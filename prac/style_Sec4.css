@@ -1,0 +1,2673 @@
+body {
+	font-family: 'Jua', sans-serif;
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: #35465d;
+	height: 100%;
+}
+
+.file-upload {
+	padding: 10% 3%;
+	margin: 0 auto;
+	border-radius: 10px;
+	border: solid 2px #0f0c29;
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	/* z-index: -100;  */
+	opacity: 0.8;
+}
+.file-upload-btn {
+	width: 100%;
+	margin: 0;
+	color: #fff;
+	background: #1fb264;
+	border: none;
+	padding: 10px;
+	border-radius: 4px;
+	border-bottom: 4px solid #15824b;
+	transition: all 0.2s ease;
+	outline: none;
+	text-transform: uppercase;
+	font-weight: 700;
+}
+
+.file-upload-btn:hover {
+	background: #1aa059;
+	color: #ffffff;
+	transition: all 0.2s ease;
+	cursor: pointer;
+}
+
+.file-upload-btn:active {
+	border: 0;
+	transition: all 0.2s ease;
+}
+
+.file-upload-content {
+	display: none;
+	text-align: center;
+}
+#loading {
+	display: none;
+}
+
+.file-upload-input {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.image-upload-wrap {
+	width: 60%;
+	margin: 0 auto;
+	position: relative;
+	object-fit: contain;
+	border-radius: 10px;
+	border: dashed 1.5px #35465d;
+	/* background: #ffc3a0; */
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+}
+
+.image-dropping,
+.image-upload-wrap:hover {
+	/* background-color: #35465d82; */
+	/* border: 3.0px dashed #ffffff; */
+
+	border: 4px dashed black;
+	/* z-index: 100; */
+	opacity: 1;
+}
+
+.image-title-wrap {
+	padding: 0 15px 15px 15px;
+	color: #222;
+}
+
+.drag-text {
+	text-align: center;
+}
+
+.drag-text h3 {
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+.file-upload-image {
+	max-height: 60%;
+	max-width: 60%;
+	margin: auto;
+	padding: 10px;
+}
+
+.try-again-btn {
+	border-radius: 40px;
+	border: solid 1.5px #35465d;
+	background-color: #35465d;
+}
+
+.try-again-text {
+	display: block;
+	font-size: 1.5rem;
+	text-align: center;
+	color: #ffffff;
+	padding: 4px 15px;
+}
+
+.remove-image:hover {
+	background: #c13b2a;
+	color: #ffffff;
+	transition: all 0.2s ease;
+	cursor: pointer;
+}
+
+.remove-image:active {
+	border: 0;
+	transition: all 0.2s ease;
+}
+
+.navbar-light .navbar-brand {
+	line-height: 1.68;
+	text-align: left;
+	color: #35465d;
+}
+
+.navbar-light .navbar-toggler {
+	border-color: #ffffff;
+}
+
+.section {
+	margin-top: 30px;
+}
+
+.title {
+	line-height: 1.0;
+	text-align: center;
+	color: #35465d;
+	font-size: 2.5rem;
+}
+
+.subtitle {
+	line-height: 1.53;
+	text-align: center;
+	color: #35465d;
+	font-size: 2.0rem;
+}
+
+/* On screens that are 600px or less, set the background color to olive */
+/* @media screen and (max-width: 600px) {
+	html {
+		font-size: 10px;
+	}
+	.navbar-brand {
+		font-size: 2rem;
+	}
+}
+
+ */
+
+.upload {
+	width: 20%;
+}
+
+.upload-text {
+	width: 58%;
+	font-size: 1.5rem;
+	line-height: 1.53;
+	text-align: center;
+	color: #35465d;
+	margin: 0 auto;
+}
+
+.footer {
+	background-color: initial;
+	color: initial;
+}
+
+
+.bar-container {
+	height: 2.7rem;
+}
+
+
+.강남길-box, .강다현-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 200, 200, 0.2);
+}
+.강남길-bar, .강다현-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 200, 200, 1);
+}
+.강동원-box, .강민경-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 190, 190, 0.2);
+}
+.강동원-bar, .강민경-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 190, 190, 1);
+}
+.강석우-box, .강소라-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 180, 180, 0.2);
+}
+.강석우-bar, .강소라-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 180, 180, 1);
+}
+.강신성일-box, .강예원-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 170, 170, 0.2);
+}
+.강신성일-bar, .강예원-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 170, 170, 1);
+}
+.강신일-box, .강정화-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 160, 160, 0.2);
+}
+.강신일-bar, .강정화-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 160, 160, 1);
+}
+.강지환-box, .강한나-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 150, 150, 0.2);
+}
+.강지환-bar, .강한나-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 150, 150, 1);
+}
+.고수-box, .강혜정-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 140, 140, 0.2);
+}
+.고수-bar, .강혜정-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 140, 140, 1);
+}
+.공유-box, .고소영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 130, 130, 0.2);
+}
+.공유-bar, .고소영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 130, 130, 1);
+}
+.권상우-box, .고아성-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 120, 120, 0.2);
+}
+.권상우-bar, .고아성-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 120, 120, 1);
+}
+.기태영-box, .공효진-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 110, 110, 0.2);
+}
+.기태영-bar, .공효진-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 110, 110, 1);
+}
+.김강우-box, .곽진영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(210, 100, 100, 0.2);
+}
+.김강우-bar, .곽진영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(210, 100, 100, 1);
+}
+.김광규-box, .권진영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 100, 100, 0.2);
+}
+.김광규-bar, .권진영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 100, 100, 1);
+}
+.김기방-box, .기은세-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 110, 200, 0.2);
+}
+.김기방-bar, .기은세-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 110, 200, 1);
+}
+.김남길-box, .김규리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 120, 190, 0.2);
+}
+.김남길-bar, .김규리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 120, 190, 1);
+}
+.김대명-box, .김남주-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 130, 180, 0.2);
+}
+.김대명-bar, .김남주-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 130, 180, 1);
+}
+.김도완-box, .김미려-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 140, 170, 0.2);
+}
+.김도완-bar, .김미려-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 140, 170, 1);
+}
+.김래원-box, .김미화-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 150, 160, 0.2);
+}
+.김래원-bar, .김미화-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 150, 160, 1);
+}
+.김무열-box, .김민희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 160, 150, 0.2);
+}
+.김무열-bar, .김민희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 160, 150, 1);
+}
+.김민종-box, .김보라-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 170, 140, 0.2);
+}
+.김민종-bar, .김보라-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 170, 140, 1);
+}
+.김범-box, .김아중-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 180, 130, 0.2);
+}
+.김범-bar, .김아중-bar{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 180, 130, 1);
+}
+.김병옥-box, .김옥빈-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 190, 120, 0.2);
+}
+.김병옥-bar, .김옥빈-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 190, 120, 1);
+}
+.김상호-box, .김유미-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(200, 200, 110, 0.2);
+}
+.김상호-bar, .김유미-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(200, 200, 110, 1);
+}
+.김수현-box, .김이지-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 100, 100, 0.2);
+}
+.김수현-bar, .김이지-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 100, 100, 1);
+}
+.김승수-box, .김태희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 110, 110, 0.2);
+}
+.김승수-bar, .김태희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 110, 110, 1);
+}
+.김승우-box, .김향기-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 120, 120, 0.2);
+}
+.김승우-bar, .김향기-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 120, 120, 1);
+}
+.김우빈-box, .김현숙-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 130, 130, 0.2);
+}
+.김우빈-bar, .김현숙-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 130, 130, 1);
+}
+.김희원-box, .김혜선-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 140, 140, 0.2);
+}
+.김희원-bar, .김혜선-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 140, 140, 1);
+}
+.남궁연-box, .김희애-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 150, 150, 0.2);
+}
+.남궁연-bar, .김희애-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 150, 150, 1);
+}
+.남궁원-box, .나나-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 160, 160, 0.2);
+}
+.남궁원-bar, .나나-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 160, 160, 1);
+}
+.노주현-box, .남규리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 170, 170, 0.2);
+}
+.노주현-bar, .남규리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 170, 170, 1);
+}
+.독고영재-box, .남보라-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 180, 180, 0.2);
+}
+.독고영재-bar, .남보라-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 180, 180, 1);
+}
+.류수영-box, .노현정-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 190, 190, 0.2);
+}
+.류수영-bar, .노현정-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 190, 190, 1);
+}
+.리마리오-box, .라미란-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(190, 200, 200, 0.2);
+}
+.리마리오-bar, .라미란-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(190, 200, 200, 1);
+}
+.박광재-box, .류혜영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 200, 100, 0.2);
+}
+.박광재-bar, .류혜영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 200, 100, 1);
+}
+.박근형-box, .박규리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 190, 110, 0.2);
+}
+.박근형-bar, .박규리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 190, 110, 1);
+}
+.박남현-box, .박민영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 180, 120, 0.2);
+}
+.박남현-bar, .박민영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 180, 120, 1);
+}
+.박성웅-box, .박소담-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 170, 130, 0.2);
+}
+.박성웅-bar, .박소담-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 170, 130, 1);
+}
+.박시후-box, .박연수-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 160, 140, 0.2);
+}
+.박시후-bar, .박연수-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 160, 140, 1);
+}
+.박유천-box, .박정아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 150, 150, 0.2);
+}
+.박유천-bar, .박정아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 150, 150, 1);
+}
+.박해일-box, .박지윤 가수-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 140, 160, 0.2);
+}
+.박해일-bar, .박지윤 가수-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 140, 160, 1);
+}
+.박해진-box, .박지윤 아나운서-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 130, 170, 0.2);
+}
+.박해진-bar, .박지윤 아나운서-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 130, 170, 1);
+}
+.박혁권-box, .방은희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 120, 180, 0.2);
+}
+.박혁권-bar, .방은희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 120, 180, 1);
+}
+.박희순-box, .배두나-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 110, 190, 0.2);
+}
+.박희순-bar, .배두나-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 110, 190, 1);
+}
+.배도환-box, .배종옥-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(180, 100, 200, 0.2);
+}
+.배도환-bar, .배종옥-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(180, 100, 200, 1);
+}
+.배용준-box, .백진희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 100, 100, 0.2);
+}
+.배용준-bar, .백진희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 100, 100, 1);
+}
+.변요한-box, .사강-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 110, 110, 0.2);
+}
+.변요한-bar, .사강-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 110, 110, 1);
+}
+.선우재덕-box, .서갑숙-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 120, 120, 0.2);
+}
+.선우재덕-bar, .서갑숙-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 120, 120, 1);
+}
+.설경구-box, .서예지-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 130, 130, 0.2);
+}
+.설경구-bar, .서예지-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 130, 130, 1);
+}
+.성지루-box, .서효림-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 140, 140, 0.2);
+}
+.성지루-bar, .서효림-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 140, 140, 1);
+}
+.소지섭-box, .선우용여-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 150, 150, 0.2);
+}
+.소지섭-bar, .선우용여-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 150, 150, 1);
+}
+.손창민-box, .성인아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 160, 160, 0.2);
+}
+.손창민-bar, .성인아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 160, 160, 1);
+}
+.손현주-box, .성유리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 170, 170, 0.2);
+}
+.손현주-bar, .성유리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 170, 170, 1);
+}
+.손호준-box, .손나은-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 180, 180, 0.2);
+}
+.손호준-bar, .손나은-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 180, 180, 1);
+}
+.송강호-box, .손예진-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 190, 190, 0.2);
+}
+.송강호-bar, .손예진-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 190, 190, 1);
+}
+.송새벽-box, .솔비-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(170, 200, 200, 0.2);
+}
+.송새벽-bar, .솔비-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(170, 200, 200, 1);
+}
+.송승헌-box, .송선미-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 200, 100, 0.2);
+}
+.송승헌-bar, .송선미-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 200, 100, 1);
+}
+.송일국-box, .송윤아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 190, 110, 0.2);
+}
+.송일국-bar, .송윤아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 190, 110, 1);
+}
+.송재희-box, .수애-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 180, 120, 0.2);
+}
+.송재희-bar, .수애-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 180, 120, 1);
+}
+.송중기-box, .수현-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 170, 130, 0.2);
+}
+.송중기-bar, .수현-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 170, 130, 1);
+}
+.신성록-box, .스테파니리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 160, 140, 0.2);
+}
+.신성록-bar, .스테파니리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 160, 140, 1);
+}
+.신하균-box, .신민아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 150, 150, 0.2);
+}
+.신하균-bar, .신민아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 150, 150, 1);
+}
+.심신-box, .신세경-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 140, 160, 0.2);
+}
+.심신-bar, .신세경-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 140, 160, 1);
+}
+.안성기-box, .신소율-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 130, 170, 0.2);
+}
+.안성기-bar, .신소율-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 130, 170, 1);
+}
+.안재홍-box, .신신애-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 120, 180, 0.2);
+}
+.안재홍-bar, .신신애-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 120, 180, 1);
+}
+.에릭-box, .신이-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 110, 190, 0.2);
+}
+.에릭-bar, .신이-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 110, 190, 1);
+}
+.여진구-box, .신주아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(160, 100, 200, 0.2);
+}
+.여진구-bar, .신주아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(160, 100, 200, 1);
+}
+.연규진-box, .안소미-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 100, 100, 0.2);
+}
+.연규진-bar, .안소미-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 100, 100, 1);
+}
+.오광록-box, .양정아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 110, 110, 0.2);
+}
+.오광록-bar, .양정아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 110, 110, 1);
+}
+.오만석-box, .양지원-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 120, 120, 0.2);
+}
+.오만석-bar, .양지원-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 120, 120, 1);
+}
+.오정세-box, .예지원-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 130, 130, 0.2);
+}
+.오정세-bar, .예지원-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 130, 130, 1);
+}
+.오종혁-box, .오승은-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 140, 140, 0.2);
+}
+.오종혁-bar, .오승은-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 140, 140, 1);
+}
+.오창석-box, .유인영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 150, 150, 0.2);
+}
+.오창석-bar, .유인영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 150, 150, 1);
+}
+.옥택연-box, .유혜리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 160, 160, 0.2);
+}
+.옥택연-bar, .유혜리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 160, 160, 1);
+}
+.온주완-box, .윤미라-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 170, 170, 0.2);
+}
+.온주완-bar, .윤미라-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 170, 170, 1);
+}
+.우도환-box, .윤승아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 180, 180, 0.2);
+}
+.우도환-bar, .윤승아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 180, 180, 1);
+}
+.원빈-box, .윤아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 190, 190, 0.2);
+}
+.원빈-bar, .윤아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 190, 190, 1);
+}
+.유동근-box, .윤유선-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(150, 200, 200, 0.2);
+}
+.유동근-bar, .윤유선-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(150, 200, 200, 1);
+}
+.유승호-box, .윤진서-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 100, 200, 0.2);
+}
+.유승호-bar, .윤진서-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 100, 200, 1);
+}
+.유아인-box, .이다희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 110, 190, 0.2);
+}
+.유아인-bar, .이다희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 110, 190, 1);
+}
+.유연석-box, .이미소-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 120, 180, 0.2);
+}
+.유연석-bar, .이미소-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 120, 180, 1);
+}
+.유오성-box, .이미숙-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 130, 170, 0.2);
+}
+.유오성-bar, .이미숙-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 130, 170, 1);
+}
+.육성재-box, .이미연-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 140, 160, 0.2);
+}
+.육성재-bar, .이미연-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 140, 160, 1);
+}
+.윤계상-box, .이시아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 150, 150, 0.2);
+}
+.윤계상-bar, .이시아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 150, 150, 1);
+}
+.윤현민-box, .이연희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 160, 140, 0.2);
+}
+.윤현민-bar, .이연희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 160, 140, 1);
+}
+.이경영-box, .이영란-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 170, 130, 0.2);
+}
+.이경영-bar, .이영란-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 170, 130, 1);
+}
+.이광수-box, .이예림-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 180, 120, 0.2);
+}
+.이광수-bar, .이예림-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 180, 120, 1);
+}
+.이동욱-box, .이유리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 190, 110, 0.2);
+}
+.이동욱-bar, .이유리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 190, 110, 1);
+}
+.이문식-box, .이은주-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(140, 200, 100, 0.2);
+}
+.이문식-bar, .이은주-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(140, 200, 100, 1);
+}
+.이민호-box, .이일화-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 200, 200, 0.2);
+}
+.이민호-bar, .이일화-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 200, 200, 1);
+}
+.이범수-box, .이지혜-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 190, 190, 0.2);
+}
+.이범수-bar, .이지혜-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 190, 190, 1);
+}
+.이병헌-box, .이채영-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 180, 180, 0.2);
+}
+.이병헌-bar, .이채영-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 180, 180, 1);
+}
+.이상윤-box, .이태란-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 170, 170, 0.2);
+}
+.이상윤-bar, .이태란-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 170, 170, 1);
+}
+.이상인-box, .이태임-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 160, 160, 0.2);
+}
+.이상인-bar, .이태임-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 160, 160, 1);
+}
+.이서진-box, .이하늬-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 150, 150, 0.2);
+}
+.이서진-bar, .이하늬-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 150, 150, 1);
+}
+.이선균-box, .이하얀-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 140, 140, 0.2);
+}
+.이선균-bar, .이하얀-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 140, 140, 1);
+}
+.이순재-box, .이혜인-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 130, 130, 0.2);
+}
+.이순재-bar, .이혜인-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 130, 130, 1);
+}
+.이승기-box, .이휘향-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 120, 120, 0.2);
+}
+.이승기-bar, .이휘향-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 120, 120, 1);
+}
+.이영하-box, .임수정-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(130, 110, 110, 0.2);
+}
+.이영하-bar, .임수정-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(130, 100, 100, 1);
+}
+.이이경-box, .임수향-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 200, 100, 0.2);
+}
+.이이경-bar, .임수향-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 200, 100, 1);
+}
+.이재황-box, .임은경-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 190, 110, 0.2);
+}
+.이재황-bar, .임은경-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 190, 110, 1);
+}
+.이정길-box, .임지현-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 180, 120, 0.2);
+}
+.이정길-bar, .임지현-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 180, 120, 1);
+}
+.이정재-box, .장자연-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 170, 130, 0.2);
+}
+.이정재-bar, .장자연-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 170, 130, 1);
+}
+.이종석-box, .장희진-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 160, 140, 0.2);
+}
+.이종석-bar, .장희진-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 160, 140, 1);
+}
+.이한휘-box, .전미도-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 150, 150, 0.2);
+}
+.이한휘-bar, .전미도-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 150, 150, 1);
+}
+.임하룡-box, .전인화-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 140, 160, 0.2);
+}
+.임하룡-bar, .전인화-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 140, 160, 1);
+}
+.임형준-box, .정가은-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 130, 170, 0.2);
+}
+.임형준-bar, .정가은-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 130, 170, 1);
+}
+.장근석-box, .정다민-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 120, 180, 0.2);
+}
+.장근석-bar, .정다민-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 120, 180, 1);
+}
+.장동건-box, .정선희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 110, 190, 0.2);
+}
+.장동건-bar, .정선희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 110, 190, 1);
+}
+.장우혁-box, .정시아-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(120, 100, 200, 0.2);
+}
+.장우혁-bar, .정시아-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(120, 100, 200, 1);
+}
+.장혁-box, .정유미-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 200, 200, 0.2);
+}
+.장혁-bar, .정유미-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 200, 200, 1);
+}
+.전광렬-box, .정윤희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 190, 190, 0.2);
+}
+.전광렬-bar, .정윤희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 190, 190, 1);
+}
+.정성화-box, .정은지-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 180, 180, 0.2);
+}
+.정성화-bar, .정은지-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 180, 180, 1);
+}
+.정우성-box, .정혜선-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 170, 170, 0.2);
+}
+.정우성-bar, .정혜선-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 170, 170, 1);
+}
+.정준-box, .조미령-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 160, 160, 0.2);
+}
+.정준-bar, .조미령-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 160, 160, 1);
+}
+.정준하-box, .조여정-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 150, 150, 0.2);
+}
+.정준하-bar, .조여정-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 150, 150, 1);
+}
+.정지훈-box, .조윤희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 140, 140, 0.2);
+}
+.정지훈-bar, .조윤희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 140, 140, 1);
+}
+.조인성-box, .조혜정-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 130, 130, 0.2);
+}
+.조인성-bar, .조혜정-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 130, 130, 1);
+}
+.조재현-box, .진서연-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 120, 120, 0.2);
+}
+.조재현-bar, .진서연-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 120, 120, 1);
+}
+.조정석-box, .차예련-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 110, 110, 0.2);
+}
+.조정석-bar, .차예련-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 110, 110, 1);
+}
+.조희봉-box, .채정안-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(110, 100, 100, 0.2);
+}
+.조희봉-bar, .채정안-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(110, 100, 100, 1);
+}
+.주진모-box, .최강희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 100, 200, 0.2);
+}
+.주진모-bar, .최강희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 100, 200, 1);
+}
+.지창욱-box, .최여진-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 110, 190, 0.2);
+}
+.지창욱-bar, .최여진-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 110, 190, 1);
+}
+.진선규-box, .최지우-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 120, 180, 0.2);
+}
+.진선규-bar, .최지우-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 120, 180, 1);
+}
+.차승원-box, .하나경-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 130, 170, 0.2);
+}
+.차승원-bar, .하나경-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 130, 170, 1);
+}
+.차인표-box, .하연수-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 140, 160, 0.2);
+}
+.차인표-bar, .하연수-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 140, 160, 1);
+}
+.차태현-box, .해재숙-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 150, 150, 0.2);
+}
+.차태현-bar, .해재숙-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 150, 150, 1);
+}
+.최다니엘-box, .하희라-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 160, 140, 0.2);
+}
+.최다니엘-bar, .하희라-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 160, 140, 1);
+}
+.최무성-box, .한보름-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 170, 130, 0.2);
+}
+.최무성-bar, .한보름-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 170, 130, 1);
+}
+.최민수-box, .한예리-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 180, 120, 0.2);
+}
+.최민수-bar, .한예리-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 180, 120, 1);
+}
+.최민용-box, .황신혜-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 190, 110, 0.2);
+}
+.최민용-bar, .황신혜-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 190, 110, 1);
+}
+.최불암-box, .황우슬혜-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(100, 200, 100, 0.2);
+}
+.최불암-bar, .황우슬혜-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(100, 200, 100, 1);
+}
+.최수종-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 100, 100, 0.2);
+}
+.최수종-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 100, 100, 1);
+}
+.최재성-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 110, 110, 0.2);
+}
+.최재성-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 110, 110, 1);
+}
+.최진혁-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 120, 120, 0.2);
+}
+.최진혁-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 120, 120, 1);
+}
+.하정우-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 130, 130, 0.2);
+}
+.하정우-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 130, 130, 1);
+}
+.한석규-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 140, 140, 0.2);
+}
+.한석규-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 140, 140, 1);
+}
+.한진희-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 150, 150, 0.2);
+}
+.한진희-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 150, 150, 1);
+}
+.허성태-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 160, 160, 0.2);
+}
+.허성태-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 160, 160, 1);
+}
+.현빈-box {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	width: 100%;
+	background-color: rgba(90, 170, 170, 0.2);
+}
+.현빈-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 2rem;
+	border-radius: 10px;
+	background-color: rgba(90, 170, 170, 1);
+}
+
+
+
+.percent-text {
+	font-size: 1rem;
+	color: #ffffff;
+}
+.animal-label {
+	width: 20%;
+	text-align: left;
+	height: 2rem;
+}
+#label-container {
+	width: 80%;
+	margin: 0 auto;
+}
+
+.result-message {
+	font-size: 2.5rem;
+	color: #283c86;
+}
+
+.animal-explain {
+	font-size: 1.5rem;
+	color: #093637;
+}
+
+
+/* gender */
+input#gender {
+	display: none;
+}
+
+label {
+	cursor: pointer;
+	display: inline-block;
+	width: 90px;
+	height: 41px;
+	box-shadow: 0 0 0 8px #e5e9ea inset;
+	border-radius: 30px;
+	position: relative;
+}
+
+.knob {
+	position: absolute;
+	width: 41px;
+	top: 0;
+	left: 0;
+	height: 41px;
+	border-radius: 50%;
+	box-shadow: 0 0 0 8px #f470a7 inset;
+	background-color: #fbd4e6;
+	transition: 0.3s;
+}
+
+.knob > i {
+	position: absolute;
+	width: 4px;
+	height: 18px;
+	top: 100%;
+	background-color: #f470a7;
+	left: calc(50% - 2px);
+}
+
+.knob > i:before,
+.knob > i:after {
+	width: 6px;
+	position: absolute;
+	top: 42%;
+	content: '';
+	height: 4px;
+	background-color: #f470a7;
+}
+
+.knob > i:before {
+	left: 4px;
+}
+.knob > i:after {
+	left: -6px;
+}
+
+input:checked + label > .knob {
+	box-shadow: 0 0 0 8px #a1c6dd inset;
+	background-color: #e2ecf4;
+	transform: translateX(49px) rotate(-140deg);
+}
+
+input:checked + label > .knob > i {
+	background-color: #a1c6dd;
+}
+
+input:checked + label > .knob > i:after,
+input:checked + label > .knob > i:before {
+	background-color: #a1c6dd;
+}
+
+input:checked + label > .knob > i:after {
+	top: 14.5px;
+	width: 12px;
+	left: -7px;
+	transform: rotate(45deg);
+}
+input:checked + label > .knob > i:before {
+	top: 13px;
+	width: 12px;
+	left: 0px;
+	transform: rotate(134deg);
+}
+
+.ad-banner {
+	width: 320px;
+	margin: 0 auto;
+}

@@ -1,0 +1,109 @@
+/* 여기는 tab css */
+
+*:focus {
+	outline: 1px dotted blue;
+}
+
+.tabs > ul {
+	font-family: 'Jua', sans-serif;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-bottom: 1px solid #ccc;
+	font-size: 0;
+	font-weight: normal;
+}
+.tabs > ul .indicator {
+	display: block;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 3px;
+	width: 20%;
+	background: #1e88e5;
+	-webkit-transform: translateZ(0) translateX(0);
+	transform: translateZ(0) translateX(0);
+	-webkit-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+}
+.tabs > ul li {
+	display: inline-block;
+	font-size: 2.0rem;
+	width: 20%;
+}
+.tabs > ul li a {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	/* padding: 10px; */
+	padding-top: 15px;
+	padding-right: 0px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	text-decoration: none;
+	text-align: center;
+	/* font-weight: bold; */
+	/* color: black; */
+	-webkit-transition: all 0.3s ease 0.4s;
+	transition: all 0.3s ease 0.4s;
+}
+
+a[href$='section1'] {
+	/* background: #faffd1; */
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section2'] {
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section3'] {
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section4'] {
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section5'] {
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
+
+.tabs > ul li a:before {
+	content: '';
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	background: #1e88e5;
+	-webkit-transform: translateZ(0) translateY(100%);
+	transform: translateZ(0) translateY(100%);
+	-webkit-transition: all 0.3s ease 0.3s;
+	transition: all 0.3s ease 0.3s;
+	z-index: -1;
+}
+
+.tabs > ul li a[aria-selected] {
+	transition: all 0.2s ease;
+	color: #dc281e;
+}
+
+.tabs > ul li a[aria-selected]:before {
+	-webkit-transform: translateZ(0) translateY(0);
+	transform: translateZ(0) translateY(0);
+}
+
+/* .tabs > section[aria-hidden='true'] { */
+.tabs > section[aria-hidden='true'] {
+	display: none;
+}
+/* 여기는 tab css 마지막 */
