@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- meta 태그는 해당 문서에 대한 정보인 메타데이터(metadata)를 정의할 때 사용 		 -->
+		<meta charset="UTF-8" />
+		<!--코딩의 시작 UTF-8로 주로 시작 -->
+		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
+		<!--폰에 화면 줄어들때 화면 비율에 따라서 적용하기 위해 -->
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<!--content="ie=edge"는 IE브라우저에서 각 버전 중 가장 최신 표준모드를 선택하는 문서모드 -->
+		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+		<!-- link = 연결하는거, href = Hyper text markup language, rel = relationship (보통스타일 시트랑 연결) Css = cascading style sheet-->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+		<!-- integrity는 rel 파일이 수정되지 않았음을 확인하기 위해 사용되는 해쉬 값 (hash value, crossorigin = 교차 출처 리소스 공유 -->
+		<title>일진(양아치) 지수 측정</title>
+		<meta name="title" content="일진(양아치) 지수 측정" />
+		<meta name="subject" content="얼굴로 살펴보는 나의 일진 지수 또는 양아치 지수는?" />
+		<meta
+			name="keywords"
+			content="양아치 테스트, 일진상 테스트, 일진 테스트, 양아치 테스트, 
+					 인공지능 얼굴상, AI 얼굴상, AI 얼굴 점수, 외모 테스트, 
+					 face AI, face artificial intelligence, 
+					 AI 얼굴 점수, 외모 테스트, 인공지능 외모 평가"
+		/>
+		<meta name="author" content="PDY" />
+		<link rel="stylesheet" href="style_Sec5.css" />
+		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- 대표 홈페이지 주소를 rel="canonical" 로 표시하는거다 -->
+		<meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- og = open graph, og:title = 콘텐츠 제목, og:type =  웹페이지 타입 (blog, website 등, og:title = 웹사이트 이름) -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="양아치(일진) 테스트" />
+		<meta
+			property="og:description"
+			content="얼굴로 알아보는 나의 일진 지수 또는 양아치 지수
+					 다양한 일진 및 양아치 사진을 통해서 분석한 인공지능 학습 모델을 통해서 나의 얼굴이 일진 또는 양아치와 일치율을 평가해 준다!
+					 회원 가입없이 화면에서 바로 확인 가능합니다. 
+					 사진 데이터는 어디에도 사용 및 전송되지 않습니다."
+		/>
+
+		<!-- 이게 공유 관련된 부분 -->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script
+			type="text/javascript"
+			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
+		></script>
+		<!-- 이게 공유 관련된 부분 -->
+	</head>
+
+	<body>
+		<section class="section">
+			<!-- section은 독립적은 구획을 의미한다 -->
+			<h1 class="title">인공지능 양아치 지수 측정</h1>
+			<h2 class="subtitle">넌 양아치 얼굴일까? 아닐까?</h2>
+			<h2 class="sr-only">나의 외모점수는 얼마일까요?</h2>
+			<!-- class ="sr-only"는 화면에는 안나옴 -->
+			<h3 class="sr-only">
+				연예인 사진을 기반으로 인공지능 학습을 수행 함
+			</h3>
+			<h4 class="sr-only">teachable machine 2.0을 활용하였습니다.</h4>
+			<p class="sr-only">
+				얼굴로 보는 인공지능 외모 테스트, 나와 외모점수는 몇점일까요? 다양한 사람들의 외모
+				사진으로 학습한 인공지능이 나의 얼굴(외모) 점수를 매겨줍니다. 회원가입 없이도
+				화면에서 바로 확인 가능합니다. 사용한 사진 데이터는 다른 용도로 사용하지 않습니다.
+				인공지능을 통해서 나의 외모를 테스트 해 보세요! 과연 여러분의 외모는 몇점일까요?
+			</p>
+			<!-- p = paragraph -->
+		</section>
+
+		<!--성별 선택하는 곳 		 -->
+		<h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+		<!-- pb-2 글자 밑으로 패딩이 "2",  https://bootstrapshuffle.com/kr/classes/spacing/pb-1+%25_F+pb-*-%23, d-flex는 flex 방향이라는데?? column 방향일 듯-->
+		<section class="d-flex justify-content-center">
+			<p class="d-flex align-items-center pr-3">여자</p>
+			<!-- align-items-center = 글자를 중간에 맞추는 거 -->
+			<div>
+				<input type="checkbox" id="gender" /><!-- input type="유형" id="name" -->
+				<label for="gender">
+					<span class="knob">
+						<i></i>
+					</span>
+				</label>
+			</div>
+
+			<p class="d-flex align-items-center pl-3">남자</p>
+		</section>
+
+		<script
+			class="jsbin"
+			src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+		></script>
+		<!-- teachable machine에 관한 Javascript -->
+
+		<div class="mt-3 container file-upload">
+			<div class="image-upload-wrap">
+				<input
+					class="file-upload-input"
+					type="file"
+					onchange="readURL(this);"
+					accept="image/*"
+				/>
+				<!-- onchange는 우리가 작성한 Javascript를 통해서 변화가 일어났는지 탐지해 줌, readURL함수는 뒤에 정의 되어있음, accept는 받아들이는 파일형식-->
+
+				<div class="drag-text">
+					<img src="img/upload.png" class="mt-5 pt-5 upload" />
+					<h3 class="mb-5 pb-5 pt-4 upload-text">
+						얼굴 사진을<br />
+						올려놓거나 <br />눌러서 <br />업로드하세요!
+					</h3>
+				</div>
+			</div>
+
+			<div class="file-upload-content">
+				<img class="file-upload-image" id="face-image" src="#" alt="your image" />
+				<div id="loading" class="animated bounce">
+					<div class="spinner-border" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+					<p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
+				</div>
+				<p class="result-message"></p>
+
+				<div id="label-container" class="d-flex flex-column justify-content-around"></div>
+
+				<!-- percent gauge -->
+				<canvas id="canvas" width="300" height="300">
+					<p>抱歉，您的浏览器不支持canvas</p>
+				</canvas>
+				<!-- percent gauge -->
+
+				<!--이게 공유버튼	 -->
+				<div class="addthis_inline_share_toolbox_czma"></div>
+				<!--이게 공유버튼	 -->
+				<div class="pt-3 image-title-wrap">
+					<button
+						type="button p-2"
+						class="try-again-btn"
+						onclick="window.location.reload();"
+					>
+						<span class="try-again-text">다른 사진으로 재시도</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer pt-5 container d-flex justify-content-center">
+			<div>
+				<p>&copy; Industrial AI 2020. All Rights Reserved.</p>
+			</div>
+		</footer>
+
+		<script>
+			<!-- Javascript 파일 upload와 remove관련	 -->
+						function readURL(input) {
+							if (input.files && input.files[0]) {
+								var reader = new FileReader();
+								reader.onload = function (e) {
+									$('.image-upload-wrap').hide();
+									$('#loading').show();
+									$('.file-upload-image').attr('src', e.target.result);
+									$('.file-upload-content').show();
+									$('.image-title').html(input.files[0].name);
+								};
+								reader.readAsDataURL(input.files[0]);
+								init().then(function () {
+									predict();
+									$('#loading').hide();
+								});
+							} else {
+								removeUpload();
+							}
+						}
+
+						function removeUpload() {
+							$('.file-upload-input').replaceWith($('.file-upload-input').clone());
+							$('.file-upload-content').hide();
+							$('.image-upload-wrap').show();
+						}
+						$('.image-upload-wrap').bind('dragover', function () {
+							$('.image-upload-wrap').addClass('image-dropping');
+						});
+						$('.image-upload-wrap').bind('dragleave', function () {
+							$('.image-upload-wrap').removeClass('image-dropping');
+						});
+		</script>
+		<!-- Javascript 파일 upload와 remove관련 -->
+
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+		<script type="text/javascript">
+			<!-- Javascript AI관련된 부분 -->
+						let URL;
+						const urlMale = './AI_model/AI_good_bad_m/';
+						const urlFemale = './AI_model/AI_good_bad_w/';
+						let model, webcam, labelContainer, maxPredictions;
+						async function init() {
+							if (document.getElementById('gender').checked) {
+								URL = urlMale;
+							} else {
+								URL = urlFemale;
+							}
+							const modelURL = URL + 'model.json';
+							const metadataURL = URL + 'metadata.json';
+							model = await tmImage.load(modelURL, metadataURL);
+							maxPredictions = model.getTotalClasses();
+							labelContainer = document.getElementById('label-container');
+							for (let i = 0; i < maxPredictions; i++) {
+								var element = document.createElement('div');
+								element.classList.add('d-flex');
+								labelContainer.appendChild(element);
+							}
+						}
+
+						async function predict() {
+							var image = document.getElementById('face-image');
+							const prediction = await model.predict(image, false);
+
+
+							// to find the maximum index
+							var predict_pro = new Array();
+							var sum_pred_g = 0;
+							var sum_pred_b = 0;
+							var sum_pp = 0;
+
+							for(var i = 0; i <= 15; i++) {
+								predict_pro[i] = prediction[i].probability;
+								sum_pred_g += predict_pro[i];
+							}
+
+							for(var i = 16; i <= 31; i++) {
+								predict_pro[i] = prediction[i].probability;
+								sum_pred_b += predict_pro[i];
+							}
+
+							// if (sum_pred_g > sum_pred_b) {
+							// 	sum_pp = sum_pred_g;
+							// } else {
+							// 	sum_pp = sum_pred_b;
+							// }
+							console.log(sum_pp);
+							console.log(sum_pred_g);
+							console.log(sum_pred_b);
+							console.log(prediction);
+
+							var max_probability = Math.max.apply(null, predict_pro);
+							console.log(max_probability);
+							var index = predict_pro.indexOf(max_probability); // 최종 찾은 index = 확률 가장 높은거
+							console.log(index);
+							// to find the maximum index 끝
+
+							// prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability)); // 오름차순 정렬
+
+							var resultTitle, resultExplain, resultCeleb;
+
+							if (document.getElementById('gender').checked) {
+								if (sum_pred_g > sum_pred_b) {
+									sum_pp = sum_pred_g;
+									if (sum_pred_g >= 0.9){
+										resultTitle = '상위 10 % 모범생 마스크!';
+										resultExplain =	'엄친아 이미지로 잘생긴 얼굴에 비상한 머리까지... 모든걸 갖추었기에 부럽기도 하지만 재수가 없다!';
+										resultCeleb = '엄청난 엄친아 마스크!';
+
+									}else if (sum_pred_g >= 0.8 && sum_pred_g < 0.9){
+										resultTitle = '상위 20 % 모범생 마스크!';
+										resultExplain =	'전교에서 놀 정도는 아니고, 반에서 최상위권정도 속하는 얼굴!';
+										resultCeleb = '쫌 하는 모범생 스타일!';
+
+									}else if (sum_pred_g >= 0.7 && sum_pred_g < 0.8){
+										resultTitle = '상위 30 % 모범생 마스크!';
+										resultExplain =	'반에서 상위권인데, 전교에서는 티도 안나는 중상위권 정도의 애매한 수준의 마스크!';
+										resultCeleb = '티나지 않는 모범생';
+
+									}else if (sum_pred_g >= 0.6 && sum_pred_g < 0.7){
+										resultTitle = '상위 40 % 모범생 마스크!';
+										resultExplain =	'중위권에서 살짝 위에 있는 수준! 가끔식 중상위권으로 올랐다 다시 내려오는.. 조금만 노력하면 상위권을 노려볼만한 머리는 좋은 마스크!';
+										resultCeleb = '모범생까지는 아니고 어중간한... ';
+
+									}else{
+										resultTitle = '상위 50 % 모범생 마스크!';
+										resultExplain =	'애매하다! 애매해!! 조금 실수하면 하위권에 분류된다! 그래도 희망은 있다! 왜냐 중간을 기준으로 위에 있으니까!';
+										resultCeleb = '뛰어난건 아닌데 잘하는건 아닌, 까딱하면 하위권 간다!';
+									}
+
+								} else {
+									sum_pp = sum_pred_b;
+									if (sum_pred_b >= 0.9){
+										resultTitle = '하위 10 % 양아치(일진) 마스크!';
+										resultExplain =	'누가봐도 양아치! 불미스러운 일이 생기면 가장 먼저 의심받을만한 얼굴! 담배를 안펴도 담배 냄새가 날듯한 얼굴';
+										resultCeleb = '완전 개!쌩!양아치 얼굴!';
+
+									}else if (sum_pred_b >= 0.8 && sum_pred_b < 0.9){
+										resultTitle = '하위 20 % 양아치(일진) 마스크!';
+										resultExplain =	'아무리 아닌척 하려고 해도... 날(나리)티가 풍기는 마스크! 골목에 한명씩 있을 듯한 얼굴';
+										resultCeleb = '심각한 양아치(일진) 얼굴!';
+
+									}else if (sum_pred_b >= 0.7 && sum_pred_b < 0.8){
+										resultTitle = '하위 30 % 양아치(일진) 마스크!';
+										resultExplain =	'양아치(일진)가 되고 싶은... 양아치를 동경하여 따라하려는 마스크! 일진 옆에 꼬붕같은 스타일 얼굴!';
+										resultCeleb = '일진 옆에 꼬붕 스타일 마스크!';
+
+									}else if (sum_pred_b >= 0.6 && sum_pred_b < 0.7){
+										resultTitle = '하위 40 % 양아치(일진) 마스크!';
+										resultExplain =	'언듯보면 양아치인데, 머리스타일 조금 바꾸면 평민이 될 수 있는 이도저도 아닌 애매한 마스크! 일진들 없을때 2진급에서 왕노릇하는 마스크!';
+										resultCeleb = '2진급 양아치 얼굴!';
+
+									}else{
+										resultTitle = '하위 50 % 양아치(일진) 마스크!';
+										resultExplain =	'모범생과 양아치 두얼굴을 모두 품고 있는! 이것도 저것도 아닌 애매한 마스크!';
+										resultCeleb = '범생이도 아닌, 아치도 아닌 애매한 얼굴!';
+									}
+								}
+
+							} else {
+
+								if (sum_pred_g > sum_pred_b) {
+									sum_pp = sum_pred_g;
+									if (sum_pred_g >= 0.9){
+										resultTitle = '상위 10 % 모범생 마스크!';
+										resultExplain =	'엄친아 이미지로 잘생긴 얼굴에 비상한 머리까지... 모든걸 갖추었기에 부럽기도 하지만 재수가 없다!';
+										resultCeleb = '엄청난 엄친아 마스크!';
+
+									}else if (sum_pred_g >= 0.8 && sum_pred_g < 0.9){
+										resultTitle = '상위 20 % 모범생 마스크!';
+										resultExplain =	'전교에서 놀 정도는 아니고, 반에서 최상위권정도 속하는 얼굴!';
+										resultCeleb = '쫌 하는 모범생 스타일!';
+
+									}else if (sum_pred_g >= 0.7 && sum_pred_g < 0.8){
+										resultTitle = '상위 30 % 모범생 마스크!';
+										resultExplain =	'반에서 상위권인데, 전교에서는 티도 안나는 중상위권 정도의 애매한 수준의 마스크!';
+										resultCeleb = '티나지 않는 모범생';
+
+									}else if (sum_pred_g >= 0.6 && sum_pred_g < 0.7){
+										resultTitle = '상위 40 % 모범생 마스크!';
+										resultExplain =	'중위권에서 살짝 위에 있는 수준! 가끔식 중상위권으로 올랐다 다시 내려오는.. 조금만 노력하면 상위권을 노려볼만한 머리는 좋은 마스크!';
+										resultCeleb = '모범생까지는 아니고 어중간한... ';
+
+									}else{
+										resultTitle = '상위 50 % 모범생 마스크!';
+										resultExplain =	'애매하다! 애매해!! 조금 실수하면 하위권에 분류된다! 그래도 희망은 있다! 왜냐 중간을 기준으로 위에 있으니까!';
+										resultCeleb = '뛰어난건 아닌데 잘하는건 아닌, 까딱하면 하위권 간다!';
+									}
+
+								} else {
+									sum_pp = sum_pred_b;
+									if (sum_pred_b >= 0.9){
+										resultTitle = '하위 10 % 양아치(일진) 마스크!';
+										resultExplain =	'누가봐도 양아치! 불미스러운 일이 생기면 가장 먼저 의심받을만한 얼굴! 담배를 안펴도 담배 냄새가 날듯한 얼굴';
+										resultCeleb = '완전 개!쌩!양아치 얼굴!';
+
+									}else if (sum_pred_b >= 0.8 && sum_pred_b < 0.9){
+										resultTitle = '하위 20 % 양아치(일진) 마스크!';
+										resultExplain =	'아무리 아닌척 하려고 해도... 날(나리)티가 풍기는 마스크! 골목에 한명씩 있을 듯한 얼굴';
+										resultCeleb = '심각한 양아치(일진) 얼굴!';
+
+									}else if (sum_pred_b >= 0.7 && sum_pred_b < 0.8){
+										resultTitle = '하위 30 % 양아치(일진) 마스크!';
+										resultExplain =	'양아치(일진)가 되고 싶은... 양아치를 동경하여 따라하려는 마스크! 일진 옆에 꼬붕같은 스타일 얼굴!';
+										resultCeleb = '일진 옆에 꼬붕 스타일 마스크!';
+
+									}else if (sum_pred_b >= 0.6 && sum_pred_b < 0.7){
+										resultTitle = '하위 40 % 양아치(일진) 마스크!';
+										resultExplain =	'언듯보면 양아치인데, 머리스타일 조금 바꾸면 평민이 될 수 있는 이도저도 아닌 애매한 마스크! 일진들 없을때 2진급에서 왕노릇하는 마스크!';
+										resultCeleb = '2진급 양아치 얼굴!';
+
+									}else{
+										resultTitle = '하위 50 % 양아치(일진) 마스크!';
+										resultExplain =	'모범생과 양아치 두얼굴을 모두 품고 있는! 이것도 저것도 아닌 애매한 마스크!';
+										resultCeleb = '범생이도 아닌, 아치도 아닌 애매한 얼굴!';
+									}
+								}
+							}
+
+
+							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
+							var title =
+								"<div class='" +
+								prediction[index].className +
+								"-animal-title'>" +
+								resultTitle +
+								'</div>';
+
+							var explain = "<div class='animal-explain pt-2'>" + resultExplain + '</div>';
+
+							var celeb =
+								"<div class='" +
+								prediction[index].className +
+								"-animal-celeb pt-2 pb-2'>" +
+								resultCeleb +
+								'</div>';
+
+							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
+
+
+
+									// 내가 받은 percent gauage
+								/* by www.geekwen.com */
+								var canvas = document.getElementById("canvas"),
+								  ctx = canvas.getContext("2d"),
+								  percent = sum_pp*100, // 最终百分比
+								  circleX = canvas.width / 2, // 中心x坐标
+								  circleY = canvas.height / 2, // 中心y坐标
+								  radius = 100, // 圆环半径
+								  lineWidth = 20, // 圆形线条的宽度
+								  fontSize = 50; // 字体大小
+								// 画圆
+								function circle(cx, cy, r) {
+								  ctx.beginPath();
+								  ctx.moveTo(cx + r, cy);
+								  ctx.lineWidth = lineWidth;
+								  ctx.strokeStyle = "#eee";
+								  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+								  ctx.closePath();
+								  ctx.stroke();
+								}
+
+								// 画弧线
+								function sector(cx, cy, r, startAngle, endAngle, anti) {
+								  ctx.beginPath();
+								  ctx.moveTo(cx, cy + r); // 从圆形底部开始画
+								  ctx.lineWidth = lineWidth;
+
+								  // 渐变色 - 可自定义
+								  var linGrad = ctx.createLinearGradient(
+									circleX,
+									circleY - radius - lineWidth,
+									circleX,
+									circleY + radius + lineWidth
+								  );
+								  linGrad.addColorStop(0.0, "#ec847a");
+								  linGrad.addColorStop(0.5, "#9bc4eb");
+								  linGrad.addColorStop(1.0, "#eccd23");
+								  ctx.strokeStyle = linGrad;
+
+								  // 圆弧两端的样式
+								  ctx.lineCap = "round";
+
+								  // 圆弧
+								  ctx.arc(
+									cx,
+									cy,
+									r,
+									startAngle * (Math.PI / 180.0) + Math.PI / 2,
+									endAngle * (Math.PI / 180.0) + Math.PI / 2,
+									anti
+								  );
+								  ctx.stroke();
+								}
+
+
+
+								// 刷新
+								function loading() {
+								  if (process >= percent) {
+									clearInterval(circleLoading);
+								  }
+
+								  // 清除canvas内容
+								  ctx.clearRect(0, 0, circleX * 2, circleY * 2);
+
+								  // 中间的字
+								  ctx.font = fontSize + "px April";
+								  ctx.textAlign = "center";
+								  ctx.textBaseline = "middle";
+								  ctx.fillStyle = "#999";
+								  ctx.fillText(parseFloat(process).toFixed(0) + "%", circleX, circleY);
+
+								  // 圆形
+								  circle(circleX, circleY, radius);
+
+								  // 圆弧
+								  sector(circleX, circleY, radius, 0, (process / 100) * 360);
+
+								  // 控制结束时动画的速度
+								  if (process / percent > 0.9) {
+									process += 0.3;
+								  } else if (process / percent > 0.8) {
+									process += 0.55;
+								  } else if (process / percent > 0.7) {
+									process += 0.75;
+								  } else {
+									process += 1.0;
+								  }
+								}
+
+								var process = 0.0; // 进度
+								var circleLoading = window.setInterval(function () {
+								  loading();
+								}, 20);
+								// 내가 받은 percent gauage
+						}
+		</script>
+		<!-- Javascript AI관련된 부분 -->
+		<!-- 이거는 광고 -->
+		<script>
+			function iosApp() {
+				document.getElementById('coupang').style.display = 'none';
+				$('#coupang ins').hide();
+				document.getElementById('addThis').style.display = 'none';
+				document.getElementById('disqus_thread').style.display = 'none';
+				var kakao = document.getElementsByClassName('kakao_ad_area');
+				for (var i = 0; i < kakao.length; i++) {
+					if (kakao[i]) {
+						kakao[i].style.display = 'none';
+					}
+				}
+				document.getElementById('yotube-top-link').style.display = 'none';
+				document.getElementById('yotube-mid-link').style.display = 'none';
+				document.getElementById('yotube-bottom-link').style.display = 'none';
+			}
+		</script>
+		<!-- 이거는 광고 -->
+		<!-- 여기는 댓글창 다는거 -->
+		<div id="disqus_thread"></div>
+		<script>
+			/**
+			 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+			 *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+			/*
+			var disqus_config = function () {
+			this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+			this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			*/
+			(function () {
+				// DON'T EDIT BELOW THIS LINE
+				var d = document,
+					s = d.createElement('script');
+				s.src = 'https://seoyoul0510.disqus.com/embed.js';
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript
+			>Please enable JavaScript to view the
+			<a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+		>
+		<!-- 여기는 댓글창 다는거 -->
+	</body>
+	<!-- 
+image input box
+Copyright (c) 2020 by Aaron Vanston (https://codepen.io/aaronvanston/pen/yNYOXR)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+gender toggle
+Copyright (c) 2020 by Mert Cukuren (https://codepen.io/knyttneve/pen/bPpEZY)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ -->
+</html>

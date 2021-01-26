@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- meta 태그는 해당 문서에 대한 정보인 메타데이터(metadata)를 정의할 때 사용 		 -->
+		<meta charset="UTF-8" />
+		<!--코딩의 시작 UTF-8로 주로 시작 -->
+		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
+		<!--폰에 화면 줄어들때 화면 비율에 따라서 적용하기 위해 -->
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<!--content="ie=edge"는 IE브라우저에서 각 버전 중 가장 최신 표준모드를 선택하는 문서모드 -->
+		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+		<!-- link = 연결하는거, href = Hyper text markup language, rel = relationship (보통스타일 시트랑 연결) Css = cascading style sheet-->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+		<!-- integrity는 rel 파일이 수정되지 않았음을 확인하기 위해 사용되는 해쉬 값 (hash value, crossorigin = 교차 출처 리소스 공유 -->
+		<title>닮은꼴 개그맨 또는 개그우먼</title>
+		<meta name="title" content="닮은꼴 개그맨 또는 개그우먼" />
+		<meta name="subject" content="얼굴로 찾는 나와 닮은 개그맨 또는 개그우먼?" />
+		<meta
+			name="keywords"
+			content="닮은꼴 개그맨, 닮은꼴 개그우먼, 닮은꼴 희극인, 닮은꼴 연예인, 
+					 인공지능 얼굴상, AI 얼굴상, AI 얼굴 점수, 외모 테스트, 
+					 face AI, face artificial intelligence, 
+					 AI 얼굴 점수, 외모 테스트, 인공지능 외모 평가"
+		/>
+		<meta name="author" content="PDY" />
+		<link rel="stylesheet" href="style_Sec4.css" />
+		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- 대표 홈페이지 주소를 rel="canonical" 로 표시하는거다 -->
+		<meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- og = open graph, og:title = 콘텐츠 제목, og:type =  웹페이지 타입 (blog, website 등, og:title = 웹사이트 이름) -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="닮은꼴 개그맨 또는 개그우먼" />
+		<meta
+			property="og:description"
+			content="얼굴로 살펴보는 나와 닮은 개그맨 또는 개그우먼
+					 개그맨과 개그우먼 사진으로 학습하고 학습모델을 통해서 나의 닮은 개그맨 또는 개그우먼을 찾아줍니다. 
+					 회원 가입없이 화면에서 바로 확인 가능합니다. 
+					 사진 데이터는 어디에도 사용 및 전송되지 않습니다."
+		/>
+
+		<!-- 이게 공유 관련된 부분 -->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script
+			type="text/javascript"
+			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
+		></script>
+		<!-- 이게 공유 관련된 부분 -->
+	</head>
+
+	<body>
+		<section class="section">
+			<!-- section은 독립적은 구획을 의미한다 -->
+			<h1 class="title">코미디언 얼굴상 테스트</h1>
+			<h2 class="subtitle">나는 어떤 개그맨(우먼)과 닮았을까?</h2>
+			<h2 class="sr-only">나의 외모점수는 얼마일까요?</h2>
+			<!-- class ="sr-only"는 화면에는 안나옴 -->
+			<h3 class="sr-only">
+				연예인 사진을 기반으로 인공지능 학습을 수행 함
+			</h3>
+			<h4 class="sr-only">teachable machine 2.0을 활용하였습니다.</h4>
+			<p class="sr-only">
+				나와 닮은 개그맨 또는 개그우먼은 누구일까요?
+				대한민국 개그맨과 개그우먼의 사진으로부터 인공지능 학습을 수행하고 나와 가장 닮은 개그맨 또는 개그우먼을 알려줍니다. 
+				회원가입 없이도 화면에서 바로 확인	가능합니다. 
+				사용한 사진 데이터는 다른 용도로 사용하지 않습니다. 
+				인공지능을 통해서 나의 외모를 테스트 해 보세요! 과연 여러분의 외모는 몇점일까요?
+			</p>
+			<!-- p = paragraph -->
+		</section>
+
+		<!--성별 선택하는 곳 		 -->
+		<h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+		<!-- pb-2 글자 밑으로 패딩이 "2",  https://bootstrapshuffle.com/kr/classes/spacing/pb-1+%25_F+pb-*-%23, d-flex는 flex 방향이라는데?? column 방향일 듯-->
+		<section class="d-flex justify-content-center">
+			<p class="d-flex align-items-center pr-3">여자</p>
+			<!-- align-items-center = 글자를 중간에 맞추는 거 -->
+			<div>
+				<input type="checkbox" id="gender" /><!-- input type="유형" id="name" -->
+				<label for="gender">
+					<span class="knob">
+						<i></i>
+					</span>
+				</label>
+			</div>
+
+			<p class="d-flex align-items-center pl-3">남자</p>
+		</section>
+
+		<script
+			class="jsbin"
+			src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+		></script>
+		<!-- teachable machine에 관한 Javascript -->
+
+		<div class="mt-3 container file-upload">
+			<div class="image-upload-wrap">
+				<input
+					class="file-upload-input"
+					type="file"
+					onchange="readURL(this);"
+					accept="image/*"
+				/>
+				<!-- onchange는 우리가 작성한 Javascript를 통해서 변화가 일어났는지 탐지해 줌, readURL함수는 뒤에 정의 되어있음, accept는 받아들이는 파일형식-->
+
+				<div class="drag-text">
+					<img src="img/upload.png" class="mt-5 pt-5 upload" />
+					<h3 class="mb-5 pb-5 pt-4 upload-text">
+						얼굴 사진을<br> 올려놓거나 <br>눌러서 <br>업로드하세요!
+					</h3>
+				</div>
+			</div>
+
+			<div class="file-upload-content">
+				<img class="file-upload-image" id="face-image" src="#" alt="your image" />
+				<div id="loading" class="animated bounce">
+					<div class="spinner-border" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+					<p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
+				</div>
+				<p class="result-message"></p>
+				<div id="label-container" class="d-flex flex-column justify-content-around"></div>
+				<!--이게 공유버튼	 -->
+				<!-- <div id="addThis" class="addthis_inline_share_toolbox_6lz1"></div> -->
+				<div class="addthis_inline_share_toolbox_czma"></div>
+				<!--이게 공유버튼	 -->
+				<div class="pt-3 image-title-wrap">
+					<button
+						type="button p-2"
+						class="try-again-btn"
+						onclick="window.location.reload();"
+					>
+						<span class="try-again-text">다른 사진으로 재시도</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+	
+		<footer class="footer pt-5 container d-flex justify-content-center">
+
+			<div>
+				<p>&copy; Industrial AI 2020. All Rights Reserved.</p>
+			</div>
+		</footer>
+
+		<script>
+			<!-- Javascript 파일 upload와 remove관련	 -->
+						function readURL(input) {
+							if (input.files && input.files[0]) {
+								var reader = new FileReader();
+								reader.onload = function (e) {
+									$('.image-upload-wrap').hide();
+									$('#loading').show();
+									$('.file-upload-image').attr('src', e.target.result);
+									$('.file-upload-content').show();
+									$('.image-title').html(input.files[0].name);
+								};
+								reader.readAsDataURL(input.files[0]);
+								init().then(function () {
+									predict();
+									$('#loading').hide();
+								});
+							} else {
+								removeUpload();
+							}
+						}
+
+						function removeUpload() {
+							$('.file-upload-input').replaceWith($('.file-upload-input').clone());
+							$('.file-upload-content').hide();
+							$('.image-upload-wrap').show();
+						}
+						$('.image-upload-wrap').bind('dragover', function () {
+							$('.image-upload-wrap').addClass('image-dropping');
+						});
+						$('.image-upload-wrap').bind('dragleave', function () {
+							$('.image-upload-wrap').removeClass('image-dropping');
+						});
+		</script>
+		<!-- Javascript 파일 upload와 remove관련 -->
+
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+		<script type="text/javascript">
+			<!-- Javascript AI관련된 부분 -->
+						let URL;
+						const urlMale = './AI_model/AI_GAG_M/';
+						const urlFemale = './AI_model/AI_GAG_w/';
+						let model, webcam, labelContainer, maxPredictions;
+						
+			
+						async function init() {
+							if (document.getElementById('gender').checked) {
+								URL = urlMale;
+							} else {
+								URL = urlFemale;
+							}
+							const modelURL = URL + 'model.json';
+							const metadataURL = URL + 'metadata.json';
+							model = await tmImage.load(modelURL, metadataURL);
+							maxPredictions = model.getTotalClasses();
+							labelContainer = document.getElementById('label-container');
+							for (let i = 0; i < maxPredictions; i++) {
+								var element = document.createElement('div');
+								element.classList.add('d-flex');
+								labelContainer.appendChild(element);
+							}
+							console.log(maxPredictions);
+						}
+
+							async function predict() {
+							var image = document.getElementById('face-image');
+							const prediction = await model.predict(image, false);
+							prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
+							console.log(prediction[0].className);
+							var resultTitle, resultExplain, resultCeleb, result_site;
+							if (document.getElementById('gender').checked) {
+								$(function(){
+									var obj = [
+										{"name":"강병규", "expl":"당신은 전 야구 선수답게 훤칠한 키와, 시원한 마스크의 소유자 강병규씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EB%B3%91%EA%B7%9C_(%EC%97%B0%EC%98%88%EC%9D%B8)"},
+										{"name":"강석", "expl":"당신은 라디오 디제이로 더욱 알려진 개그맨 강석시를 닮으셨군요! 아마 얼굴 모르시는 분들이 더 많으시겠죠?", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%84%9D"},
+										{"name":"강호동", "expl":"당신은 지금은 국민 MC 그러나 전 천하장사인 찢어진 눈매에 큰 얼굴의 강호동씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%ED%98%B8%EB%8F%99"},
+										{"name":"고명환", "expl":"당신은 큰머리의 소유자 그러나 의외로 몸짱 개그맨겸 뮤지컬 배우이신 고명환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%A0%EB%AA%85%ED%99%98"},
+										{"name":"구봉서", "expl":"너네는 잘 모르지? 배삼룡씨와 한때 코메디계를 주름 잡았던 수려한 외모에 훤칠한 키의 구봉서씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B5%AC%EB%B4%89%EC%84%9C"},
+										{"name":"권재관", "expl":"당신은 잘생기지도 그렇다고 많이 못생기지도 특징없는 얼굴에 권재관씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B6%8C%EC%9E%AC%EA%B4%80"},
+										{"name":"김경민", "expl":"당신은 호기심 천국의 호기심 해결사로 활동하며, 소수 매니아층을 형성한 김경민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B2%BD%EB%AF%BC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김경식", "expl":"당신은 틴틴파이브로 엄청난 인기 몰이를했던 깔끔한 외모에 재치를 겸비한 김경식씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B2%BD%EC%8B%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김경진", "expl":"당신은 특이한(못생긴) 얼굴에 특이한 목소리를 보유한 김경진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B2%BD%EC%A7%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김구라", "expl":"김구라씨는 다들 아시죠? 두꺼비 같은 얼굴에 항상 찡그린 얼굴에 김구라씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B5%AC%EB%9D%BC"},
+										{"name":"김국진", "expl":"당신은 도시 서민적인 외모와 왜소한 체격에 약간 어눌하면서도 친근한 말투가 매력적인 김국진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B5%AD%EC%A7%84"},
+										{"name":"김기욱", "expl":"당신은 장난스러운 원숭이와 닮은 외모에 김기욱씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B8%B0%EC%9A%B1"},
+										{"name":"김늘메", "expl":"당신은 웃찾사에서 활약한 김늘메씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%8A%98%EB%A9%94"},
+										{"name":"김대희", "expl":"당신은 개그맨이지만 웃기지 못하는게 장기인 준수한 외모의 김대희씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%8C%80%ED%9D%AC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김민기", "expl":"당신은 개그우먼 홍윤화씨의 남편으로 더욱 유명한 김민기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%BC%EA%B8%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김상태", "expl":"당신은 노통장으로 개콘 봉숭아 학당에서 활약하신 김상태씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%83%81%ED%83%9C_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김상호", "expl":"당신은 코미디언이 되기 전에는 조폭이었다는 뚱보 개그맨 김상호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%83%81%ED%98%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김수용", "expl":"당신은 다크써클이 트레이드 마크인 조동아리 멤버 김수용씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%88%98%EC%9A%A9_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김영철", "expl":"당신은 돌출입이 트레이드 마크인 김영철씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%98%81%EC%B2%A0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김완기", "expl":"당신은 고명환, 손헌수와 함께 활약했던 전 공무원 김완기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%99%84%EA%B8%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김용만", "expl":"당신은 감자골 4인방, 대두 김용만씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9A%A9%EB%A7%8C_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김원효", "expl":"당신은 심진화씨의 남편, 꽃미남 수사대의 경찰서장으로 다수의 유행어를 보유한 재미난 얼굴에 김원효를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9B%90%ED%9A%A8"},
+										{"name":"김인석", "expl":"당신은 코미디언에 어울리지 않는 듯한 지적인 마스크의 김인석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9D%B8%EC%84%9D"},
+										{"name":"김재우", "expl":"당신은 남자다운 얼굴의 극치 김재우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9E%AC%EC%9A%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김정렬", "expl":"당신은 숭구리당당 춤으로 한때를 풍미했던, 흐느적거리는 다리처럼 얼굴도 약간 '흐느적?'하게 생기신 김정렬씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A0%95%EB%A0%AC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김정식", "expl":"당신은 지금은 개신교 목사로 활동하고 있으신 키는 작지만 귀여운 외모의 김정식씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A0%95%EC%8B%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김준현", "expl":"김준현씨는 다들 아시죠? 맛있는 녀석들 및 많은 예능에 출연 중이신 대표 뚱보 개그맨중에 한명 김준현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A4%80%ED%98%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김준호", "expl":"당신은 코미디언들의 큰형님, 햐프하고 준수한 외모의 김준호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A4%80%ED%98%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김진수", "expl":"당신은 사각얼굴의 대표 코미디언, 연예인 싸움 1등이라는 소문이 있는 김진수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A7%84%EC%88%98_(%EB%B0%B0%EC%9A%B0)"},
+										{"name":"김철민", "expl":"당신은 현재 병마로 힘든 시간을 보내고 계신 긍정의 사나이 김철민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%B2%A0%EB%AF%BC_(1967%EB%85%84)"},
+										{"name":"김학도", "expl":"당신은 코미디언이지만 다소 지적인 마스크로 그러한 역할을 많이 했던 김학도씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%99%EB%8F%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김학래", "expl":"당신은 한때 잘나가는 개그맨이었지만 지금은 임미숙씨의 남편으로 더욱 유명하신 김학래씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%99%EB%9E%98_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김한석", "expl":"당신은 코미디언답지 않은 잘생긴 외모로 희극인이지만 MC등 다양환 활약을 했던 김한석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%95%9C%EC%84%9D"},
+										{"name":"김현철", "expl":"당신은 말을 더듬고, 어눌하게 해서 똑똑한 이미지는 거의 없지만, 의외로 머리가 좋고 암기력이 대단한 김현철씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%84%EC%B2%A0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김형곤", "expl":"당신은 시사 코미디에서 맹활약했던 뚱보 캐릭터 김형곤씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%95%EA%B3%A4"},
+										{"name":"김형인", "expl":"당신은 다소 귀여운 장난끼 가득한 마스크에 김형인씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%95%EC%9D%B8"},
+										{"name":"남보원", "expl":"당신은 개그계의 원로 남보원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%EB%B3%B4%EC%9B%90"},
+										{"name":"남호연", "expl":"당신은 폭소클럽에 짜증뉴스를 진행한 귀여운 마스크에 남호연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%ED%98%B8%EC%97%B0"},
+										{"name":"남희석", "expl":"당신은 눈 코 입이 다소 모여 있는 코미디언으로써 적합한 얼굴을 보유한 남희석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%ED%9D%AC%EC%84%9D"},
+										{"name":"노우진", "expl":"당신은 달인의 달인(김병만) 제자로 더 알려진 노우진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%85%B8%EC%9A%B0%EC%A7%84"},
+										{"name":"류근지", "expl":"당신은 잘생긴 미남 역할을 많이 했는데, 키큰 개그맨으로 유명한 류근지씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A5%98%EA%B7%BC%EC%A7%80"},
+										{"name":"류담", "expl":"당신은 개콘의 '달인' 코너의 설명충으로 유명한 류담씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A5%98%EB%8B%B4"},
+										{"name":"리마리오", "expl":"당신은 마가린 버터3세 느끼한 외모의 리마리오씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A6%AC%EB%A7%88%EB%A6%AC%EC%98%A4"},
+										{"name":"문세윤", "expl":"당신은 3대 뚱보 캐릭터 중에 한명 건강한 뚱땡이 문세윤씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%AC%B8%EC%84%B8%EC%9C%A4"},
+										{"name":"문천식", "expl":"당신은 한때 고명환씨와 콤비로 개그계를 평정했던, 지금은 정선희씨와 지금은 라디오시대를 진행하고 있는 문천식시와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%AC%B8%EC%B2%9C%EC%8B%9D"},
+										{"name":"박광덕", "expl":"당신은 전 씨름선수이자 지금은 족발집 사장님 박광덕씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EA%B4%91%EB%8D%95"},
+										{"name":"박명수", "expl":"당신은 못생긴 얼굴의 대표 희극인 박명수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EB%AA%85%EC%88%98"},
+										{"name":"박성호", "expl":"당신은 한때 개콘에서 '갸루상'으로 큰 인기를 얻었던 후배들이 짜놓은 캐릭터에 잘 녹아(?)드는 박성호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%84%B1%ED%98%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"박수홍", "expl":"당신은 동안의 노총각 아이콘, 바른생활 사나이에서 최근에는 클럽맨으로 우리에게 익숙한 개그맨이자 MC 박수홍씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%88%98%ED%99%8D"},
+										{"name":"박영진", "expl":"당신은 왠지 시골 이장님이 떠오르는 외모의 박영진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%98%81%EC%A7%84_(1981%EB%85%84)"},
+										{"name":"박준형", "expl":"당신은 갈갈이 패밀리의 수장, 튀어나온 입이 트레이드 마크인 '무를 주세요'의 박준형씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%A4%80%ED%98%95_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"박휘순", "expl":"당신은 자학개그의 달인 못생긴 외모가 무기이지만 생각보다 디테일이 살아있는 박휘순씨 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%ED%9C%98%EC%88%9C"},
+										{"name":"배동성", "expl":"당신은 너무 잘생긴 얼굴로 개그를 할 수 있을까 걱정이 되는 희극인 배동성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EB%8F%99%EC%84%B1"},
+										{"name":"배칠수", "expl":"당신은 배철수씨의 성대모사로 유명하지만 실제 훨씬 많은 성대모사가 가능한 얼굴보다는 성대모사로 유명하신 배칠수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%B9%A0%EC%88%98"},
+										{"name":"백남봉", "expl":"당신은 과거 남보원씨와 투맨쇼라 어르신들 시대에 최고의 인기를 누리셨던 희극인 백남봉씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B1%EB%82%A8%EB%B4%89"},
+										{"name":"백재현", "expl":"당신은 한때 100kg이 넘는 뚱캐로 유명하였지만 다이어트와 양악수술로 지금은 인상이 너무나 바뀐 희극인 백재현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B1%EC%9E%AC%ED%98%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"변기수", "expl":"당신은 끼가 넘치고 깐족깐족 까불이 이미지의 변기수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B3%80%EA%B8%B0%EC%88%98"},
+										{"name":"서경석", "expl":"당신은 육사 및 서울대에 합격할정도의 엄청난 브레인의 희극인으로 '공무원 시험은 에듀윌'광고로 더욱 유명한 서경석씨 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%EA%B2%BD%EC%84%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"서세원", "expl":"당신은 한때 대한민국에서 가장 잘 나가는 희극인으로 이름을 날렸고, 외모상의 특징으로는 돌출된 입을 가진 서세원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%EC%84%B8%EC%9B%90"},
+										{"name":"서승만", "expl":"당신은 서승만 아들 왈 '못생긴 게 죄라면 아빠는 무기징역' 희극인 서승만씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%EC%8A%B9%EB%A7%8C"},
+										{"name":"손헌수", "expl":"당신은 최근 박수홍, 윤정수에 품에서 벗어나려는 잘생긴 희극인 손헌수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%ED%97%8C%EC%88%98"},
+										{"name":"송병철", "expl":"당신은 주로 잘생긴 캐릭터를 연기하는 희극인 송병철씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EB%B3%91%EC%B2%A0"},
+										{"name":"송준근", "expl":"당신은 나름 훈남의 이미지로 주로 외국인 성대모사(곤잘래스)를 주로하는 희극인 송준근씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%A4%80%EA%B7%BC"},
+										{"name":"송해", "expl":"송해씨가 희극인 출신인거 아셨나요? 장수의 아이콘 송해씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%ED%95%B4"},
+										{"name":"신동엽", "expl":"당신은 눈코입이 모여있는 마스크의 국민 MC 신동엽씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EB%8F%99%EC%97%BD_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"심원철", "expl":"당신은 개콘등에 출연한 희극인이지만, 다수의 영화 출연으로 배우로 알고 있는 배우겸 희극인 심원철씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%AC%EC%9B%90%EC%B2%A0"},
+										{"name":"심현섭", "expl":"당신은 한때 이분을 모르면 한국인이 아닐정도로 엄청난 인기를 누렸던 개콘의 사바나의 아침으로 큰 인기를 누렸던 희극인 심현섭씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%AC%ED%98%84%EC%84%AD"},
+										{"name":"심형래", "expl":"당신은 계그계의 레전드, 레전드 캐릭터 영구로 빵 뜨신 심형래씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%AC%ED%98%95%EB%9E%98"},
+										{"name":"안상태", "expl":"당신은 '안어벙' 캐릭터로 유명하신 어벙한 캐릭터 안상태씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%83%81%ED%83%9C"},
+										{"name":"양상국", "expl":"당신은 사투리를 사용하는 촌놈 캐릭터의 양상국씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%83%81%EA%B5%AD"},
+										{"name":"양세찬", "expl":"당신은 양세형의 형제로 까불이 악동 캐릭터 양세찬씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%84%B8%EC%B0%AC"},
+										{"name":"양세형", "expl":"당신은 양세찬과 형제로 악동의 깝불이 캐릭터로 귀여운 이미지의 양세형씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%84%B8%ED%98%95"},
+										{"name":"양원경", "expl":"당신은 잘생기긴 했지만 다소 날카로운 인상의 양원경씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%9B%90%EA%B2%BD"},
+										{"name":"양종철", "expl":"당신은 다소 강한남자의 이미지 개그를 많이 하신 남자다운 외모의 양종철씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%A2%85%EC%B2%A0"},
+										{"name":"엄용수", "expl":"당신은 7080시대 유명했던 희극인 엄용수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%97%84%EC%9A%A9%EC%88%98_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"염경환", "expl":"당신은 김구라씨의 친구로 원래 대머리는 아니고 머리를 스스로 밀고 다니는 자발형 대머리 희극인 염경환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%97%BC%EA%B2%BD%ED%99%98"},
+										{"name":"오지헌", "expl":"당신은 외모로 개그맨 순위 탑3에 포함되는 희극인 오지헌씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EC%A7%80%ED%97%8C"},
+										{"name":"유상무", "expl":"당신은 옹달샘의 바람둥이 캐릭터로 유명한 훤칠한 키와 외모로 유명한 유상무씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%83%81%EB%AC%B4"},
+										{"name":"유세윤", "expl":"당신은 옹달샘의 멤버로 깐족거리는 캐릭터로 강자(김종국)에게 깝치는 캐릭터를 주로 소화하는 유세훈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%84%B8%EC%9C%A4"},
+										{"name":"유인석", "expl":"누군지 잘 모르지? 희극인이지만 최근 쇼호스트로 많이 활동중이신 다소 잘생긴 희극인 유인석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%9D%B8%EC%84%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"유재석", "expl":"당신은 국민MC, 바른생활 연예인의 표본, 누구나 존경하는 희극인 유재석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%9E%AC%EC%84%9D"},
+										{"name":"윤기원", "expl":"코믹한 연기를 많이해서 희극인으로 오해할수도 있지만 잘생긴 배우 윤기원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EA%B8%B0%EC%9B%90_(%EB%B0%B0%EC%9A%B0)"},
+										{"name":"윤정수", "expl":"당신은 파산이후 최근 회생에 성공한 작은 키, 거의 없는 목, 알이 꽉찬 장딴지로 태릉인 이미지로 주로 활동한 희극인 윤정수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EC%A0%95%EC%88%98"},
+										{"name":"윤택", "expl":"당신은 희극인인지 자연인인지 구분이 안되는 푸근한 외모의 윤택씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%ED%83%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"윤형빈", "expl":"당신은 희극인 파이터, 비호감 개그맨 왕비호의 윤형빈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%ED%98%95%EB%B9%88"},
+										{"name":"이경규", "expl":"당신은 몰래카메라의 원조 버럭 개그맨의 원조 이경규씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B2%BD%EA%B7%9C"},
+										{"name":"이동우", "expl":"당신은 틴틴파이브 멤버이자 최근 망막색소변성증으로 투병중이신 그러나 훌륭한 성품에 훈훈한 외모를 보유한 이동우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%8F%99%EC%9A%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이병진", "expl":"당신은 후덕한 외모 덕분인지 개콘에서나 웃찾사에서나 둔하고 느릿느릿하고 답답한 캐릭터의 이병진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%B3%91%EC%A7%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이봉원", "expl":"당신은 사업실패의 아이콘, 그러나 최근에는 짬뽕집이 잘되고 있다는 박미선씨의 남편 이봉원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%B4%89%EC%9B%90"},
+										{"name":"이상용", "expl":"당신은 뽀빠이로 잘 알려진 희극인이자 우정의 무대 MC 이상용씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%83%81%EC%9A%A9"},
+										{"name":"이상해", "expl":"당신은 이제는 희극인계의 원로급으로 생쥐 닮은 마스크의 이상해씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%83%81%ED%95%B4"},
+										{"name":"이상훈", "expl":"당신은 개콘의 '니글니글니글'로 큰 인기를 얻은 희극인 이상훈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%83%81%ED%9B%88_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이수근", "expl":"만능재주꾼, 못하는게 없는 최고 희극인 중 한명 이수근씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%88%98%EA%B7%BC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이승윤", "expl":"요즘은 방송인인지 자연인인지 헤깔리는 몸짱 희극인 이승윤씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%8A%B9%EC%9C%A4_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이용진", "expl":"당신은 까칠한 4차원 말투와 돌+I 짓이 매력적인 희극인 이용진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9A%A9%EC%A7%84"},
+										{"name":"이윤석", "expl":"병약, 허약 캐릭터의 이윤석시를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9C%A4%EC%84%9D_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이재포", "expl":"당신은 개그맨+탤런트 이재포씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9E%AC%ED%8F%AC"},
+										{"name":"이정수", "expl":"당신은 잘생긴 희극인으로 '재미 없으면 다시 돌아온다'라는 유행어로 유명한 이정수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A0%95%EC%88%98_(1979%EB%85%84)"},
+										{"name":"이주일", "expl":"코미디계의 거장 '콩나물 팍팍 무쳤냐' 등의 개인기로도 유명한 이주일씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A3%BC%EC%9D%BC"},
+										{"name":"이창훈", "expl":"당신은 '영구'의 대항마 '맹구'로 한 시대를 풍미한 배우겸 희극인 이창훈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%B0%BD%ED%9B%88_(1955%EB%85%84)"},
+										{"name":"이혁재", "expl":"언듯보면 조폭과 같은 험악한 인상을 지닌 희극인 이혁재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%98%81%EC%9E%AC"},
+										{"name":"이홍렬", "expl":"당신은 콧구멍에 500원이 들어갈 정도로 큰 코를 가진 이홍렬씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%99%8D%EB%A0%AC"},
+										{"name":"이휘재", "expl":"당신은 '롱다리' 신드롬을 일으키고 잘생긴 외모로 MC로 맹 활약중인 이휘재시를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%9C%98%EC%9E%AC"},
+										{"name":"임하룡", "expl":"희극인 사이에 큰형님 희극인겸 배우로 유명하신 임하룡씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%ED%95%98%EB%A3%A1"},
+										{"name":"자니윤", "expl":"당신은 미국에서 아시아계 최초 스탠드업 코미디언으로 활약한 자니윤씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%90%EB%8B%88_%EC%9C%A4"},
+										{"name":"장동민", "expl":"당신은 옹달샘의 까칠남 그러나 상당한 브레인을 소유한 장동민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%8F%99%EB%AF%BC"},
+										{"name":"전유성", "expl":"당신은 개콘의 창시자이자 개그계의 살아있는 대부 정유성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%EC%9C%A0%EC%84%B1"},
+										{"name":"전창걸", "expl":"당신은 '출발 비디오 여행'으로 더 유명한 전창걸씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%EC%B0%BD%EA%B1%B8"},
+										{"name":"전현무", "expl":"당신은 아나운서 출신의 MC인데 최근에 희극인으로도 시츄 닮은 연예인 전현무씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%ED%98%84%EB%AC%B4"},
+										{"name":"정성호", "expl":"당신은 성대모사 최강자중 한명으로 다수의 연예인을 성대모사 할 수 있고, 대표적으로 임재범과는 외모까지도 비슷한 정성호씨를 닮으셨군요!", "img_site":""},
+										{"name":"정성화", "expl":"당신은 희극인이지만 최근에는 뮤지컬로 엄청난 흥행수표가 되어버린 정성화씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%84%B1%ED%99%94"},
+										{"name":"정준하", "expl":"당신은 '식신'이라는 단어를 탄생시킨 전 무한도전의 바보 캐릭터 정준하씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%A4%80%ED%95%98"},
+										{"name":"정찬우", "expl":"당신은 큰 머리의 까칠남 캐릭터 컬투의 정찬우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%B0%AC%EC%9A%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"정태호", "expl":"당신은 학대 개그를 통한 몸개그의 달인 '정여사'로 잘 알려진 정태호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%ED%83%9C%ED%98%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"정형돈", "expl":"당신은 원래 재미없는 캐릭터에서 근자감과 터프함으로 무장한 맥락 파괴적 캐릭터 정형돈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%ED%98%95%EB%8F%88"},
+										{"name":"조세호", "expl":"당신은 '프로불참러' 조재호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%84%B8%ED%98%B8"},
+										{"name":"주병진", "expl":"골드싱글이자 한때 대한민국 최고의 희극인이자 MC였던 주병진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A3%BC%EB%B3%91%EC%A7%84"},
+										{"name":"지상렬", "expl":"당신은 어눌한 말투와 뭔가 지저분해 보이는 외모이지만 언어의 마술사로 매니아층에게 큰 인기인 희극인 지상렬씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A7%80%EC%83%81%EB%A0%AC"},
+										{"name":"지석진", "expl":"당신은 다소 나쁘지 않은 외모의 소유자로 웃음이 많은 스타일로 친근함이 매력적인 지석진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A7%80%EC%84%9D%EC%A7%84"},
+										{"name":"차승환", "expl":"당신은 미스코리아 미 출신 김예분씨와 결혼한 차승환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B0%A8%EC%8A%B9%ED%99%98"},
+										{"name":"최병서", "expl":"얼굴보면 알텐데... 개그계의 시조이자 그랜드마스터라는 최병서씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%B3%91%EC%84%9C"},
+										{"name":"최양락", "expl":"당신은 최근 대세 단발머리, 알까기 달인, 희극인 최양락씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%96%91%EB%9D%BD"},
+										{"name":"최효종", "expl":"당신은 선배 연예인들의 개그 OEM으로 아이디어가 많고 머리가 좋은 최효종씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%ED%9A%A8%EC%A2%85"},
+										{"name":"표영호", "expl":"당신은 전설의 조동아리 멤버 중 한명인데 최근 잘 보이지 않는 표영호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%91%9C%EC%98%81%ED%98%B8"},
+										{"name":"표인봉", "expl":"당신은 틴틴파이브의 멤버로 순풍산부인과에 간호사로 더 잘 알려진 표인봉씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%91%9C%EC%9D%B8%EB%B4%89"},
+										{"name":"하준수", "expl":"코빅 다들 아시죠? 코빅에서 황재성씨가 자주 언급하는 하! 준! 수!씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%EC%A4%80%EC%88%98_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"한무", "expl":"당신은 금붕어를 닮은 외모의 한무씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%9C%EB%AC%B4"},
+										{"name":"한현민", "expl":"당신은 윤문식 성대모사를 유명한 한현민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%9C%ED%98%84%EB%AF%BC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"허경환", "expl":"당신은 '꽃거지' 캐릭터로 유명한 몸짱 희극인 겸 사업가 허경환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%97%88%EA%B2%BD%ED%99%98"},
+										{"name":"허참", "expl":"당신은 가족오락관의 오랜 MC 허참씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%97%88%EC%B0%B8"},
+										{"name":"홍기훈", "expl":"당신은 강렬하고 무서운 인상의 소문에 연예인 싸움 탑3에 포함된다는 홍기훈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%8D%EA%B8%B0%ED%9B%88"},
+										{"name":"홍석천", "expl":"당신은 배우, 방송인, 요식업 사업가로 연예의 거의 최초 커밍아웃 희극인 홍석천씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%8D%EC%84%9D%EC%B2%9C"},
+										{"name":"황기순", "expl":"약간은 고릴라 또는 원숭이 같은 외모의 황기순씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%A9%EA%B8%B0%EC%88%9C"},
+										{"name":"황제성", "expl":"당신은 최근 개그계의 최고 인기남 황제성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%A9%EC%A0%9C%EC%84%B1"},
+									];
+
+									var arr2 = $.map(obj, function(i, o){
+										if(i.name == prediction[0].className){
+											console.log(i);
+											console.log(o);
+											console.log(obj[o].expl);
+											resultTitle = prediction[0].className;
+											resultExplain =	obj[o].expl;
+											resultCeleb = prediction[0].className + ' 프로필 찾아보기!';
+											result_site = obj[o].img_site;
+											console.log(obj[o].img_site);
+											return resultTitle, resultExplain, resultCeleb, result_site;
+										}
+									});
+								});
+					
+							} else {
+								$(function(){
+									var obj = [
+										{"name":"강유미", "expl":"양악수술 후 눈을 의심할정도로 이뻐진 희극인 강유미씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%9C%A0%EB%AF%B8"},
+										{"name":"곽현아", "expl":"희극인답지 않은 외모와 몸매로 영화계로 입문하여 '전망좋은 집'을 찍고 이후 힘든 시간을 겪고 있는 곽현아씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%BD%ED%98%84%ED%99%94"},
+										{"name":"권미진", "expl":"개콘에서 뚱뚱한 캐릭터였는데 '헬스걸' 코너를 통해서 다이어트에 성공, 지금은 이뻐진 얼굴로 활동 중인 권미진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B6%8C%EB%AF%B8%EC%A7%84"},
+										{"name":"권진영", "expl":"'우비 삼남매'를 기억하시나요? 적당한 돌출입이 매력적인 권진영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B6%8C%EC%A7%84%EC%98%81"},
+										{"name":"김가연", "expl":"희극인답지 않은 엄청난 외모의 소유자로 황제테란의 임요환씨와 결혼한 김가연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B0%80%EC%97%B0"},
+										{"name":"김경아", "expl":"개그맨 권재관씨와 결혼한 '분장실의 강선생님'에 출연한 김경아씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B2%BD%EC%95%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김미려", "expl":"개그야의 코너 '사모님'의 사모님 역할을 맡아 유행어 '김기사~'를 히트시키며 정상의 인기를 얻었던 김미려씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%B8%EB%A0%A4"},
+										{"name":"김미연", "expl":"무용수 출신다운 엄청난 몸매와 외모로 코미디언, 배우, 가수 등 다양하게 활동 중이신 김미연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%B8%EC%97%B0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김민경", "expl":"최근 '운동뚱' 캐릭터로 새로운 대세로 떠오른 김민경씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%BC%EA%B2%BD_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김선정", "expl":"공채 12기 개그우먼 김선정씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%84%A0%EC%A0%95_(1980%EB%85%84)"},
+										{"name":"김숙", "expl":"김숙은 다 알지? '님과함께'로 제2의 전성기를 누리고 있는 김숙씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%88%99"},
+										{"name":"김승혜", "expl":"현존하는 개그우먼 중 탑3에 포함될 정도의 예쁜 외모의 김승혜씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%8A%B9%ED%98%9C"},
+										{"name":"김신영", "expl":"웃찾사에서 행님아 코너로 유명세를 얻고, 무한걸스 등에서 활약하는 등 다방면에서 활동 중인 작지만 힘쎈 캐릭터의 김신영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%8B%A0%EC%98%81"},
+										{"name":"김영희", "expl":"다양한 유행어('정말 기가 막히고 코가 막힌다', '앙~대요~')를 보유하고 있는 최근 연하의 예비남편과 결혼을 앞둔 김영희씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%98%81%ED%9D%AC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김지민", "expl":"현존하는 개그우먼 중 탑3에 포함될 정도의 예쁜 외모를 소유한 전 유상무씨의 여친 김지민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A7%80%EB%AF%BC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김지혜", "expl":"갈갈이 삼형재 박준형씨와 결혼한 원래 이뻤지만 튜닝 이후에 더욱 이뻐진 김지혜씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A7%80%ED%98%9C_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김진주", "expl":"SBS 16기 공채 개그우먼 김진주씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%A7%84%EC%A3%BC_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"김현숙", "expl":"'막되먹은 영애씨'로 큰 인기를 얻은 영애씨 김현숙씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%84%EC%88%99_(1978%EB%85%84)"},
+										{"name":"김형은", "expl":"개그우먼이자 가수였던, 단무지 아카데미로 활약했던 김형은씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%95%EC%9D%80"},
+										{"name":"김혜선", "expl":"가끔씩 운동선수인지 희극인인지 헤깔리는 건강미인 김혜선씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%9C%EC%84%A0_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"맹승지", "expl":"어딘가 맹!하지만 예쁜 얼굴에 엄청난 몸매를 소유한 맹승지씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A7%B9%EC%8A%B9%EC%A7%80"},
+										{"name":"박나래", "expl":"최근 엄청난 대세, 망가지는 역할을 주로하고 있지만 사실은 이쁜 박나래씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EB%82%98%EB%9E%98"},
+										{"name":"박미선", "expl":"개그우먼 중에 가장 큰 성공을 거둔 레전드급 코미디언 박미선씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EB%AF%B8%EC%84%A0"},
+										{"name":"박슬기", "expl":"주머니에 넣고 싶을정도로 조그마한 꼬맹이 캐릭터, 언제나 밝고 힘이 넘치는 박슬기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%8A%AC%EA%B8%B0_(%EB%B0%A9%EC%86%A1%EC%9D%B8)"},
+										{"name":"박지선", "expl":"개그계의 엄청난 브레인으로 '참 쉽죠잉~' 등의 유행어를 만든 박지선씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%A7%80%EC%84%A0"},
+										{"name":"방미", "expl":"최근 부동산 사업가가 된 방미씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%A9%EB%AF%B8"},
+										{"name":"배연정", "expl":"코 위에 점이 포인트인 중년 희극인 배연정씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%97%B0%EC%A0%95"},
+										{"name":"백보람", "expl":"약간 백치 이미지와 예쁜 얼굴과 긴 기럭지로 큰 인기를 얻었던 백보람씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B1%EB%B3%B4%EB%9E%8C"},
+										{"name":"송은이", "expl":"작지만 항상 에너지 넘치고 기획력이 뛰어난 골드미스 송은이씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%9D%80%EC%9D%B4"},
+										{"name":"신보라", "expl":"한때 엄청난 인기를 누렸던 개그우먼으로 예쁘지만 망가지는 역할을 맡는 등 다양하게 활동한 신보라씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EB%B3%B4%EB%9D%BC"},
+										{"name":"신봉선", "expl":"성형을 했지만 미녀부류에 포함되지 못하는 아쉬운 미녀? 개그우먼 신봉선씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EB%B4%89%EC%84%A0"},
+										{"name":"심진화", "expl":"김원효씨의 아내로 다이어트 이후 엄청난 미모를 자랑하고 있으나 최근 다시 돌아갔다는 소문이 있는 심진화씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%AC%EC%A7%84%ED%99%94"},
+										{"name":"안소미", "expl":"예쁜 외모를 갖고 있음에도 외모와 관계없는 본인만의 개그를 자주 시도하는 편으로 인지도와 평판이 꽤 높은 안소미씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%86%8C%EB%AF%B8"},
+										{"name":"안영미", "expl":"개그우먼이지만 19금 개그를 즐기는 방송 중에는 돌+i가 되는 안영미씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%98%81%EB%AF%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"양귀비", "expl":"최근 주간이상준에서 역대급? 방송을 했던 양귀비씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EA%B7%80%EB%B9%84_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이경실", "expl":"오랜기간 개그우먼으로써 활약해온 다소 쎈 캐릭터의 이경실씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B2%BD%EC%8B%A4"},
+										{"name":"이경애", "expl":"중년이 되었지만 연극배우로 데뷔를 할만큼 이쁜 외모를 보유하였지만, 개그로도 활약한 이경애씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B2%BD%EC%95%A0"},
+										{"name":"이국주", "expl":"개그우먼 중 뚱뚱한 캐릭터로 유명한, 호불호가 강한 이국주씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B5%AD%EC%A3%BC"},
+										{"name":"이성미", "expl":"앙증맞은 체구와 특유의 앵앵대는 목소리 때문에 주로 꼬마개그를 많이 했던 이성미씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%84%B1%EB%AF%B8_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이세영", "expl":"류승범 닮은꼴 개그우먼으로 유명세를 날렸지만 최근 성형수술로 엄청난 미모를 자랑하고 있는 이세영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%84%B8%EC%98%81_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이수지", "expl":"뚱뚱한 개그우먼 캐릭터이기는 하지만 몸매보다는 특기인 목소리 연기를 자주하는 귀여운 이미지가 있는 이수지씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%88%98%EC%A7%80_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"이영자", "expl":"다소 저돌적이고 강압적인 이미지의 개그우먼 이영자씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%98%81%EC%9E%90"},
+										{"name":"이희경", "expl":"개콘에서 헬스걸에 출연하면서 엄청난 다이어트 이후에 새로운 삶을 살고 있는 이희경씨를  닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%9D%AC%EA%B2%BD"},
+										{"name":"장도연", "expl":"긴 기럭지에 예쁜 얼굴을 가지고 있지만 망가지는 역할로 큰 인기를 얻고 있는 개그우먼 장도연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%8F%84%EC%97%B0"},
+										{"name":"장미화", "expl":"돌출입이 특징인 장미화씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%AF%B8%ED%99%94_(%ED%9D%AC%EA%B7%B9%EC%9D%B8)"},
+										{"name":"정선희", "expl":"특유의 발랄함으로 큰 인기를 얻고, 결혼 후 안좋은 일이 있었다가 최근에는 라디오 DJ로 복귀하여 활약 중인 정선희씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%84%A0%ED%9D%AC"},
+										{"name":"정주리", "expl":"나이에 비해 노안인 편으로 팜므파탈 기믹이 개드립 취급을 당하는 연기를 자주하는 정주리씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%A3%BC%EB%A6%AC"},
+										{"name":"조정린", "expl":"귀엽고 통통한 이미지로 어필하다가, 최근에는 기자로 전향한 조정린씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%A0%95%EB%A6%B0"},
+										{"name":"조혜련", "expl":"다소 쎈 캐릭터로 힘쓰는 역할을 주로 하는 조혜련씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%ED%98%9C%EB%A0%A8"},
+										{"name":"팽현숙", "expl":"최양락씨의 아내로 엄청난 미녀 개그우먼, 최근에는 사업으로 엄청난 매출을 올리고 있는 팽현숙씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%8C%BD%ED%98%84%EC%88%99"},
+										{"name":"허안나", "expl":"연극이 전공이었으나 개그가 어울릴 것 같다는 교수의 조언에 코미디언으로 전향한 키큰 미녀이지만 자주 망가지는 허안나씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%97%88%EC%95%88%EB%82%98"},
+										{"name":"홍윤화", "expl":"뚱캐 중 top3에 포함되는 뚱뚱하지만 귀여운 개그우먼 홍윤하씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%8D%EC%9C%A4%ED%99%94"},
+										{"name":"홍진경", "expl":"모델 출신의 개그우먼으로 최근에는 사업가로 성공한 다소 부족한? 연기를 주로하는 홍진경씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%8D%EC%A7%84%EA%B2%BD"},
+									];
+
+									var arr2 = $.map(obj, function(i, o){
+										if(i.name == prediction[0].className){
+											console.log(i);
+											console.log(o);
+											console.log(obj[o].expl);
+											resultTitle = prediction[0].className;
+											resultExplain =	obj[o].expl;
+											resultCeleb = prediction[0].className + ' 프로필 찾아보기!';
+											result_site = obj[o].img_site;
+											return resultTitle, resultExplain, resultCeleb, result_site;
+										}
+									});
+								});
+							}
+
+							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
+							var title =
+								"<div class='" +
+								prediction[0].className +
+								"-animal-title'>" +
+								resultTitle +
+								'</div>';
+
+
+							var explain = "<div class='animal-explain pt-2'>" + resultExplain + '</div>';
+
+							// 누군지 궁금하면 여기서 확인하세요!
+							var celeb =
+								"<div class='" +
+								prediction[0].className +
+								"-animal-celeb pt-2 pb-2'>" +
+								resultCeleb +
+								'</div>';
+
+							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
+
+
+
+							// 여기가 아래 그래프 기능이겠지
+							var barWidth;
+							for (let i = 0; i < 5; i++) {
+								if (prediction[i].probability.toFixed(2) > 0.1) { //toFixed(2) = 소수점 두째자리 표시했을 때 0.1 보다 크면...
+									barWidth = Math.round(prediction[i].probability.toFixed(2) * 100) + '%'; // 반올림한 숫자에 100 곱하고 % 달아서 barwidth에 넣어라
+								} else if (prediction[i].probability.toFixed(2) >= 0.01) {
+									barWidth = '4%';
+								} else {
+									barWidth = '2%';
+								}
+								// var labelTitle = prediction[i].className;
+								var labelTitle = prediction[i].className;
+								
+								// switch (prediction[i].className) {
+								// 	case 'dog':
+								// 		labelTitle = '강아지상';
+								// 		break;
+								// 	case 'cat':
+								// 		labelTitle = '고양이상';
+								// 		break;
+								// 	case 'rabbit':
+								// 		labelTitle = '토끼상';
+								// 		break;
+								// 	case 'dinosaur':
+								// 		labelTitle = '공룡상';
+								// 		break;
+								// 	case 'bear':
+								// 		labelTitle = '곰상';
+								// 		break;
+								// 	case 'deer':
+								// 		labelTitle = '사슴상';
+								// 		break;
+								// 	case 'fox':
+								// 		labelTitle = '여우상';
+								// 		break;
+								// 	default:
+								// 		labelTitle = '알수없음';
+								// }
+								
+								
+								var label =
+									"<div class='animal-label d-flex align-items-center'>" +
+									labelTitle +
+									'</div>';
+								
+								
+								var bar =
+									"<div class='bar-container position-relative container'><div class='" +
+									labelTitle +
+									"-box'></div><div class='d-flex justify-content-center align-items-center " +
+									prediction[i].className +
+									"-bar' style='width: " +
+									barWidth +
+									"'><span class='d-block percent-text'>" +
+									Math.round(prediction[i].probability.toFixed(2) * 100) +
+									'%</span></div></div>';
+								
+								
+								labelContainer.childNodes[i].innerHTML = label + bar;
+							} // 여기가 아래 그래프 기능이겠지
+						}
+		</script>
+		<!-- Javascript AI관련된 부분 -->
+
+		<!-- 이거는 광고 -->
+		<script>
+			function iosApp() {
+				document.getElementById('coupang').style.display = 'none';
+				$('#coupang ins').hide();
+				document.getElementById('addThis').style.display = 'none';
+				document.getElementById('disqus_thread').style.display = 'none';
+				var kakao = document.getElementsByClassName('kakao_ad_area');
+				for (var i = 0; i < kakao.length; i++) {
+					if (kakao[i]) {
+						kakao[i].style.display = 'none';
+					}
+				}
+				document.getElementById('yotube-top-link').style.display = 'none';
+				document.getElementById('yotube-mid-link').style.display = 'none';
+				document.getElementById('yotube-bottom-link').style.display = 'none';
+			}
+		</script>
+		<!-- 이거는 광고 -->
+		<!-- 여기는 댓글창 다는거 -->
+		<div id="disqus_thread"></div>
+		<script>
+			/**
+			 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+			 *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+			/*
+			var disqus_config = function () {
+			this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+			this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			*/
+			(function () {
+				// DON'T EDIT BELOW THIS LINE
+				var d = document,
+					s = d.createElement('script');
+				s.src = 'https://seoyoul0510.disqus.com/embed.js';
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript
+			>Please enable JavaScript to view the
+			<a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+		>
+		<!-- 여기는 댓글창 다는거 -->
+	</body>
+	<!-- 
+image input box
+Copyright (c) 2020 by Aaron Vanston (https://codepen.io/aaronvanston/pen/yNYOXR)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+gender toggle
+Copyright (c) 2020 by Mert Cukuren (https://codepen.io/knyttneve/pen/bPpEZY)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ -->
+</html>

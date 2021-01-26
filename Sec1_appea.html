@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+		<title>인공지능 외모점수</title>
+		<meta name="title" content="외모점수 측정" />
+		<meta name="subject" content="얼굴로 보는 외모점수 테스트, 나의 외모 점수는 얼마일까요?" />
+		<meta
+			name="keywords"
+			content="인공지능 외모점수, 인공지능 얼굴상, AI 얼굴상, AI 얼굴 점수, 외모 테스트, face AI, face artificial intelligence, appearance test, apperance test"
+		/>
+		<meta name="author" content="PDY" />
+		<link rel="stylesheet" href="style_Sec1.css" />
+		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<meta property="og:url" content="www.naver.com" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="인공지능 외모점수 측정" />
+		<meta
+			property="og:description"
+			content="인공지능 학습을 통해서 나의 얼굴 점수를 평가해 줍니다.
+					 과연 나의 얼굴점수는 몇점일까요? 
+					 다양한 외모 사진으로 학습한 인공지능이 나의 얼굴 점수를 평가해 줍니다. 
+					 회원 가입없이 화면에서 바로 확인 가능합니다. 
+					 사진 데이터는 어디에도 사용 및 전송되지 않습니다."
+		/>
+		<!-- 공유할 때 나오는 이미지-->
+		<!-- <meta
+			property="og:image"
+			content="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fk.kakaocdn.net%2Fdn%2Fc0eq42%2FbtqCQpiFhFn%2F8KPaOP9q8PXpJFRL7if55K%2Fimg.jpg"
+		/> -->
+		<meta property="og:image" content="./img/img_sharing_2.png" />
+		<!-- favicon은 탭에 아이콘 -->
+		<link rel="shortcut icon" href="./img/favicon.ico" />
+		<!-- favicon은 탭에 아이콘 -->
+		<!-- 이게 공유 관련된 부분 -->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script
+			type="text/javascript"
+			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
+		></script>
+		<!-- 이게 공유 관련된 부분 -->
+	</head>
+
+	<body>
+		<section class="section">
+			<!-- section은 독립적은 구획을 의미한다 -->
+			<h1 class="title">인공지능 외모점수</h1>
+			<h2 class="subtitle">얼굴로 보는 나의 외모 점수</h2>
+			<h2 class="sr-only">나의 외모점수는 얼마일까요?</h2>
+			<!-- class ="sr-only"는 화면에는 안나옴 -->
+			<h3 class="sr-only">
+				다양한 외모 사진을 기반으로 인공지능 학습을 수행 함
+			</h3>
+			<h4 class="sr-only">teachable machine 2.0을 활용하였습니다.</h4>
+			<p class="sr-only">
+				얼굴로 보는 인공지능 외모 테스트! 나와 외모점수는 몇점일까요? 다양한 연예인의 외모
+				사진으로 학습한 인공지능이 나의 얼굴(외모) 점수를 매겨줍니다. 회원가입 없이도
+				화면에서 바로 확인 가능합니다. 사용한 사진 데이터는 다른 용도로 사용하지 않습니다.
+				인공지능을 통해서 나의 외모를 테스트 해 보세요! 과연 여러분의 외모는 몇점일까요?
+			</p>
+			<!-- p = paragraph -->
+		</section>
+
+		<!--성별 선택하는 곳 		 -->
+		<h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+		<!-- pb-2 글자 밑으로 패딩이 "2",  https://bootstrapshuffle.com/kr/classes/spacing/pb-1+%25_F+pb-*-%23, d-flex는 flex 방향이라는데?? column 방향일 듯-->
+		<section class="d-flex justify-content-center">
+			<p class="d-flex align-items-center pr-3">여자</p>
+			<!-- align-items-center = 글자를 중간에 맞추는 거 -->
+			<div>
+				<input type="checkbox" id="gender" /><!-- input type="유형" id="name" -->
+				<label for="gender">
+					<span class="knob">
+						<i></i>
+					</span>
+				</label>
+			</div>
+
+			<p class="d-flex align-items-center pl-3">남자</p>
+		</section>
+
+		<script
+			class="jsbin"
+			src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+		></script>
+		<!-- teachable machine에 관한 Javascript -->
+
+		<div class="mt-3 container file-upload">
+			<div class="image-upload-wrap">
+				<input
+					class="file-upload-input"
+					type="file"
+					onchange="readURL(this);"
+					accept="image/*"
+				/>
+				<!-- onchange는 우리가 작성한 Javascript를 통해서 변화가 일어났는지 탐지해 줌, readURL함수는 뒤에 정의 되어있음, accept는 받아들이는 파일형식-->
+
+				<div class="drag-text">
+					<img src="img/upload.png" class="mt-5 pt-5 upload" />
+					<h3 class="mb-5 pb-5 pt-4 upload-text">
+						얼굴 사진을<br />
+						올려놓거나 <br />눌러서 <br />업로드하세요!
+					</h3>
+				</div>
+			</div>
+
+			<div class="file-upload-content">
+				<img class="file-upload-image" id="face-image" src="#" alt="your image" />
+				<div id="loading" class="animated bounce">
+					<div class="spinner-border" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+					<p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
+				</div>
+				<p class="result-message"></p>
+				<div id="label-container" class="d-flex flex-column justify-content-around"></div>
+				<!--이게 공유버튼	 --><!-- Go to www.addthis.com/dashboard to customize your tools -->
+				<div class="addthis_inline_share_toolbox_czma"></div>
+				<!--이게 공유버튼	 -->
+				<div class="pt-3 image-title-wrap">
+					<button
+						type="button p-2"
+						class="try-again-btn"
+						onclick="window.location.reload();"
+					>
+						<span class="try-again-text">다른 사진으로 재시도</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer pt-5 container d-flex justify-content-center">
+			<div>
+				<p>&copy; Industrial AI 2020. All Rights Reserved.</p>
+			</div>
+		</footer>
+
+		<script>
+			<!-- Javascript 파일 upload와 remove관련	 -->
+						function readURL(input) {
+							if (input.files && input.files[0]) {
+								var reader = new FileReader();
+								reader.onload = function (e) {
+									$('.image-upload-wrap').hide();
+									$('#loading').show();
+									$('.file-upload-image').attr('src', e.target.result);
+									$('.file-upload-content').show();
+									$('.image-title').html(input.files[0].name);
+								};
+								reader.readAsDataURL(input.files[0]);
+								init().then(function () {
+									predict();
+									$('#loading').hide();
+								});
+							} else {
+								removeUpload();
+							}
+						}
+
+						function removeUpload() {
+							$('.file-upload-input').replaceWith($('.file-upload-input').clone());
+							$('.file-upload-content').hide();
+							$('.image-upload-wrap').show();
+						}
+						$('.image-upload-wrap').bind('dragover', function () {
+							$('.image-upload-wrap').addClass('image-dropping');
+						});
+						$('.image-upload-wrap').bind('dragleave', function () {
+							$('.image-upload-wrap').removeClass('image-dropping');
+						});
+		</script>
+		<!-- Javascript 파일 upload와 remove관련 -->
+
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+		<script type="text/javascript">
+			<!-- Javascript AI관련된 부분 -->
+						let URL;
+						const urlMale = './AI_model/AI_handsome_m_ver2/';
+						const urlFemale = './AI_model/AI_handsome_w_ver2/';
+						let model, webcam, labelContainer, maxPredictions;
+						async function init() {
+							if (document.getElementById('gender').checked) {
+								URL = urlMale;
+							} else {
+								URL = urlFemale;
+							}
+							const modelURL = URL + 'model.json';
+							const metadataURL = URL + 'metadata.json';
+							model = await tmImage.load(modelURL, metadataURL);
+							maxPredictions = model.getTotalClasses();
+							labelContainer = document.getElementById('label-container');
+							for (let i = 0; i < maxPredictions; i++) {
+								var element = document.createElement('div');
+								element.classList.add('d-flex');
+								labelContainer.appendChild(element);
+							}
+						}
+
+						async function predict() {
+							var image = document.getElementById('face-image');
+							const prediction = await model.predict(image, false);
+
+
+							// to find the maximum index
+							var predict_pro = new Array();
+							for(var i = 0; i <= 5; i++) {
+								predict_pro[i] = prediction[i].probability;
+							}
+							var max_probability = Math.max.apply(null, predict_pro);
+							console.log(max_probability);
+							var index = predict_pro.indexOf(max_probability); // 최종 찾은 index = 확률 가장 높은거
+							console.log(index);
+
+							// to find the maximum index 끝
+
+							// prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability)); // 오름차순 정렬
+
+							var resultTitle, resultExplain, resultCeleb;
+
+							if (document.getElementById('gender').checked) {
+								switch (prediction[index].className) {
+									case 'handsome_10':
+										resultTitle = '상위 10 % = 신이 빚은 얼굴!';
+										resultExplain =	'당신의 외모는 최상위급 (S클래스)입니다!! 어디에서도 빛나는 당신! 그정도 생겼으면 ㅆㄱㅈ 없어도 이해하잖아! 아무리 비싸고 간지나는 옷을 입어도 얼굴 때문에 옷이 묻히는 현상이 일어남! 거부감이 생길 정도로 뛰어난 외모 덕분에 외롭고 쓸쓸한 인생을 살아야할 수준!';
+										resultCeleb = ' S급 연예인 얼굴';
+										break;
+									case 'handsome_20':
+										resultTitle = '상위 20 %' + '기형적으로 잘생긴 얼굴!';
+										resultExplain =	'A급 너의 얼굴! 주변에서 잘생겼다는 말 좀 듣겠는걸! 코따깆를 파고 있어도 간지가 나는 수준! 청바지에 난닝구를 입어도 대박 간지! 아무리 추잡한 짓을 해도 면죄부를 받을 눈에 띄는 외모 덕분에 어딜가도 시선집중, 연예인 안해도 팬클럽이 생길 정도의 수준!';
+										resultCeleb = 'A급 연예인 얼굴';
+										break;
+									case 'handsome_50':
+										resultTitle = '상위 30 ~ 50 % = 어딜가도 튀지 않는 잘생긴 얼굴! - 잘생기는 않지만 개성이 넘치는 얼굴!';
+										resultExplain =	'준수한 너의 얼굴! 이정도 레벨의 외모는 능력이 없어도 먹고 사는데 큰 지장없음! 외모로 돈 벌어벅고 살수있는 수준! 대다수의 연예인들은 이정도 레벨, 잘생기지도 못생기지도 않아! 준수한 너의 얼굴! 잘 꾸미고 다니면 매력적이게 보일수도 있음! 옷 잘입으면 외모에 플러스 요인이 될 수 있음! 말빨하고 돈만 있으면 왠만큼 괜찮은 여자도 충분히 꼬실수 있음!!';
+										resultCeleb = 'B급 연예인 얼굴에서 평범한 얼굴까지...';
+										break;
+									case 'handsome_70':
+										resultTitle = '하위 30 ~ 50 % = 평타 얼굴부터 적당히 못생긴 얼굴';
+										resultExplain =
+											'길거리에서 보기 쉬운 흔하고 평범한 얼굴! 아무리 멋지게 꾸며도 평범해 보이는 수준! 명품이라도 조금 쳐바르면 부티는 날 수 있음! 청바지에 면티가 이들에게 가장 적합한 패션! 능력만 된다면 적당한 여자친구는 만들 수 있음!- 뚱땡이들은 잘나봐야 여기에 속함! 능력만 된다면 어디든지 취직이 가능하고, 여자친구도 만들고 진실한 사랑을 할 수 있음! 죽어도 잘생겼다는 소리는 들을 수가 없음! 비싸고 멋진 옷을 입어도 추잡해 보임!';
+										resultCeleb =
+											'평범한 일반인 얼굴! & D급 연예인 얼굴!';
+										break;
+									case 'handsome_90':
+										resultTitle = '하위 20 % = 심각한 일반인!';
+										resultExplain =	'일반인중에서도 심각한 수준의 못생긴 얼굴! 개그맨을 하기엔 더할나위없이 좋은 얼굴! 얼굴만으로도 충분히 웃길수가 있고, 돈이 아주 많다면 결혼도 할 수 있을 오로지 저축과 자기발전을 위한 노력만 해야할 옷 같은건 아무리 잘 입어봐야 소용없음!';
+										resultCeleb = 'E급 연예인 얼굴';
+										break;
+									case 'handsome_100':
+										resultTitle = '하위 10 % = 심각한 얼굴!';
+										resultExplain =	'한달에 한두번씩 성형을 생각해 볼 정도의 심각한 얼굴! 결혼은 꿈도 못꾸고 여자친구라도 만들려면 돈을 무진장 많이 벌어야 할 진실한 사랑은 죽어도 할 수 없을 희망을 가지기 힘든 얼굴! 희망을 가지기 힘든 얼굴!';
+										resultCeleb = ' F급 연예인 얼굴';
+										break;
+									default:
+										resultTitle = '알수없음';
+										resultExplain = '';
+										resultCeleb = '';
+								}
+							} else {
+								switch (prediction[index].className) {
+									case 'handsome_10':
+										resultTitle = '상위 10 % = 신이 내린 얼굴!';
+										resultExplain =	'신께서 내려주신 축복받은 얼굴! 이세상의 모든 화려한 수식어를 붙여도 모자랄 정도로 표현할 수 없는 아름다움을 지님! 모든 남자의 로망!';
+										resultCeleb = ' S급 연예인 얼굴';
+										break;
+									case 'handsome_20':
+										resultTitle = '상위 20 % = 다른 세상 얼굴!';
+										resultExplain =	'일반인들과는 비교할 수 없는 아름다운 외모! 얼굴로 자신의 단점을 모두 커버할 수 있음! 이정도 레벨부터에서는 똥도 안쌀것 같음! 외모로 밀어붙이면 좋은 집도 마련할 수 있음!';
+										resultCeleb = 'A급 연예인 얼굴';
+										break;
+									case 'handsome_50':
+										resultTitle = '상위 30 ~ 50% = 어딜가도 뒤지지 않는 얼굴 & 일반인 중에 예쁜 얼굴!';
+										resultExplain =	'대다수의 이쁜 연예인들이 이정도의 레벨! 공부 못하는 꼴통에 밤고양이처럼 살아도 좋은 남자한테 시집갈 수 있는 복받은 인생! 외모로 밀어 붙히면 대기업도 취직 가능! & 이쁘기보다는 매력으로 승부! 부담없이 사귈 수 있는 가장 편안한 유형! 남자에게 인정받기보다는 사랑 받을 수 있음';
+										resultCeleb = 'B급 연예인 얼굴';
+										break;
+									case 'handsome_70':
+										resultTitle = '하위 30 ~ 50 % = 적당히 못생긴 얼굴';
+										resultExplain =	'얼굴은 조금 약하지만! 운동으로 몸매로 승부 가능한 얼굴! & 현재는 이뻐 보일 수 있지만! 과거의 이미지가 남아서 못생겨 보이는 유형!';
+										resultCeleb = '평범한 연예인 얼굴! & D급 연예인 얼굴!';
+										break;
+									case 'handsome_90':
+										resultTitle = '하위 20 % = 심각한 일반인!';
+										resultExplain =	'이쁜척하기 보다는 개그로! 성격으로! 술자리에 불러서 신세 한탄하기 좋은 유형!';
+										resultCeleb = 'E급 연예인 얼굴';
+										break;
+
+									case 'handsome_100':
+										resultTitle = '하위 10 % = 심각한 얼굴!';
+										resultExplain =	'무조건 망가지는 캐릭터를 유지해야하는 스타일! 몸매 얼굴 모두 심각! 개그로 진로를!';
+										resultCeleb = ' F급 연예인 얼굴';
+										break;
+									default:
+										resultTitle = '알수없음';
+										resultExplain = '';
+										resultCeleb = '';
+								}
+							}
+
+							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
+							var title =
+								"<div class='" +
+								prediction[index].className +
+								"-animal-title'>" +
+								resultTitle +
+								'</div>';
+
+							var explain = "<div class='animal-explain pt-2'>" + resultExplain + '</div>';
+
+							var celeb =
+								"<div class='" +
+								prediction[index].className +
+								"-animal-celeb pt-2 pb-2'>" +
+								resultCeleb +
+								'</div>';
+
+							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
+
+							// 여기가 아래 그래프 기능이겠지
+							var barWidth;
+							for (let i = 0; i < maxPredictions; i++) {
+								if (prediction[i].probability.toFixed(2) > 0.1) { //toFixed(2) = 소수점 두째자리 표시했을 때 0.1 보다 크면...
+									barWidth = Math.round(prediction[i].probability.toFixed(2) * 100) + '%'; // 반올림한 숫자에 100 곱하고 % 달아서 barwidth에 넣어라
+								} else if (prediction[i].probability.toFixed(2) >= 0.01) {
+									barWidth = '4%';
+								} else {
+									barWidth = '2%';
+								}
+								var labelTitle;
+								switch (prediction[i].className) {
+									case 'handsome_10':
+										labelTitle = '상위 10%';
+										break;
+									case 'handsome_20':
+										labelTitle = '상위 20%';
+										break;
+									case 'handsome_50':
+										labelTitle = '상위 50%';
+										break;
+									case 'handsome_70':
+										labelTitle = '하위 50%';
+										break;
+									case 'handsome_90':
+										labelTitle = '하위 30%';
+										break;
+									case 'handsome_100':
+										labelTitle = '하위 10%';
+										break;
+									default:
+										labelTitle = '알수없음';
+								}
+								var label =
+									"<div class='animal-label d-flex align-items-center'>" +
+									labelTitle +
+									'</div>';
+								var bar =
+									"<div class='bar-container position-relative container'><div class='" +
+									prediction[i].className +
+									"-box'></div><div class='d-flex justify-content-center align-items-center " +
+									prediction[i].className +
+									"-bar' style='width: " +
+									barWidth +
+									"'><span class='d-block percent-text'>" +
+									Math.round(prediction[i].probability.toFixed(2) * 100) +
+									'%</span></div></div>';
+								labelContainer.childNodes[i].innerHTML = label + bar;
+							} // 여기가 아래 그래프 기능이겠지
+						}
+		</script>
+		<!-- Javascript AI관련된 부분 -->
+
+		<!-- 이거는 광고 -->
+		<!-- <script>
+			function iosApp() {
+				document.getElementById('coupang').style.display = 'none';
+				$('#coupang ins').hide();
+				document.getElementById('addThis').style.display = 'none';
+				document.getElementById('disqus_thread').style.display = 'none';
+				var kakao = document.getElementsByClassName('kakao_ad_area');
+				for (var i = 0; i < kakao.length; i++) {
+					if (kakao[i]) {
+						kakao[i].style.display = 'none';
+					}
+				}
+				// document.getElementById('yotube-top-link').style.display = 'none';
+				// document.getElementById('yotube-mid-link').style.display = 'none';
+				// document.getElementById('yotube-bottom-link').style.display = 'none';
+			}
+		</script> -->
+		<!-- 이거는 광고 -->
+		<!-- 여기는 댓글창 다는거 -->
+		<div id="disqus_thread"></div>
+		<script>
+			/**
+			 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+			 *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+			/*
+			var disqus_config = function () {
+			this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+			this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			*/
+			(function () {
+				// DON'T EDIT BELOW THIS LINE
+				var d = document,
+					s = d.createElement('script');
+				s.src = 'https://seoyoul0510.disqus.com/embed.js';
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript
+			>Please enable JavaScript to view the
+			<a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+		>
+		<!-- 여기는 댓글창 다는거 -->
+	</body>
+	<!-- 
+image input box
+Copyright (c) 2020 by Aaron Vanston (https://codepen.io/aaronvanston/pen/yNYOXR)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+gender toggle
+Copyright (c) 2020 by Mert Cukuren (https://codepen.io/knyttneve/pen/bPpEZY)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ -->
+</html>
