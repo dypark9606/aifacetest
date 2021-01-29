@@ -390,21 +390,9 @@
 
 
 							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
-							var title =
-								"<div class='" +
-								prediction[index].className +
-								"-animal-title'>" +
-								resultTitle +
-								'</div>';
-
+							var title =	"<div class='" + prediction[0].className + "-animal-title result_title'>" + resultTitle + '</div>';
 							var explain = "<div class='animal-explain pt-2'>" + resultExplain + '</div>';
-
-							var celeb =
-								"<div class='" +
-								prediction[index].className +
-								"-animal-celeb pt-2 pb-2'>" +
-								resultCeleb +
-								'</div>';
+							var celeb =	"<div class='" + prediction[0].className + "-animal-celeb pt-2 pb-2 result_celeb'>" + resultCeleb + '</div>';
 
 							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
 
