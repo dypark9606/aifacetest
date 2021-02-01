@@ -446,11 +446,9 @@ input:checked + label > .knob > i:before {
 }
 
 .ad-banner {
-	width: 320px;
+	width: 90%;
 	margin: 0 auto;
 }
-
-
 
 /* <!-- percent gauge --> */
 #canvas {
