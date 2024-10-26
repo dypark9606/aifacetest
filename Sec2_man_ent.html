@@ -1,657 +1,537 @@
 <!DOCTYPE html>
-<html>
-	<head>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>닮은꼴 연예인</title>
+    
+        <!-- 스타일 및 폰트 -->
+        <link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+              integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+        <link rel="stylesheet" href="style_Sec2.css" />
+    
+        <!-- Open Graph 태그 -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="닮은꼴 연예인" />
+        <meta property="og:description" content="얼굴로 분석하는 나와 닮은 연예인은 누구일까요?" />
+        <meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+    
+        <!-- TensorFlow.js 라이브러리 -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    
+        <!-- 공유 기능: AddThis (비활성화) -->
+        <!-- <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"></script> -->
+    </head>
+    
+    
+<body>
+    <section class="section">
+        <h1 class="title">인공지능 닮은꼴 연예인</h1>
+        <h2 class="subtitle">나와 닮은 연예인은 누구일까요?</h2>
+    </section>
 
-				<!-- 네이버 웹마스터도구 -->
-		<meta name="naver-site-verification" content="3f75b7ef8734d657c125381f3009154cc3c273bd" />
-		<meta name="naver-site-verification" content="08203b65fe0d7296aab757c8099263a1610d5b42" />
-		<!-- 네이버 웹마스터도구 -->
-		<!-- meta 태그는 해당 문서에 대한 정보인 메타데이터(metadata)를 정의할 때 사용 		 -->
-		<meta charset="UTF-8" />
-		<!--코딩의 시작 UTF-8로 주로 시작 -->
-		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
-		<!--폰에 화면 줄어들때 화면 비율에 따라서 적용하기 위해 -->
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<!--content="ie=edge"는 IE브라우저에서 각 버전 중 가장 최신 표준모드를 선택하는 문서모드 -->
-		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
-		<!-- link = 연결하는거, href = Hyper text markup language, rel = relationship (보통스타일 시트랑 연결) Css = cascading style sheet-->
-		<link
-			rel="stylesheet"
-			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-			crossorigin="anonymous"
-		/>
-		<!-- integrity는 rel 파일이 수정되지 않았음을 확인하기 위해 사용되는 해쉬 값 (hash value, crossorigin = 교차 출처 리소스 공유 -->
-		<title>닮은꼴 연예인</title>
-		<link rel="stylesheet" href="style_Sec2.css" />
+    <!-- 성별 선택 -->
+    <h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+    <section class="d-flex justify-content-center">
+        <p class="d-flex align-items-center pr-3">여자</p>
+        <div>
+            <input type="checkbox" id="gender"/>
+            <label for="gender">
+                <span class="knob"><i></i></span>
+            </label>
+        </div>
+        <p class="d-flex align-items-center pl-3">남자</p>
+    </section>
 
+    <div class="mt-3 container file-upload">
+        <div class="image-upload-wrap">
+            <input class="file-upload-input" id="file-upload-input" type="file" onchange="readURL(this);" accept="image/*"/>
+            <div class="drag-text">
+                <img src="img/upload.png" class="mt-5 pt-5 upload"/>
+                <h3 class="mb-5 pb-5 pt-4 upload-text">
+                    얼굴 사진을<br> 올려놓거나 <br>눌러서 <br>업로드하세요!
+                </h3>
+            </div>
+        </div>
 
-		<!-- 이게 공유 관련된 부분 -->
-		<!-- Go to www.addthis.com/dashboard to customize your tools -->
-		<script
-			type="text/javascript"
-			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
-		></script>
-		<!-- 이게 공유 관련된 부분 -->
-		<meta property="og:image" content="./img/img_sharing_2.png" />
-		<!-- 연예인 설명 넣으려고 만든거 -->
-		<script src="js/jquery.js"></script>
-		<!-- 연예인 설명 넣으려고 만든거 -->
-		
-	</head>
+        <div class="file-upload-content">
+            <img class="file-upload-image" id="face-image" src="#" alt="your image"/>
+            <div id="loading" class="animated bounce">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
+            </div>
+            <!-- 결과 메시지와 설명 요소 추가 -->
+            <p id="result-message" class="result-message"></p> <!-- 예측 결과와 설명을 여기에 표시 -->
+            <p id="result-description" class="result-description"></p> <!-- celebrityData 설명을 여기에 표시 -->
+            
+            <div id="label-container" class="d-flex flex-column justify-content-around"></div> <!-- 막대 그래프 출력 -->
+            <div class="addthis_inline_share_toolbox_czma"></div>
+            <div class="pt-3 image-title-wrap">
+                <button type="button" class="try-again-btn" onclick="window.location.reload();">
+                    <span class="try-again-text">다른 사진으로 재시도</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-	<body>
-		<section class="section">
-			<!-- section은 독립적은 구획을 의미한다 -->
-			<h1 class="title">인공지능 닮은꼴 연예인</h1>
-			<h2 class="subtitle">나와 닮은 연예인은 누구일까요?</h2>
-			<h2 class="sr-only">대한민국 연예인 데이터 베이스에서 나와 닮은 연예인을 찾습니다</h2>
-			<!-- class ="sr-only"는 화면에는 안나옴 -->
-			<h3 class="sr-only">
-				연예인 사진을 기반으로 인공지능 학습을 수행 함
-			</h3>
-			<h4 class="sr-only">teachable machine 2.0을 활용하였습니다.</h4>
-			<p class="sr-only">
-				나의 얼굴은 어떤 연예인과 닮았을까요? 
-				대한민국 모든 연예인의 사진으로부터 나와 가장 닮은 연예인의 사진을 인공지능을 통해서 찾습니다. 
-				회원가입 없이도 화면에서 바로 확인	가능합니다. 
-				사용한 사진 데이터는 다른 용도로 사용하지 않습니다. 
-				인공지능을 통해서 나의 외모를 테스트 해 보세요! 과연 여러분의 외모는 몇점일까요?
-			</p>
-		</section>
+    <footer class="footer pt-5 container d-flex justify-content-center">
+        <div>
+            <p>&copy; Industrial AI 2020. All Rights Reserved.</p>
+        </div>
+    </footer>
 
-		<!--성별 선택하는 곳 		 -->
-		<h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
-		<!-- pb-2 글자 밑으로 패딩이 "2",  https://bootstrapshuffle.com/kr/classes/spacing/pb-1+%25_F+pb-*-%23, d-flex는 flex 방향이라는데?? column 방향일 듯-->
-		<section class="d-flex justify-content-center">
-			<p class="d-flex align-items-center pr-3">여자</p>
-			<!-- align-items-center = 글자를 중간에 맞추는 거 -->
-			<div>
-				<input type="checkbox" id="gender" /><!-- input type="유형" id="name" -->
-				<label for="gender">
-					<span class="knob">
-						<i></i>
-					</span>
-				</label>
-			</div>
+    <script>
+        const modelPaths = {
+            male: '/AI_model/AI_star_m2/model.json',
+            female: '/AI_model/AI_star_w2/model.json'
+        };
+        let model;
+        let isMaleModel = true;
 
-			<p class="d-flex align-items-center pl-3">남자</p>
-		</section>
-
-		<script
-			class="jsbin"
-			src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
-		></script>
-		<!-- teachable machine에 관한 Javascript -->
-
-		<div class="mt-3 container file-upload">
-			<div class="image-upload-wrap">
-				<input
-					class="file-upload-input"
-					type="file"
-					onchange="readURL(this);"
-					accept="image/*"
-				/>
-				<!-- onchange는 우리가 작성한 Javascript를 통해서 변화가 일어났는지 탐지해 줌, readURL함수는 뒤에 정의 되어있음, accept는 받아들이는 파일형식-->
-
-				<div class="drag-text">
-					<img src="img/upload.png" class="mt-5 pt-5 upload" />
-					<h3 class="mb-5 pb-5 pt-4 upload-text">
-						얼굴 사진을<br> 올려놓거나 <br>눌러서 <br>업로드하세요!
-					</h3>
-				</div>
-			</div>
-
-			<div class="file-upload-content">
-				<img class="file-upload-image" id="face-image" src="#" alt="your image" />
-				<div id="loading" class="animated bounce">
-					<div class="spinner-border" role="status">
-						<span class="sr-only">Loading...</span>
-					</div>
-					<p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
-				</div>
-				<p class="result-message"></p>
-				<div id="label-container" class="d-flex flex-column justify-content-around"></div>
-				<!--이게 공유버튼	 -->
-				<div class="addthis_inline_share_toolbox_czma"></div>
-				<!--이게 공유버튼	 -->
-				<div class="pt-3 image-title-wrap">
-					<button
-						type="button p-2"
-						class="try-again-btn"
-						onclick="window.location.reload();"
-					>
-						<span class="try-again-text">다른 사진으로 재시도</span>
-					</button>
-				</div>
-			</div>
-		</div>
-		
-		<!-- <footer class="footer pt-5 container d-flex justify-content-center">
-			<div>
-				<p>&copy; Industrial AI 2020. All Rights Reserved.</p>
-			</div>
-		</footer> -->
-
-		<script>
-			<!-- Javascript 파일 upload와 remove관련	 -->
-						function readURL(input) {
-							if (input.files && input.files[0]) {
-								var reader = new FileReader();
-								reader.onload = function (e) {
-									$('.image-upload-wrap').hide();
-									$('#loading').show();
-									$('.file-upload-image').attr('src', e.target.result);
-									$('.file-upload-content').show();
-									$('.image-title').html(input.files[0].name);
-								};
-								reader.readAsDataURL(input.files[0]);
-								init().then(function () {
-									predict();
-									$('#loading').hide();
-								});
-							} else {
-								removeUpload();
-							}
-						}
-
-						function removeUpload() {
-							$('.file-upload-input').replaceWith($('.file-upload-input').clone());
-							$('.file-upload-content').hide();
-							$('.image-upload-wrap').show();
-						}
-						$('.image-upload-wrap').bind('dragover', function () {
-							$('.image-upload-wrap').addClass('image-dropping');
-						});
-						$('.image-upload-wrap').bind('dragleave', function () {
-							$('.image-upload-wrap').removeClass('image-dropping');
-						});
-		</script>
-		<!-- Javascript 파일 upload와 remove관련 -->
-
-
-		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-
-		<script type="text/javascript">
-			<!-- Javascript AI관련된 부분 -->
-						let URL;
-						const urlMale = './AI_model/AI_star_m/';
-						const urlFemale = './AI_model/AI_star_w/';
-						let model, webcam, labelContainer, maxPredictions;
-						
-			
-						async function init() {
-							if (document.getElementById('gender').checked) {
-								URL = urlMale;
-							} else {
-								URL = urlFemale;
-							}
-							const modelURL = URL + 'model.json';
-							const metadataURL = URL + 'metadata.json';
-							model = await tmImage.load(modelURL, metadataURL);
-							maxPredictions = model.getTotalClasses();
-							labelContainer = document.getElementById('label-container');
-							for (let i = 0; i < maxPredictions; i++) {
-								var element = document.createElement('div');
-								element.classList.add('d-flex');
-								labelContainer.appendChild(element);
-							}
-							console.log(maxPredictions);
-						}
-
-							async function predict() {
-							var image = document.getElementById('face-image');
-							const prediction = await model.predict(image, false);
-							prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
-							console.log(prediction[0].className);
-							var resultTitle, resultExplain, resultCeleb, result_site;
-							if (document.getElementById('gender').checked) {
-								$(function(){
-									var obj = [
-										{"name":"강남길", "expl":"당신은 중년배우 강남길씨와 매우 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EB%82%A8%EA%B8%B8"},
-										{"name":"강동원", "expl":"당신은 꽃미남의 결정판 배우 강동원씨와 많이 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EB%8F%99%EC%9B%90"},
-										{"name":"강석우", "expl":"당신은 편안한 인상이 매력적인 배우 강석우씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%84%9D%EC%9A%B0"},
-										{"name":"강신성일", "expl":"당신은 한시대를 풍미하고 국회위원까지 역임한 최고의 배우 강신성일씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%84%B1%EC%9D%BC"},
-										{"name":"강신일", "expl":"당신은 강력한 카리스마의 명품 조연 배우 강신일씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%8B%A0%EC%9D%BC"},
-										{"name":"강지환", "expl":"당신은 영화 차형사, 7급공무원에 주연으로 활약한 배우 강지환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%A7%80%ED%99%98"},
-										{"name":"고수", "expl":"당신은 고비드(고수+다비드)의 별명이 딱 어울리는 조각같은 배우 고수를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%88%98_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"공유", "expl":"당신은 때로는 부드럽고(커피프린스), 때로는 터프한(용의자) 공룡상의 대표 배우 공유씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%B5%EC%9C%A0_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"권상우", "expl":"당신은 혀 짧은 발음이 매력적인, 몸짱 배우 권상우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B6%8C%EC%83%81%EC%9A%B0"},
-										{"name":"기태영", "expl":"당신은 SES 유진의 남편인 배우 기태영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B8%B0%ED%83%9C%EC%98%81"},
-										{"name":"김강우", "expl":"당신은 한혜진씨의 형부로 유명한 배우 김강우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B0%95%EC%9A%B0"},
-										{"name":"김광규", "expl":"당신은 '느그아부지 뭐하시노' 대사로 유명하신 배우 김광규씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B4%91%EA%B7%9C_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김기방", "expl":"당신은 옷 잘입는 연예인으로 유명한 조인성씨의 절친 김기방씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B8%B0%EB%B0%A9"},
-										{"name":"김남길", "expl":"당신은 다수의 영화(강철중, 해적 등)에서 큰 역할을 맡 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%82%A8%EA%B8%B8"},
-										{"name":"김대명", "expl":"당신은 미생에서 '빵' 뜨신 배우 김대명씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%8C%80%EB%AA%85"},
-										{"name":"김도완", "expl":"당신은 남자친구 역을 많이 해서 '남친짤'로 유명한 배우 김도완씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%8F%84%EC%99%84_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김래원", "expl":"당신은 영화 캐릭터와는 다르게 애늙은이 소리를 많이 듣는다는 명품배우 김래원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%9E%98%EC%9B%90"},
-										{"name":"김무열", "expl":"당신은 닮은꼴 인물(가수 션, 정석원 등)이 너무나 많은 배우 김무열씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AC%B4%EC%97%B4"},
-										{"name":"김민종", "expl":"당신은 사슴같은 눈이 매력적인 의리남 배우 김민종씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%BC%EC%A2%85"},
-										{"name":"김범", "expl":"당신은 꽃보다 남자 F4중 한명 배우 김범씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%B2%94"},
-										{"name":"김병옥", "expl":"당신은 악역 전문 명품 배우 올드보이의 김병옥씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%B3%91%EC%98%A5_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김상호", "expl":"당신은 얼굴보면 누구나 아는 명품 조연 배우, 생각보다 '노안'이신 배우 김상호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%83%81%ED%98%B8_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김수현", "expl":"당신은 남자라면 누구나 한번쯤 꿈꾸는 외모의 소유자 배우 김수현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%88%98%ED%98%84_(1988%EB%85%84)"},
-										{"name":"김승수", "expl":"당신은 꽃중년 배우 김승수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%8A%B9%EC%88%98_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김승우", "expl":"당신은 배우 김남주씨의 남편으로 명품 중년 배우 김승우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%8A%B9%EC%9A%B0"},
-										{"name":"김우빈", "expl":"당신은 배우 신민아씨의 연인, 공룡상의 대표 배우인 김우빈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9A%B0%EB%B9%88"},
-										{"name":"김희원", "expl":"당신은 실제 성격과는 달리 비열하고 사악한 역할을 많이 하신 배우 김희원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%9D%AC%EC%9B%90_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"남궁연", "expl":"당신은 드러머이자 방송인 남궁연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%EA%B6%81%EC%97%B0"},
-										{"name":"남궁원", "expl":"당신은 60~70년대를 풍미한 한국의 대표 명배우 남궁연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%EA%B6%81%EC%9B%90"},
-										{"name":"노주현", "expl":"당신은 리즈시절에는 조각외모로, 중년이 되어서는 코믹배우로 활약중이신 명품 배우 노주연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%85%B8%EC%A3%BC%ED%98%84"},
-										{"name":"독고영재", "expl":"당신은 배우집안 출신의 중년 배우 독고영재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%8F%85%EA%B3%A0%EC%98%81%EC%9E%AC"},
-										{"name":"류수영", "expl":"당신은 얼굴에서부터 긍정적인 향기가 풍기는 배우 박하선씨의 남편 류수영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A5%98%EC%88%98%EC%98%81"},
-										{"name":"리마리오", "expl":"당신은 이태리 느끼한 혈통, 마가린 버터 3세 리마리오씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A6%AC%EB%A7%88%EB%A6%AC%EC%98%A4"},
-										{"name":"박광재", "expl":"당신은 농구선수에서 배우로 전향한 배우 박광재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EA%B4%91%EC%9E%AC"},
-										{"name":"박근형", "expl":"당신은 주로 정치인, 고위관료, 회장님으로 많이 나오시는 명품 중년 배우 박근형씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EA%B7%BC%ED%98%95"},
-										{"name":"박남현", "expl":"당신은 소문으로 연예계 싸움1등이라는 배우 박남현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EB%82%A8%ED%98%84"},
-										{"name":"박성웅", "expl":"당신은 법대 출신의 명품대사(신세계: 살려는 드릴께!)가 많은 배우 박성웅씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%84%B1%EC%9B%85"},
-										{"name":"박시후", "expl":"당신은 한류스타 중 한면 지금은 주로 일본에서 활동하시는 배우 박시후씨와 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%8B%9C%ED%9B%84"},
-										{"name":"박유천", "expl":"당신은 예전 동방신기의 귀여운 외모의 박유천씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%9C%A0%EC%B2%9C"},
-										{"name":"박해일", "expl":"당신은 평범한 얼굴이지만 엄청난 연기력을 보유한 배우 박해일씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%ED%95%B4%EC%9D%BC"},
-										{"name":"박해진", "expl":"당신은 치즈인더트랩의 멋진 배우 박해진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%ED%95%B4%EC%A7%84"},
-										{"name":"박혁권", "expl":"당신은 대체불가의 명품 배우 육룡이나르샤의 길태미로 인생 배역을 연기하신 배우 박혁권씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%ED%98%81%EA%B6%8C"},
-										{"name":"박희순", "expl":"당신은 특유의 카리스마와 목소리가 인상적인 배우 박희순씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%ED%9D%AC%EC%88%9C"},
-										{"name":"배도환", "expl":"당신은 옆집 아저씨의 푸근함에 매력적인 배우 배도환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EB%8F%84%ED%99%98"},
-										{"name":"배용준", "expl":"당신은 한류 열풍의 시초를 다진 입지전적인 인물 배용준씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%9A%A9%EC%A4%80"},
-										{"name":"변요한", "expl":"당신은 미생에서 이름을 알리고 현재 엄청난 매력을 발산중이신 배우 변요한씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B3%80%EC%9A%94%ED%95%9C"},
-										{"name":"선우재덕", "expl":"당신은 원조 실장님 전문 배우 선우재덕씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%A0%EC%9A%B0%EC%9E%AC%EB%8D%95"},
-										{"name":"설경구", "expl":"당신은 국민배우 중 한명 설경구시를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%A4%EA%B2%BD%EA%B5%AC"},
-										{"name":"성지루", "expl":"당신은 탄탄한 연기력의 명품 조연전문 배우 성지루씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%B1%EC%A7%80%EB%A3%A8"},
-										{"name":"소지섭", "expl":"당신은 '소간지'라는 별명이 있을정도로 간지가 줄줄 흐르는 배우 소지섭씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%8C%EC%A7%80%EC%84%AD"},
-										{"name":"손창민", "expl":"당신은 70~80년대 조각미남 배우, 현재는 회장님 전문 배우 손창민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%EC%B0%BD%EB%AF%BC"},
-										{"name":"손현주", "expl":"당신은 이웃집 아저씨와 같은 친근함이 뭍어나는 배우 손현주씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%ED%98%84%EC%A3%BC"},
-										{"name":"손호준", "expl":"당신은 쓸데없이 잘생긴 얼굴을 가진 유노윤호의 절친 배우 손호준씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%ED%98%B8%EC%A4%80"},
-										{"name":"송강호", "expl":"당신은 국민배우 중에 한명 송강호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EA%B0%95%ED%98%B8"},
-										{"name":"송새벽", "expl":"당신은 어리버리한 모습이 매력적인 배우 송새벽씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%83%88%EB%B2%BD"},
-										{"name":"송승헌", "expl":"당신은 조각미남의 대표 배우 송승헌씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%8A%B9%ED%97%8C"},
-										{"name":"송일국", "expl":"당신은 실제 장군의손자, 바른생활 사나이 송일국씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%9D%BC%EA%B5%AD"},
-										{"name":"송재희", "expl":"당신은 현빈과 닮은 외모의 해병대 출신의 배우 송재희씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%9E%AC%ED%9D%AC"},
-										{"name":"송중기", "expl":"당신은 강아지상의 대표 배우 송혜교씨의 전남편 송중기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%A4%91%EA%B8%B0"},
-										{"name":"신성록", "expl":"당신은 뮤지컬 배우에서 영화계롤 진출하신 배우 신성록씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%84%B1%EB%A1%9D"},
-										{"name":"신하균", "expl":"당신은 B급 영화적 매력을 지닌 배우 신하균씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%ED%95%98%EA%B7%A0_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"심신", "expl":"당신은 깔끔한 외모와 훤칠한 키의 가수 심신씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%AC%EC%8B%A0"},
-										{"name":"안성기", "expl":"당신은 부드러운 매력의 국민배우 안성기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%84%B1%EA%B8%B0"},
-										{"name":"안재홍", "expl":"당신은 무언가 어리버리한듯한 매력의 안재홍씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%9E%AC%ED%99%8D_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"에릭", "expl":"당신은 역대 잘생긴 남자 아이돌에 항상 언급될정도의 가수겸 배우 에릭씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%97%90%EB%A6%AD_(%EA%B0%80%EC%88%98)"},
-										{"name":"여진구", "expl":"당신은 잘생긴 공룡상 배우 여진구씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%97%AC%EC%A7%84%EA%B5%AC"},
-										{"name":"연규진", "expl":"당신은 한가인의 시아버지, 연규지의 아버지, 중년 배우 연규진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%97%B0%EA%B7%9C%EC%A7%84"},
-										{"name":"오광록", "expl":"당신은 무언가 어눌한듯한 느낌의 오광록씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EA%B4%91%EB%A1%9D"},
-										{"name":"오만석", "expl":"당신은 느끼한 남자 오만석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EB%A7%8C%EC%84%9D_(1974%EB%85%84)"},
-										{"name":"오정세", "expl":"당신은 코믹한 이미지의 오정세씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EC%A0%95%EC%84%B8"},
-										{"name":"오종혁", "expl":"당신은 미소년 느낌의 가수겸 배우 오정혁씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EC%A2%85%ED%98%81"},
-										{"name":"오창석", "expl":"당신은 훈훈한 외모, 뚜렷한 이목구비의 전문직 남성이나 차도남 느낌이 있는 오창석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EC%B0%BD%EC%84%9D"},
-										{"name":"옥택연", "expl":"당신은 남자다운 외모와 체격의 2PM의 짐승 옥택연씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A5%ED%83%9D%EC%97%B0"},
-										{"name":"온주완", "expl":"당신은 잘생겼지만 조금은 가벼운 느낌의 온주완씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A8%EC%A3%BC%EC%99%84"},
-										{"name":"우도환", "expl":"당신은 날카로운 눈매, 두꺼운 입술의 우도환씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9A%B0%EB%8F%84%ED%99%98"},
-										{"name":"원빈", "expl":"당신은 남자 배우 중 외모 탑클래스의 원빈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9B%90%EB%B9%88"},
-										{"name":"유동근", "expl":"당신은 왕의 상(왕전문배우)을 가진 배우 유동근씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EB%8F%99%EA%B7%BC"},
-										{"name":"유승호", "expl":"당신은 어릴때부터 꽃미남, 정변의 아이콘, 배우 유승호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%8A%B9%ED%98%B8"},
-										{"name":"유아인", "expl":"당신은 주관과 본인만의 철학이 있는 배우 유아인씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%95%84%EC%9D%B8"},
-										{"name":"유연석", "expl":"당신은 넓은 어깨, 미소년 외모의 배우 유연석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%97%B0%EC%84%9D"},
-										{"name":"유오성", "expl":"당신은 강렬한 카리스마의 배우 유오성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%98%A4%EC%84%B1"},
-										{"name":"육성재", "expl":"당신은 비투비 멤버 가수겸 배우 육성재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A1%EC%84%B1%EC%9E%AC"},
-										{"name":"윤계상", "expl":"당신은 god의 멤버이자 범죄도시의 장첸 윤계상씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EA%B3%84%EC%83%81"},
-										{"name":"윤현민", "expl":"당신은 야구선수로도 활약했던 배우 백진희씨와 연예중인 배우 윤현민씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%ED%98%84%EB%AF%BC"},
-										{"name":"이경영", "expl":"당신은 대표 악역 회장님 캐릭터 배우 이경영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B2%BD%EC%98%81_(1960%EB%85%84)"},
-										{"name":"이광수", "expl":"당신은 모델출신 예능인, 최근 배우로도 왕성한 활동 중이신 '기린' 이광수씨를  닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EA%B4%91%EC%88%98_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이동욱", "expl":"당신은 점잖고 젠틀한 이미지의 부드러운 카리스마를 가진 배우 이경영씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%8F%99%EC%9A%B1_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이문식", "expl":"당신은 명품 조연 배우, 두들겨 맞는 연기에 대가 배우 이문식씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AC%B8%EC%8B%9D"},
-										{"name":"이민호", "expl":"당신은 꽃미남 신드롬을 일으켰던 '꽃남' F4의 대장 배우 이민호씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AF%BC%ED%98%B8_(1987%EB%85%84)"},
-										{"name":"이범수", "expl":"당신은 단발머리 악역이 잘어울리는, 2 % 부족한 어눌한 연기도 완벽히 소화하는 배우 이범수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%B2%94%EC%88%98"},
-										{"name":"이병헌", "expl":"당신은 독보적인 연기력과 광활한 스펙트럼, 완벽한 외모로 단연 대한민국 원탑 대배우 이병헌씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%B3%91%ED%97%8C"},
-										{"name":"이상윤", "expl":"당신은 엄친아의 대표 아이콘 배우 이상윤씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%83%81%EC%9C%A4_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이상인", "expl":"당신은 방송인보다 체육인 느낌이 더 많은 배우 이상인씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%83%81%EC%9D%B8"},
-										{"name":"이서진", "expl":"당신은 금융가의 자손, 얼굴에 부티가 넘치는 배우 이서진씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%84%9C%EC%A7%84"},
-										{"name":"이선균", "expl":"당신은 매력적인 저음의 목소리와 잘생겼지만 과하지 않은 외모의 배우 이선균씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%84%A0%EA%B7%A0"},
-										{"name":"이순재", "expl":"당신은 많은 후배들의 롤모델이자 현역 최고령 배우 이순재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%88%9C%EC%9E%AC"},
-										{"name":"이승기", "expl":"당신은 엄친아의 원조 가수겸 배우 이승기씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%8A%B9%EA%B8%B0"},
-										{"name":"이영하", "expl":"당신은 배우 선우은숙의 전남편이자 부드러운 인상이 매력적인 배우 이영하씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%98%81%ED%95%98_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이이경", "expl":"당신은 고양이상의 대표 연예인 이이경씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9D%B4%EA%B2%BD"},
-										{"name":"이재황", "expl":"당신은 주로 킹카, 바람둥이 연기로 청춘드라마에 많이 출연한 배우 이재황씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9E%AC%ED%99%A9_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이정길", "expl":"당신은 70년대 박근형씨와 멜로드라마의 쌍두마차로 활약한 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A0%95%EA%B8%B8_(1944%EB%85%84)"},
-										{"name":"이정재", "expl":"당신은 잘생긴 외모와 세련된 스타일로 강남 부잣집 도련님 느낌의 배우 이정재씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A0%95%EC%9E%AC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이종석", "expl":"당신은 차도남스러운 외모와 조용한 성격과는 달리 친해비면 애교도 많은 스타일의 배우 이종석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A2%85%EC%84%9D_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이한위", "expl":"당신은 명품중년 조연전문 배우 이한위씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%95%9C%EC%9C%84"},
-										{"name":"임하룡", "expl":"당신은 개그계의 대부, 푸근한 인상이 매력적인 개그맨겸 배우 임하룡씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%ED%95%98%EB%A3%A1"},
-										{"name":"임형준", "expl":"당신은 다수의 영화에 조연으로 출연 중이신 영화에 없어서는 안될 감초배우 임형준씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%ED%98%95%EC%A4%80"},
-										{"name":"장근석", "expl":"당신은 아역부터 성인연기까지 꾸준히 멋진 외모로 열일중이신 배우 장근석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EA%B7%BC%EC%84%9D"},
-										{"name":"장동건", "expl":"당신은 설명이 필요없는 대한민국 대표미남 장동건씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%8F%99%EA%B1%B4"},
-										{"name":"장우혁", "expl":"당신은 반항기 넘치는 외모의 HOT멤버 장우혁씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EC%9A%B0%ED%98%81"},
-										{"name":"장혁", "expl":"당신은 남자다운 외모의 미친 연기력이 돋보이는 배우 장혁씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%ED%98%81"},
-										{"name":"전광렬", "expl":"당신은 본명보다 '허준'으로 더 유명하신 배우 전광렬씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%EA%B4%91%EB%A0%AC"},
-										{"name":"정성화", "expl":"당신은 개그맨에서 뮤지컬배우로 최고의 인기를 누리고 계시는 배우 정성화씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%84%B1%ED%99%94"},
-										{"name":"정우성", "expl":"당신은 대한민국 대표미남, 남자들에게조차 인기가 좋은 배우 정우성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%9A%B0%EC%84%B1"},
-										{"name":"정준", "expl":"당신은 영원한 옆집 형 이미지의 아역때부터 꾸준히 열일 중이신 정준씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%A4%80_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"정준하", "expl":"당신은 전 메니저, 전 무한도전 멤버, 사업가, 개그 연기로 활약중이신 배우 정준하씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%A4%80%ED%95%98"},
-										{"name":"정지훈", "expl":"당신은 월드스타라는 단어를 처음 유행시킨 가수겸 배우 비(정지훈)를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B9%84_(%EA%B0%80%EC%88%98)"},
-										{"name":"조인성", "expl":"당신은 엄청난 기럭지에 얼굴까지 모든걸 다 갖춘 배우 조인성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%9D%B8%EC%84%B1_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"조재현", "expl":"당신은 우리부리한 외모의 배우 조재현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%9E%AC%ED%98%84"},
-										{"name":"조정석", "expl":"당신은 가수 거미의 연인, 잘생긴 외모와 능청스러운 연기에 달인 배우 조정석씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%A0%95%EC%84%9D"},
-										{"name":"조희봉", "expl":"당신은 영화나 드라마에서 많이 봤지만, 이름은 딱 떠오르지 않는 명품 조연 조희봉씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%ED%9D%AC%EB%B4%89"},
-										{"name":"주진모", "expl":"당신은 s급 외모의 터프한듯 세련된 배우 주진모씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A3%BC%EC%A7%84%EB%AA%A8_(1974%EB%85%84)"},
-										{"name":"지창욱", "expl":"당신은 착하게 잘생긴 외모의 배우 지창욱씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A7%80%EC%B0%BD%EC%9A%B1"},
-										{"name":"진선규", "expl":"당신은 내려앉은 화살코가 매력적인 배우 진선규씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A7%84%EC%84%A0%EA%B7%9C"},
-										{"name":"차승원", "expl":"당신은 차도남 이미지의 모델출신이지만 실제로는 아줌마스러운 배우 차승원씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B0%A8%EC%8A%B9%EC%9B%90"},
-										{"name":"차인표", "expl":"당신은 잘생긴 외모에 바른생활 사나이 배우 차인표씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B0%A8%EC%9D%B8%ED%91%9C"},
-										{"name":"차태현", "expl":"당신은 착한 옆집 형 이미지의 친근함이 매력인 배우 차태현씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B0%A8%ED%83%9C%ED%98%84"},
-										{"name":"최다니엘", "expl":"당신은 지적인 이미지와 동갑배우 최진혁씨와 대표 노안 배우로 유명한 최다니엘씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%8B%A4%EB%8B%88%EC%97%98"},
-										{"name":"최무성", "expl":"당신은 다수의 영화와 드라마에서 명품 조연 연기로 유명하신, 응답하라 시리즈에서 '택이아빠'로 더 유명하신 배우 최무성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%AC%B4%EC%84%B1"},
-										{"name":"최민수", "expl":"당신은 터프가이 배우의 대표 배우 최민수씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%AF%BC%EC%88%98"},
-										{"name":"최민용", "expl":"당신은 배력적인 얼굴, 큰 키, 독특한 캐릭터로 유명한 배우 최민용씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%AF%BC%EC%9A%A9"},
-										{"name":"최불암", "expl":"당신은 국민 아버지로 유명한 국민배우이자 수사반장, 전원일기의 대배우 최불암선생님을 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EB%B6%88%EC%95%94"},
-										{"name":"최수종", "expl":"당신은 동안의 아이콘, 똘망똘망한 외모가 매력적인 배우 최수종씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%88%98%EC%A2%85"},
-										{"name":"최재성", "expl":"당신은 '여명의눈동자' 최대치가 떠오르는 배우 최재성씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%9E%AC%EC%84%B1_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"최진혁", "expl":"당신은 남자다운 잘생긴 외모에 남자다운 목소리가 매력적인 배우 최진혁씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%A7%84%ED%98%81"},
-										{"name":"하정우", "expl":"당신은 잘생기지는 않았지만 멋진 배우, 영화만 나오면 대흥행, 국민배우에 점점 다가가는 중이신 배우 하정우씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%EC%A0%95%EC%9A%B0"},
-										{"name":"한석규", "expl":"당신은 성우 출신에 매력적인 목소리를 보유하신 흥행보증수표로 유명하셨던 배우 한석규씨를 닮으셨군요!", "img_site":""},
-										{"name":"한진희", "expl":"당신은 중년의 아이콘 중년 배우 한진희씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%9C%EC%84%9D%EA%B7%9C"},
-										{"name":"허성태", "expl":"당신은 밖에서 마주치면 눈을 돌릴 것 같은 '엄청난'외모의 명품 배우 허성태씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%97%88%EC%84%B1%ED%83%9C"},
-										{"name":"현빈", "expl":"당신은 중후한 목소리, 우수에 차 있는 눈빛으로 유명한 미남배우 현빈씨를 닮으셨군요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%98%84%EB%B9%88"},
-									];
-
-									var arr2 = $.map(obj, function(i, o){
-										if(i.name == prediction[0].className){
-											console.log(i);
-											console.log(o);
-											console.log(obj[o].expl);
-											resultTitle = prediction[0].className;
-											resultExplain =	obj[o].expl;
-											resultCeleb = prediction[0].className + ' 프로필 찾아보기!';
-											result_site = obj[o].img_site;
-											console.log(obj[o].img_site);
-											return resultTitle, resultExplain, resultCeleb, result_site;
-										}
-									});
-								});
-					
-							} else {
-								$(function(){
-									var obj = [
-										{"name":"강다현", "expl":"드라마 '병원선'으로 데뷔한 신인 배우 강민경씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EB%8B%A4%ED%98%84"},
-										{"name":"강민경", "expl":"당신은 다비치의 보컬이자 데뷔 전부터 인터넷 얼짱으로 알려진 강민경씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EB%AF%BC%EA%B2%BD"},
-										{"name":"강소라", "expl":"당신은 중학교 때까지는 통통했지만, 살을 빼면서 복권에 긁은 것처럼 긴 기럭지에 멋진 외모를 갖게 된 배우 강소라씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%86%8C%EB%9D%BC"},
-										{"name":"강예원", "expl":"당신은 대표 고양이상 페이스에 최고의 몸매로 유명하신 배우 강예원씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%98%88%EC%9B%90"},
-										{"name":"강정화", "expl":"당신은 예전에 대장금에 출연하셨던 씬스틸러 배우 강정화씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%EC%A0%95%ED%99%94"},
-										{"name":"강한나", "expl":"당신은 청순한 외모에 귀여운 보조개가 매력적이고, 고전적이고 단아한 이미지로 사극에 잘 어울린다는 평가를 받는 배우 강한나씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%ED%95%9C%EB%82%98"},
-										{"name":"강혜정", "expl":"당신은 올드보이 미도 역할로 스타덤에 오른, 치아교정 이후에 더욱 이뻐진 배우 강혜정씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B0%95%ED%98%9C%EC%A0%95"},
-										{"name":"고소영", "expl":"당신은 미남배우 장동건씨와 결혼한 대표 미녀배우 고소영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%86%8C%EC%98%81"},
-										{"name":"고아성", "expl":"당신은 둥근상에 앳된 얼굴이 매력적인 배우 고아성씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%95%84%EC%84%B1"},
-										{"name":"공효진", "expl":"당신은 엄청난 미녀는 아니지만 매력적인 페이스에 모델출신 배우, 특유의 패션감각과 익숙함 덕분에 인기가 많은 배우 공효진씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%B5%ED%9A%A8%EC%A7%84"},
-										{"name":"곽진영", "expl":"당신은 매력적인 얼굴로 인기를 누렸던, 성형수술 이후에 다소 주춤하신 배우 곽진영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B3%BD%EC%A7%84%EC%98%81"},
-										{"name":"권진영", "expl":"당신은 돌출된 입이 매력적인 개콘 우비 삼남매로 유명한 희극인 권진영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B6%8C%EC%A7%84%EC%98%81"},
-										{"name":"기은세", "expl":"당신은 배우로 크게 뜨지는 못했다가 SNS 스타로 뜨고, '왜그래 풍상씨'에 출연하여 인지도를 높인 배우 기은세씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B8%B0%EC%9D%80%EC%84%B8"},
-										{"name":"김규리", "expl":"당신은 개성있는 예쁜 얼굴이 매력적인 배우 김규리씨를 닮으셨네요!, 정글의 법칙에서 엄청난 몸매를 선보였다고함!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EA%B7%9C%EB%A6%AC_(1979%EB%85%84_8%EC%9B%94)"},
-										{"name":"김남주", "expl":"당신은 대한민국에서 찍을 수 있는 cf는 다찍어본 완판녀라는 수식어로 유명한 광고주들이 가장 선호하는 스타 배우 김남주씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%82%A8%EC%A3%BC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김미려", "expl":"당신은 개그야 코너에서 사모님 역할로 '김기사~~'를 히트시킨 희극인 김미려씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%B8%EB%A0%A4"},
-										{"name":"김미화", "expl":"당신은 돌출입으로 매력적인 인상을 소유하신 희극인 김미화씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%B8%ED%99%94"},
-										{"name":"김민희", "expl":"당신은 고양이상의 대표 얼굴인 배우 김민희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%AF%BC%ED%9D%AC_(1982%EB%85%84)"},
-										{"name":"김보라", "expl":"당신은 아역 배우시절 귀여운 외모로 주목을 받고, 최근에는 나이에 비해 동안인 얼굴로 10년 째 학생역할을 맡고 있는 배우 김보라씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EB%B3%B4%EB%9D%BC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김아중", "expl":"당신은 '미녀는 괴로워'로 스타덤에 오른 대표 미녀 배우 김아중씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%95%84%EC%A4%91"},
-										{"name":"김옥빈", "expl":"당신은 네이버 얼짱대회에서 1등을 해서 배우생활을 시작한 배우 김옥빈씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%98%A5%EB%B9%88"},
-										{"name":"김유미", "expl":"당신은 배우 정우씨의 아내로 더욱 유명한 배우 김유미씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9C%A0%EB%AF%B8_(1979%EB%85%84)"},
-										{"name":"김이지", "expl":"당신은 베이비폭스의 멤버 가수겸 배우 김이지씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%EC%9D%B4%EC%A7%80"},
-										{"name":"김태희", "expl":"당신은 다른 수식어가 필요없는 현존하는 연예인 최고 미녀 김태희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%83%9C%ED%9D%AC"},
-										{"name":"김향기", "expl":"당신은 아역배우 출신으로 모델 오빠따라 촬영장에 갔다가 모델이되고 이후 배우가 된 김향기씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%96%A5%EA%B8%B0"},
-										{"name":"김현숙", "expl":"당신은 막되먹은 영애씨로 스타덤에 오른 배우 김현숙씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%84%EC%88%99_(1978%EB%85%84)"},
-										{"name":"김혜선", "expl":"당신은 어린시절 빼어난 외모로 유명세를 탔으며 최근에는 억센 아줌마 캐릭터로 알려진 배우 김혜선씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%98%9C%EC%84%A0_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"김희애", "expl":"당신은 아름답고 우아한 외모에 털털한 성격까지... 최고의 배우 김희애씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EA%B9%80%ED%9D%AC%EC%95%A0"},
-										{"name":"나나", "expl":"당신은 세계에서 가장 아름다운 얼굴 100인에서 1위를 차지한 적이 있는 애프터스쿨 출신의 배우 나나를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%98%EB%82%98_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"남규리", "expl":"당신은 과거 씨야의 외모를 담당하고, 배우보다 이쁘다는 평가를 받는 여신 남규리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%EA%B7%9C%EB%A6%AC"},
-										{"name":"남보라", "expl":"당신은 11남매 맏딸로 주변 권유에 의해서 연예인이 될 정도로 뛰어난 외모의 소유자로, 동안의 얼굴로 연기 스펙트럼을 넓히기 힘든 행복한 고민을 가진 배우 남보라씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%82%A8%EB%B3%B4%EB%9D%BC"},
-										{"name":"노현정", "expl":"당신은 차분하고 단아한 이미지의 아나운서 출신 방송인으로 현재 재벌가의 며느리이신 노현정씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%85%B8%ED%98%84%EC%A0%95"},
-										{"name":"라미란", "expl":"당신은 코믹에서 정극까지 연기 스펙트럼이 넓은 옆집 아주머니 같은 푸근한 이미지의 배우 라미란씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%9D%BC%EB%AF%B8%EB%9E%80"},
-										{"name":"류혜영", "expl":"당신은 응답하라의 덕선이 언니, 얼음공주 류혜영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%A5%98%ED%98%9C%EC%98%81"},
-										{"name":"박규리", "expl":"당신은 이목구비가 또렷하고 이국적인 외모를 가진 카라의 박규리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EA%B7%9C%EB%A6%AC"},
-										{"name":"박민영", "expl":"당신은 '김비서가 왜 그럴까'로 스타덤에 오르고, 오피스룩의 표준이 되어버린 커리우먼 스타일의 배우 박민영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EB%AF%BC%EC%98%81"},
-										{"name":"박소담", "expl":"당신은 닮은꼴 배우로 김고은이 있고, 서구적인 외모가 대세인 연예계에서 오히려 주목받는 외모를 가진 박소담씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%86%8C%EB%8B%B4"},
-										{"name":"박연수", "expl":"당신은 전 국가대표 축구선수 송일국씨의 전부인, 큰 눈망울이 매력적인 배우 박연수씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%97%B0%EC%88%98_(1979%EB%85%84)"},
-										{"name":"박정아", "expl":"당신은 뚜렷한 이목구비의 시원한 마스크에 쥬얼리의 리더 박정아씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%A0%95%EC%95%84_(%EC%97%B0%EC%98%88%EC%9D%B8)"},
-										{"name":"박지윤 가수", "expl":"당신은 대표 고양이상의 카리스마가 돋보이는 가수 박지윤씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%A7%80%EC%9C%A4_(%EA%B0%80%EC%88%98)"},
-										{"name":"박지윤 아나운서", "expl":"당신은 코 밑에 점이 매력적인 아나운서 박지윤씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%95%EC%A7%80%EC%9C%A4_(%EB%B0%A9%EC%86%A1%EC%9D%B8)"},
-										{"name":"방은희", "expl":"당신은 학창시절부터 이쁜외모로 인기가 많았던 중년 배우 방은희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%A9%EC%9D%80%ED%9D%AC"},
-										{"name":"배두나", "expl":"당신은 압구정 거리에서 패션모델로 길거리 캐스팅 된 개성 강한 마스크의 배두나씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EB%91%90%EB%82%98"},
-										{"name":"배종옥", "expl":"당신은 고급스러운 외모에 팜므파탈 느낌까지 다양한 얼굴이 녹아 있는 배우 배종옥씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%A2%85%EC%98%A5"},
-										{"name":"백진희", "expl":"당신은 동안의 외모로 깜찍한 외모로 대표적이 토끼상 외모로 유명한 백진희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EB%B0%B1%EC%A7%84%ED%9D%AC"},
-										{"name":"사강", "expl":"당신은 큰 눈망울에 처진 눈이 매력적인 배우 사강씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%82%AC%EA%B0%95_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"서갑숙", "expl":"당신은 중년배우이면서 센세이션한 책에 작가로도 유명한 서갑숙씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%EA%B0%91%EC%88%99"},
-										{"name":"서예지", "expl":"당신은 장신에 마른체형, 작은얼굴에 허스키 보이스가 매력적인 배우 서예지씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%EC%98%88%EC%A7%80"},
-										{"name":"서효림", "expl":"당신은 나이에 비해 상당히 동안이신 배우 서효림씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%9C%ED%9A%A8%EB%A6%BC"},
-										{"name":"선우용여", "expl":"당신은 젊은 시절에는 여주인공으로 선우용여를 빼면 드라마 섭외가 불가할 정도의 스타, 지금은 국민 엄마 역할로 활동중인 배우 선우용여씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%A0%EC%9A%B0%EC%9A%A9%EC%97%AC"},
-										{"name":"성현아", "expl":"당신은 밋스코리아 출신 배우 성현아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%B1%ED%98%84%EC%95%84"},
-										{"name":"성유리", "expl":"당신은 핑클의 비주얼을 담당했던 새침한 요정 이미지의 성유리씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%84%B1%EC%9C%A0%EB%A6%AC"},
-										{"name":"손나은", "expl":"당신은 에이핑크의 멤버로 그룹의 비쥬얼 및 센터를 맡고 있는 손나은씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%EB%82%98%EC%9D%80"},
-										{"name":"손예진", "expl":"당신은 순수함의 대표 연예인 점점 여신급이 되어가는 배우 손예진씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%90%EC%98%88%EC%A7%84"},
-										{"name":"솔비", "expl":"당신은 4차원이 매력적인 가수 솔비씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%94%EB%B9%84"},
-										{"name":"송선미", "expl":"당신은 수퍼모델 선발 대회에서 2등을 할정도로 우수한 피지컬과 외모를 보유한 배우 송선미씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%84%A0%EB%AF%B8"},
-										{"name":"송윤아", "expl":"당신은 고혹적인 분위기가 매력적인 아름다운 배우 송윤아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%86%A1%EC%9C%A4%EC%95%84"},
-										{"name":"수애", "expl":"당신은 가녀린 체형이지만 무게감이 있는 분위기 있는 배우 수애씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%88%98%EC%95%A0"},
-										{"name":"수현", "expl":"당신은 모델 출신의 배우로 마블의 어벤져스에 출연하면서 큰 인기를 얻은 서구형 외모의 배우 수현씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%88%98%ED%98%84_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"스테파니리", "expl":"당신은 재미교포 출신으로 찢어진 눈이 매력적인 배우 스테파니리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8A%A4%ED%85%8C%ED%8C%8C%EB%8B%88_%EB%A6%AC"},
-										{"name":"신민아", "expl":"당신은 배우 김우빈씨와 연예중이신 고양이상의 대표 배우 신민아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EB%AF%BC%EC%95%84"},
-										{"name":"신세경", "expl":"당신은 청순글래머로 유명하신 이모구비가 뚜렷한 배우 신세경씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%84%B8%EA%B2%BD"},
-										{"name":"신소율", "expl":"당신은 개성있는 마스크로 팬층을 확보하고 있는 신소율씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%86%8C%EC%9C%A8"},
-										{"name":"신신애", "expl":"당신은 '세상이 요지경'이라는 노래로 한시대를 풍미했던 뽕짝 신드롬의 주역 신신애씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%8B%A0%EC%95%A0"},
-										{"name":"신이", "expl":"당신은 개성있는 얼굴에서 성형 후 고급스러운 마스크로 돌아오신 배우 신이씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%9D%B4"},
-										{"name":"신주아", "expl":"당신은 중국계 태국인 재벌2세와 결혼한 신주아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%8B%A0%EC%A3%BC%EC%95%84"},
-										{"name":"안소미", "expl":"당신은 앙증맞게 귀여운, 주머니속에 넣고 다니고 싶은 안소미씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%95%88%EC%86%8C%EB%AF%B8"},
-										{"name":"양정아", "expl":"당신은 미스코리아 선발대회에 서울 대표로 출전한 중성적인 이미지가 매력적인 배우 양정아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%A0%95%EC%95%84"},
-										{"name":"양지원", "expl":"당신은 가수겸 배우로 걸그룹 활동도 하는 등 다양한 활동한 연예인으로 오소녀 출신답게 몸매가 상당히 좋은 편인 양지원씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%96%91%EC%A7%80%EC%9B%90"},
-										{"name":"예지원", "expl":"당신은 4차원계의 원조로 애교살 없는 외모가 특징인 배우 예지원씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%88%EC%A7%80%EC%9B%90"},
-										{"name":"오승은", "expl":"당신은 처진눈에 부드러운 이미지의 배우 오승은씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%98%A4%EC%8A%B9%EC%9D%80_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"유인영", "expl":"당신은 전형적인 차도녀 느낌의 미인상 배우 유인영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%9D%B8%EC%98%81"},
-										{"name":"유혜리", "expl":"당신은 아름다운 중년 여성의 표본 배우 유혜리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A0%ED%98%9C%EB%A6%AC"},
-										{"name":"윤미라", "expl":"당신은 전성기 대는 여느 청춘스타 부럽지 않은 미녀, 지금은 결혼을 하지 않은 미혼임에도 엄마 역할로 열현중이신 배우 윤미라씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EB%AF%B8%EB%9D%BC"},
-										{"name":"윤승아", "expl":"당신은 배우 김무열씨의 아내로 토끼상의 외모를 가진 배우 윤승아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EC%8A%B9%EC%95%84"},
-										{"name":"윤아", "expl":"당신은 소녀시대의 얼굴, 가녀리지만 밝은 미소가 환상적인 가수겸 배우 윤아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EC%95%84"},
-										{"name":"윤유선", "expl":"당신은 아역배우 출신으로 이제는 중년배우가 되어버린 이모/고모 역할에 특화된 배우 윤유선씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EC%9C%A0%EC%84%A0"},
-										{"name":"윤진서", "expl":"당신은 엄청나게 예븐 배우는 아니지만 나름의 매력과 개성이 있는 배우 유진서씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9C%A4%EC%A7%84%EC%84%9C"},
-										{"name":"이다희", "expl":"당신은 큰 키에 상당히 마른 체형, 서구형 외모의 배우 이다희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%8B%A4%ED%9D%AC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이미소", "expl":"당신은 배우 김부선씨의 딸로 젊은시절 김부선씨와 닮은 외모의 이미소씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AF%B8%EC%86%8C_(1988%EB%85%84)"},
-										{"name":"이미숙", "expl":"당신은 3세대 여배우 트로이카 중 한명으로 적지않은 나이에도 세련된 감각과 센스로 좌중을 압도하는 카리스마를 지닌 배우 이미숙씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AF%B8%EC%88%99"},
-										{"name":"이미연", "expl":"당신은 어린시절 미스 롯데 1위로 선정될 정도로 이쁜외모로 과거 고교생들의 책받침 모델, 현재는 명성황후로 더 유명하신 배우 이미연씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EB%AF%B8%EC%97%B0_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이지아", "expl":"당신은 서태지씨의 전부인으로 유명세를 떨쳤던, 그리고 정우성씨의 전연인으로 유명세를 탔던 배우 이시아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A7%80%EC%95%84"},
-										{"name":"이연희", "expl":"당신은 청순한 이미지를 가진 빼어난 미모와 모델같은 큰 키에 날씬한 몸매로 유명한 배우 이연희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%97%B0%ED%9D%AC"},
-										{"name":"이영란", "expl":"당신은 중년 배우 이영란씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%98%81%EB%9E%80_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이예림", "expl":"당신은 이경규씨의 외동딸로 유명한 배우 이예림씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%98%88%EB%A6%BC_(1994%EB%85%84)"},
-										{"name":"이유리", "expl":"당신은 '왔다 장보리'에서 연민정이라는 인생캐릭터를 맡고 승승장구 중인 귀여운 악역 이유리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9C%A0%EB%A6%AC"},
-										{"name":"이은주", "expl":"당신은 도시적인 차가움 (이지적이고 팜므파탈적)과 따뜻한 감성을 고루 갖춘 대체불가한 배우였던 이은주씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9D%80%EC%A3%BC"},
-										{"name":"이일화", "expl":"당신은 동안의 끝판왕, 젊은시절에도 미모가 출중했지만, 중년에도 미모가 재조명되고 있는 배우 이일화씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%9D%BC%ED%99%94"},
-										{"name":"이지혜", "expl":"당신은 밉지 않는 관종언니 샵 그룹의 이지혜씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%A7%80%ED%98%9C"},
-										{"name":"이채영", "expl":"당신은 선이 굵은 글래머 배우 이채영씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%B1%84%EC%98%81_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"이태란", "expl":"당신은 따뜻한 분위기의 매력적인 마스크에 이태란씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%83%9C%EB%9E%80"},
-										{"name":"이태임", "expl":"당신은 길거리 캐스팅으로 데뷔해서 파격적인 연기로 인기몰이를 했던 배우 이태임씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%83%9C%EC%9E%84"},
-										{"name":"이하늬", "expl":"당신은 미스코리아 진 출신의 8등신 서울대 출신 미녀 이하늬씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%95%98%EB%8A%AC"},
-										{"name":"이하얀", "expl":"당신은 배우 허준호씨의 전부인 이하얀씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%95%98%EC%96%80"},
-										{"name":"이혜인", "expl":"당신은 '롤코'로 빵 떠서 최근에는 유튜버가 되신 가녀린 선의 글래머 배우 이혜인씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%98%9C%EC%9D%B8"},
-										{"name":"이휘향", "expl":"당신은 악역 전문 중년 여배우 임수향씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%9C%98%ED%96%A5"},
-										{"name":"임수정", "expl":"당신은 원조 동안 미녀의 대표 주자, 깨끗, 청순 이미지의 대표 배우 임수정씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%EC%88%98%EC%A0%95_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"임수향", "expl":"당신은 실제로 보면 방송보다 훨씬 더 이쁘다는 강남미인 임수향씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%EC%88%98%ED%96%A5"},
-										{"name":"임은경", "expl":"당신은 TTL 소녀로 유명한 외계에서 온듯한 완벽한 미모로 신비주의 캐릭터였던 배우 임은경씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%84%EC%9D%80%EA%B2%BD"},
-										{"name":"임지현", "expl":"당신은 북한 미녀 임지연씨를 닮으셨네요!", "img_site":"https://olibia.tistory.com/187"},
-										{"name":"장자연", "expl":"당신은 날카로운 눈매를 보유한 배우로 사후 더 유명해지신 배우 장자연씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%EC%9E%90%EC%97%B0"},
-										{"name":"장희진", "expl":"당신은 제2의 전지현이라는 수식어로 유명해지신 배우 장희진씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%9E%A5%ED%9D%AC%EC%A7%84_(1983%EB%85%84)"},
-										{"name":"전미도", "expl":"당신은 엄청난 미모는 아니지만 동양적인 매력을 겸비한 미인으로 최근 주목을 받고 있는 배우 전미도씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%EB%AF%B8%EB%8F%84"},
-										{"name":"전인화", "expl":"당신은 기품있고 참한 외모에 카리스마를 겸비한 중견 여배우로 주로 왕비나 재벌가의 안주인 역할을 많이 하시는 배우 전인화씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%84%EC%9D%B8%ED%99%94"},
-										{"name":"정가은", "expl":"당신은 작은 얼굴에 크고 또렷한 눈, 오똑한 코에 날씬한 몸매를 가진 미녀 배우 정가은씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EA%B0%80%EC%9D%80"},
-										{"name":"정다빈", "expl":"당신은 귀엽고 발랄한 느낌있는 배우였던 정다빈씨와 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EB%8B%A4%EB%B9%88_(1980%EB%85%84%EC%83%9D_%EB%B0%B0%EC%9A%B0)"},
-										{"name":"정선희", "expl":"당신은 돌출된 입 구조를 잘 활용한 개인기 딱따구리 성대모사로 유명한 희극인 정선희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%84%A0%ED%9D%AC"},
-										{"name":"정시아", "expl":"당신은 털털한 모습과 백치미가 매력적인 배우 정시아씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%8B%9C%EC%95%84"},
-										{"name":"정유미", "expl":"당신은 풋풋한 외모와 세밀한 감정표현이 무척 매력적인 배우 정유미씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%9C%A0%EB%AF%B8_(1983%EB%85%84)"},
-										{"name":"정윤희", "expl":"당신은 장미희, 유지인과 더불아 70년대 여배우 트로이카 중에 한명인 정윤희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%9C%A4%ED%9D%AC"},
-										{"name":"정은지", "expl":"당신은 귀여운 외모에 큰 입이 매력적인 털털한 매력의 Apink 메인보컬 정은지씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%EC%9D%80%EC%A7%80"},
-										{"name":"정혜선", "expl":"당신은 드라마 대표 할머니 역할 배우 정혜선씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A0%95%ED%98%9C%EC%84%A0"},
-										{"name":"조미령", "expl":"당신은 얼굴보면 아!! 하고 알 수 있는 명품 조연 배우 조미령씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EB%AF%B8%EB%A0%B9_(1973%EB%85%84)"},
-										{"name":"조여정", "expl":"당신은 인형처럼 이국적인 예쁜 외모 때문에 어릴적에 혼혈아니냐는 질문을 많이 받을 정도의 조여정씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%97%AC%EC%A0%95"},
-										{"name":"조윤희", "expl":"당신은 고독한 분위기가 풍기는, 같이 있으면 안아주고 싶은 배우 조윤희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%9C%A4%ED%9D%AC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"조혜정", "expl":"당신은 조재현씨의 딸로 유명한 귀여운 매력이 있는 조혜정씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A1%B0%ED%98%9C%EC%A0%95_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"진서연", "expl":"당신은 팜므파탈의 결정판 진서연씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%A7%84%EC%84%9C%EC%97%B0"},
-										{"name":"차예련", "expl":"당신은 차도녀의 대표적인 표본 배우 차예련씨를 닮으셨네요!"},
-										{"name":"채정안", "expl":"당신은 예쁘지만 도도해 보이고 시크한 외모의 배우 채정안씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B0%A8%EC%98%88%EB%A0%A8"},
-										{"name":"최강희", "expl":"당신은 원조 동안 미녀, 4차원 성격이 매력적인 배우 최강희씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EA%B0%95%ED%9D%AC_(%EB%B0%B0%EC%9A%B0)"},
-										{"name":"최여진", "expl":"당신은 모델출신의 시크한 말투가 매력적인 배우 최여진씨 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%97%AC%EC%A7%84"},
-										{"name":"최지우", "expl":"당신은 귀여운 발음이 매력적인 가녀린 이미지의 배우 최지우씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%EC%B5%9C%EC%A7%80%EC%9A%B0"},
-										{"name":"하나경", "expl":"당신은 글래머스러운 매력의 배우 하나경씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%EB%82%98%EA%B2%BD"},
-										{"name":"하연수", "expl":"당신은 굉장히 똘망똘망한 눈망울과 치아가 훤히 보이는 미소와 같이 신비함을 느끼게 하는 인상의 배우 하연수씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%EC%97%B0%EC%88%98"},
-										{"name":"하재숙", "expl":"당신은 통통한 외모의 명품 조연 배우 하재숙씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%EC%9E%AC%EC%88%99"},
-										{"name":"하희라", "expl":"당신은 배우 최수종씨의 아내로, 큰 입이 매력적인 배우 하희라씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%98%ED%9D%AC%EB%9D%BC"},
-										{"name":"한보름", "expl":"당신은 아이돌을 준비할정도로 외모에 음악실력을 갖추고 있으나 개명 이후 배우로 활동할 정도로 외모에도 장점이 있는 배우 한보름씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%9C%EB%B3%B4%EB%A6%84"},
-										{"name":"한예리", "expl":"당신은 배우이자 무용가로 동양적인 마스크가 매력적인 배우 한예리씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%95%9C%EC%98%88%EB%A6%AC"},
-										{"name":"황신혜", "expl":"당신은 대한민국 역대급 대표 미녀배우 황신혜씨를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%A9%EC%8B%A0%ED%98%9C"},
-										{"name":"황우슬혜", "expl":"당신은 예쁘지만 무언가 비어있는 듯한 백치미가 매력적인 배우, 옆에 있다면 안아주고 싶은 배우 황우슬혜시를 닮으셨네요!", "img_site":"https://ko.wikipedia.org/wiki/%ED%99%A9%EC%9A%B0%EC%8A%AC%ED%98%9C"},
-									];
-
-									var arr2 = $.map(obj, function(i, o){
-										if(i.name == prediction[0].className){
-											console.log(i);
-											console.log(o);
-											console.log(obj[o].expl);
-											resultTitle = prediction[0].className;
-											resultExplain =	obj[o].expl;
-											resultCeleb = prediction[0].className + ' 프로필 찾아보기!';
-											result_site = obj[o].img_site;
-											return resultTitle, resultExplain, resultCeleb, result_site;
-										}
-									});
-								});
-							}
-
-							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
-							var title =	"<div class='" + prediction[0].className + "-animal-title result_title'>" + resultTitle + '</div>';
-							var explain = "<div class='animal-explain pt-2'>" + resultExplain + '</div>';
-							var celeb =	"<div class='" + prediction[0].className + "-animal-celeb pt-2 pb-2 result_celeb'>" + resultCeleb + '</div>';
-								
-								
-								
-							$('.result-message').html(title + explain + celeb.link(result_site)); // title, 설명, 관련 연예인 표시
+        // 연예인 데이터 (이름 및 설명)
+        const celebrityData = {
+            male: {
+                'RM': '당신은 RM처럼 깊은 지성과 카리스마를 가득 품고 계시군요! 학문적 매력을 지니신 분!',
+                'Jin': '석진이 형과 닮았네요! 당신도 미남미녀 월드와이드 핸섬 타이틀 도전 가능!',
+                'Suga': '슈가처럼 겉은 차가워도 속은 따뜻한 매력을 지닌 당신! 존재만으로도 힐링이 되는 사람!',
+                'J-Hope': 'J-Hope처럼 밝고 긍정적인 에너지 덩어리! 당신의 웃음이 주변을 행복하게 만듭니다!',
+                'Jimin': '지민처럼 미소로 사람들을 사로잡는 매력쟁이! 당신의 눈웃음에 모두 빠져들 거예요!',
+                'V': 'V처럼 독보적인 비주얼과 예술적 감각의 소유자! 당신도 마치 한 폭의 그림 같아요!',
+                'Jungkook': '완벽을 추구하는 정국처럼 다양한 재능을 가진 당신! 무엇을 해도 멋지겠어요!',
+                'Suho': '수호처럼 리더십이 강하고 부드러운 매력! 당신도 사람들이 믿고 의지할 수 있는 존재!',
+                'Baekhyun': 'Baekhyun처럼 유머러스하면서도 매력적인 당신! 언제 어디서나 인기를 독차지할 인물!',
+                'Chanyeol': '긍정 에너지 넘치는 Chanyeol과 닮았네요! 당신의 활력 덕분에 주변이 활기차져요!',
+                'D.O.': '묵직한 존재감과 차분한 매력의 D.O.! 당신은 어딜 가도 중심을 잡아주는 사람!',
+                'Kai': 'Kai처럼 댄디하고 카리스마 넘치는 외모! 당신도 무대 위에 서면 빛나는 스타!',
+                'Sehun': '시크하고 세련된 Sehun과 비슷해요! 당신의 매력에 많은 사람이 끌릴 거예요!',
+                'Taeyong': '강력한 리더십과 카리스마의 Taeyong! 당신도 무대 장악력이 탁월한 듯합니다!',
+                'Jaehyun': 'Jaehyun처럼 부드럽고 다정한 인상! 당신은 모두에게 호감을 주는 사람!',
+                'Mark': '에너지 넘치고 다재다능한 Mark와 비슷하네요! 어떤 도전이든 척척해내는 스타일!',
+                'Haechan': 'Haechan처럼 유쾌하고 밝은 분위기! 당신의 미소는 주변을 환하게 만듭니다!',
+                'Johnny': '유쾌하고 카리스마 넘치는 Johnny! 당신과 있으면 모두가 편안함을 느껴요!',
+                'Doyoung': '감성적인 보컬과 섬세한 매력의 Doyoung! 당신도 따뜻한 마음의 소유자!',
+                'Yuta': '시원시원한 매력의 Yuta! 당신은 어디서나 주목받을 수 있는 매력을 지녔네요!',
+                'S.Coups': '리더의 품격을 갖춘 S.Coups! 강인한 매력과 책임감 있는 모습을 지니셨어요!',
+                'Jeonghan': '부드럽고 매력적인 Jeonghan과 닮았어요! 당신의 다정한 모습에 모두가 반할 겁니다!',
+                'Joshua': '따뜻한 성격의 Joshua! 사람들에게 따뜻함을 주는 존재감을 지닌 당신!',
+                'Jun': '춤과 무대에서 빛나는 Jun! 예술적 재능을 가득 품은 당신의 열정이 느껴져요!',
+                'Hoshi': 'Hoshi처럼 춤과 열정 넘치는 매력의 소유자! 항상 에너지가 넘쳐흐르는 사람!',
+                'Wonwoo': '진지하고 깊이 있는 매력의 Wonwoo! 당신의 성숙함에 많은 사람들이 반할 거예요!',
+                'Woozi': '작곡가 Woozi처럼 감성 넘치는 당신! 사람들에게 예술적 감동을 줄 수 있는 인물!',
+                'DK': '강력한 가창력과 긍정 에너지를 지닌 DK! 어디서나 빛나는 존재감!',
+                'Mingyu': '잘생기고 유머러스한 Mingyu! 당신과 있으면 항상 즐겁고 유쾌한 시간!',
+                'The8': '섬세하고 유연한 The8! 예술적 감각이 뛰어난 당신!',
+                'Seungkwan': '유머러스하고 가창력 뛰어난 Seungkwan! 사람들을 기쁘게 하는 당신의 재치!',
+                'Vernon': '개성 넘치는 Vernon! 독특한 매력으로 사람들의 시선을 사로잡는 스타일!',
+                'Dino': '열정 넘치는 막내 Dino! 늘 새로운 도전을 즐기는 당신!',
+                'Onew': '부드러운 리더십과 따뜻한 매력의 Onew! 사람들에게 평온함을 주는 인물!',
+                'Key': '패션 감각과 독보적인 개성의 Key! 트렌드를 선도하는 당신!',
+                'Minho': '운동신경 좋고 매력적인 Minho! 늘 열정적인 모습으로 사람들을 이끄는 스타일!',
+                'Taemin': '섬세하고 매력 넘치는 Taemin! 춤과 예술에서 빛나는 당신!',
+                'Leeteuk': '차분한 리더십과 따뜻한 성격의 Leeteuk! 주변 사람들에게 신뢰를 주는 존재!',
+                'Heechul': '독특하고 개성 넘치는 Heechul! 어디서든 주목받는 당신의 유쾌한 매력!',
+                'Yesung': '감성적인 보컬과 매력의 Yesung! 당신도 사람들에게 감동을 주는 인물!',
+                'Shindong': '유머와 춤 실력의 Shindong! 사람들에게 웃음과 즐거움을 주는 당신!',
+                'Donghae': '따뜻한 목소리와 친근한 매력의 Donghae! 사람들에게 편안함을 주는 스타일!',
+                'Eunhyuk': '뛰어난 춤 실력과 리더십의 Eunhyuk! 사람들을 이끌며 빛나는 당신!',
+                'Siwon': '잘생긴 외모와 다재다능함의 Siwon! 당신도 다방면에서 활약할 스타일!',
+                'Ryeowook': '고음과 감성적인 노래의 Ryeowook! 당신은 예술적인 감각을 지닌 사람!',
+                'Kyuhyun': '다재다능하고 가창력 뛰어난 Kyuhyun! 예술적 재능이 넘치는 당신!',
+                'Bang Chan': '리더십과 긍정적 에너지의 Bang Chan! 당신도 모든 상황에서 앞장설 준비가 되어 있어요!',
+                'Lee Know': '카리스마와 유머를 갖춘 Lee Know! 사람들을 쉽게 매료시키는 당신!',
+                'Changbin': '힘 있고 강렬한 Changbin과 비슷한 에너지를 지닌 당신!',
+                'Hyunjin': '우아하고 신비로운 매력의 Hyunjin! 사람들을 끌어당기는 매력이 있네요!',
+                'Han': '재미와 끼가 넘치는 Han! 늘 주위를 밝게 만드는 당신!',
+                'Felix': '깊고 멋진 목소리의 Felix와 닮았습니다! 언제나 존재감이 강한 당신!',
+                'Seungmin': '부드럽고 감성적인 Seungmin! 당신의 목소리는 사람들에게 평안을 줍니다!',
+                'I.N': '순수하고 귀여운 매력의 I.N! 당신도 많은 사람들의 사랑을 받고 있어요!',
+                'Cha Eun-woo': '차은우처럼 눈부신 비주얼의 소유자! 어디서나 빛날 수 있는 당신!',
+                'Moonbin': '따뜻하고 다정한 Moonbin! 사람들에게 편안함과 즐거움을 주는 당신!',
+                'MJ': '유쾌하고 발랄한 MJ! 당신의 웃음소리만으로도 분위기를 밝게 만드는 사람!',
+                'JinJin': '강한 리더십과 부드러운 매력을 지닌 JinJin! 모두에게 신뢰받는 스타일!',
+                'Rocky': '춤과 열정의 Rocky! 언제나 열정 가득한 당신은 무대를 빛나게 합니다!',
+                'Yoon San-ha': '귀엽고 순수한 막내 Yoon San-ha! 당신은 모두의 사랑을 받는 존재!',
+                'JB': '강렬하고 감성적인 리더 JB! 당신의 리더십이 빛나는 순간!',
+                'Mark (GOT7)': '다재다능하고 카리스마 넘치는 Mark! 사람들의 마음을 사로잡는 당신!',
+                'Jackson': '에너지 넘치는 Jackson! 유머와 끼로 가득한 당신과 있으면 늘 즐거워요!',
+                'Jinyoung': '배려심 많고 따뜻한 성격의 Jinyoung! 사람들에게 신뢰를 주는 당신!',
+                'Youngjae': '따뜻한 목소리와 감성의 Youngjae! 노래로 사람들의 마음을 움직이는 당신!',
+                'BamBam': '유머와 개성 넘치는 BamBam! 당신과 있으면 항상 웃음이 끊이지 않아요!',
+                'Yugyeom': '춤과 열정이 넘치는 Yugyeom! 항상 새로운 도전을 즐기는 당신!',
+                'Sangyeon': '차분하고 리더십 있는 Sangyeon! 모두가 당신을 신뢰하게 되는 스타일!',
+                'Jacob': '따뜻하고 사랑스러운 Jacob! 사람들에게 편안함을 주는 당신!',
+                'Younghoon': '훈훈한 외모와 매력을 가진 Younghoon! 모두가 당신에게 끌릴 겁니다!',
+                'Hyunjae': '유쾌하고 활기찬 Hyunjae! 사람들을 즐겁게 만드는 재능을 지닌 당신!',
+                'Juyeon': '카리스마 넘치는 Juyeon! 당신의 멋진 매력이 빛나는 순간!',
+                'Kevin': '유머 감각이 뛰어난 Kevin! 항상 사람들을 즐겁게 하는 스타일!',
+                'New': '시크하면서도 사랑스러운 New! 독보적인 매력을 가진 당신!',
+                'Q': '카리스마 넘치는 무대의 Q! 항상 자신감이 넘치는 당신!',
+                'Juhaknyeon': '에너지가 넘치는 Juhaknyeon! 주변에 긍정적 영향을 주는 당신!',
+                'Eric': '밝고 활기찬 막내 Eric! 사람들에게 웃음을 선사하는 당신!',
+                'Sunwoo': '신비롭고 매력적인 Sunwoo! 언제나 주변의 관심을 사로잡는 당신!',
+                'Hongjoong': '리더십과 예술적 감각을 지닌 Hongjoong! 당신은 모두에게 영감을 주는 사람!',
+                'Seonghwa': '따뜻하고 다정한 매력의 Seonghwa! 사람들에게 평온함을 주는 당신!',
+                'Yunho': '강렬하고 자신감 넘치는 Yunho! 무대에서 빛나는 당신의 모습!',
+                'Yeosang': '조용하면서도 매력적인 Yeosang! 사람들의 마음을 끌어당기는 당신!',
+                'San': '카리스마 넘치는 무대의 San! 언제나 중심이 되는 스타일!',
+                'Mingi': '개성 넘치는 Mingi! 당신은 독특한 매력을 가진 사람!',
+                'Wooyoung': '열정적이고 카리스마 넘치는 Wooyoung! 언제나 눈에 띄는 존재!',
+                'Jongho': '강력한 가창력의 Jongho! 당신은 사람들을 사로잡는 목소리의 소유자!',
+                'Im Si-wan': '예술적 감각과 열정을 지닌 Im Si-wan! 언제나 새로운 도전을 즐기는 당신!',
+                'Kim Soo-hyun': '부드럽고 감성적인 매력의 Kim Soo-hyun! 언제나 주변 사람들에게 따뜻함을 주는 당신!',
+                'Park Seo-joon': '다정하고 신뢰감 넘치는 Park Seo-joon! 언제나 중심을 잡아주는 존재!',
+                'Ji Chang-wook': '열정과 카리스마의 Ji Chang-wook! 언제나 무대와 화면을 빛내는 당신!',
+                'Lee Jong-suk': '카리스마와 따뜻함을 모두 지닌 Lee Jong-suk! 언제나 매력 넘치는 당신!',
+                'Gong Yoo': '부드럽고 따뜻한 매력의 Gong Yoo! 사람들에게 위로와 편안함을 주는 당신!',
+                'Lee Min-ho': '훈훈한 외모와 성숙한 매력의 Lee Min-ho! 사람들을 끌어당기는 당신!',
+                'Hyun Bin': '차가우면서도 따뜻한 매력의 Hyun Bin! 언제나 중심을 잡아주는 스타일!',
+                'Song Joong-ki': '유머러스하고 매력적인 Song Joong-ki! 어디서나 인기를 독차지하는 당신!',
+                'Jung Hae-in': '따뜻하고 다정한 매력의 Jung Hae-in! 사람들에게 편안함을 주는 당신!',
+                'Ju Ji-hoon': '신비롭고 카리스마 넘치는 Ju Ji-hoon! 언제나 독보적인 존재감을 지닌 당신!',
+                'Ryu Jun-yeol': '따뜻하면서도 강렬한 매력의 Ryu Jun-yeol! 언제나 사람들에게 감동을 주는 당신!',
+                'Yoo Ah-in': '신비롭고 독창적인 매력의 Yoo Ah-in! 언제나 새로운 도전을 즐기는 스타일!',
+                'Choi Woo-shik': '다정하고 유쾌한 매력의 Choi Woo-shik! 언제나 사람들을 웃게 만드는 당신!',
+                'Nam Joo-hyuk': '훈훈한 외모와 매력을 지닌 Nam Joo-hyuk! 언제나 인기를 독차지하는 당신!',
+                'Seo In-guk': '독특하고 매력적인 Seo In-guk! 언제나 자신의 길을 가는 스타일!',
+                'Lee Seung-gi': '유쾌하고 따뜻한 Lee Seung-gi! 언제나 사람들에게 편안함을 주는 당신!',
+                'Park Bo-gum': '다정하고 따뜻한 매력의 Park Bo-gum! 사람들에게 위로를 주는 당신!',
+                'Kang Dong-won': '신비롭고 독창적인 매력의 Kang Dong-won! 언제나 중심이 되는 당신!',
+                'Kim Woo-bin': '강렬하고 카리스마 넘치는 Kim Woo-bin! 언제나 사람들에게 큰 인상을 주는 당신!',
+                'Cho Seung-woo': '부드럽고 신뢰감 넘치는 Cho Seung-woo! 언제나 중심을 잡아주는 스타일!',
+                'Jang Hyuk': '에너지 넘치는 Jang Hyuk! 언제나 활기찬 분위기를 만드는 당신!',
+                'Cha Tae-hyun': '유쾌하고 발랄한 Cha Tae-hyun! 언제나 주변을 즐겁게 만드는 당신!',
+                'Lee Je-hoon': '신비롭고 독특한 매력의 Lee Je-hoon! 언제나 사람들에게 큰 인상을 주는 당신!',
+                'Park Hae-jin': '부드럽고 신뢰감 넘치는 Park Hae-jin! 언제나 사람들에게 안정감을 주는 당신!',
+                'Kim Bum': '훈훈하고 매력적인 Kim Bum! 언제나 인기를 독차지하는 당신!',
+                'Yoon Kyun-sang': '당신은 듬직하고 훈훈한 매력을 가진 윤균상과 닮았습니다! 진중한 분위기로 주위를 압도하겠군요!',
+                'Yoon Shi-yoon': '당신은 따뜻하고 친근한 매력의 윤시윤과 닮았습니다! 주변 사람들에게 호감을 사는 타입이네요!',
+                'Lee Jun-ho': '당신은 다재다능하고 섬세한 매력의 이준호와 닮았습니다! 카리스마 넘치는 눈빛이 매력적이네요!',
+                'Jung Kyung-ho': '당신은 슬기로운 연기의 대가, 정경호와 닮았습니다! 유쾌한 성격에 주변이 환해지는 느낌!',
+                'Kim Jae-wook': '당신은 묵직한 존재감의 김재욱과 닮았습니다! 분위기로 시선을 사로잡는 매력의 소유자군요!',
+                'Yoo Yeon-seok': '당신은 부드러운 카리스마의 유연석과 닮았습니다! 다정함과 지성미가 묻어나네요!',
+                'Park Hyung-sik': '당신은 재치와 연기력의 아이콘, 박형식과 닮았습니다! 어디서든 사랑받는 스타일이군요!',
+                'Lee Dong-wook': '당신은 묵직한 눈빛의 소유자, 이동욱과 닮았습니다! 강렬한 첫인상을 주는군요!',
+                'Jo Jung-suk': '당신은 유쾌한 다재다능한 매력의 조정석과 닮았습니다! 사람을 기분 좋게 만드는 매력이네요!',
+                'Jang Ki-yong': '당신은 차가운 듯 따뜻한 매력의 장기용과 닮았습니다! 숨겨진 매력을 가진 타입이에요!',
+                'Kim Jae-joong': '당신은 다양한 매력의 소유자, 김재중과 닮았습니다! 어디서든 눈에 띄는 존재감이네요!',
+                'Lee Kwang-soo': '당신은 유쾌하고 다정한 매력의 이광수와 닮았습니다! 코믹한 매력으로 모두를 웃게 만드네요!',
+                'Jung Il-woo': '당신은 부드럽고 다정한 매력의 정일우와 닮았습니다! 따뜻한 인상을 주는 스타일이군요!',
+                'Woo Do-hwan': '당신은 강렬하고 묵직한 매력의 우도환과 닮았습니다! 주변에 깊은 인상을 남기는 타입이군요!',
+                'Ahn Bo-hyun': '당신은 듬직하고 선이 굵은 매력의 안보현과 닮았습니다! 카리스마 넘치는 눈빛이 멋지네요!',
+                'Kim Seon-ho': '당신은 따뜻한 미소와 밝은 에너지를 가진 김선호와 닮았습니다! 유쾌하고 친근한 매력을 뽐내네요!',
+                'Lee Joon-gi': '당신은 날카롭고 강렬한 매력의 이준기와 닮았습니다! 신비롭고 압도적인 분위기를 자아내네요!',
+                'Jung Woo-sung': '당신은 멋짐이 흘러넘치는 정우성과 닮았습니다! 어딜 가도 시선을 사로잡는 스타일이에요!',
+                'Jo In-sung': '당신은 다정하고 따뜻한 카리스마의 조인성과 닮았습니다! 주변 사람들에게 안정감을 주는군요!',
+                'Shin Ha-kyun': '당신은 묵직한 존재감과 카리스마의 신하균과 닮았습니다! 누구에게나 깊은 인상을 남기네요!',
+                'Kim Nam-gil': '당신은 강렬하고 신비로운 매력의 김남길과 닮았습니다! 누구에게나 독특한 매력으로 다가오네요!',
+                'Yoon Sang-hyun': '당신은 부드럽고 유쾌한 매력의 윤상현과 닮았습니다! 어디서든 사랑받는 스타일이에요!',
+                'Song Kang': '당신은 깔끔하고 훈훈한 외모의 송강과 닮았습니다! 뭔가 미묘하게 사람을 끌어당기는 매력이 있네요!',
+                'Choi Jin-hyuk': '당신은 깊이 있는 매력의 최진혁과 닮았습니다! 어딘가 신비로운 분위기를 풍기는 타입이에요!',
+                'Go Kyung-pyo': '당신은 부드럽고 따뜻한 매력의 고경표와 닮았습니다! 밝은 미소로 모두를 기분 좋게 만드네요!',
+                'Park Ki-woong': '당신은 매력적인 비주얼의 박기웅과 닮았습니다! 사람들에게 좋은 인상을 남기는 타입이에요!',
+                'Kim Min-jae': '당신은 귀엽고 훈훈한 매력의 김민재와 닮았습니다! 주변 사람들에게 사랑받는 스타일이에요!',
+                'Ha Seok-jin': '당신은 진중하고 부드러운 매력의 하석진과 닮았습니다! 안정감을 주는 인상을 가지고 있군요!',
+                'Jang Dong-yoon': '당신은 소년미 넘치는 장동윤과 닮았습니다! 친근하고 따뜻한 매력을 뽐내네요!',
+                'Lee Soo-hyuk': '당신은 날카롭고 신비로운 매력의 이수혁과 닮았습니다! 독특한 분위기로 시선을 사로잡아요!',
+                'Park Sung-hoon': '당신은 진지하고 신비로운 매력의 박성훈과 닮았습니다! 어디서든 주목받는 스타일이에요!',
+                'Bae In-hyuk': '당신은 청춘의 매력이 가득한 배인혁과 닮았습니다! 풋풋하고 싱그러운 느낌이 매력적이에요!',
+                'Nam Da-reum': '당신은 밝고 순수한 매력의 남다름과 닮았습니다! 청춘의 에너지를 뿜어내는 타입이에요!',
+                'Cha Seung-won': '당신은 듬직하고 카리스마 넘치는 차승원과 닮았습니다! 남성미 가득한 인상을 주네요!',
+                'Lee Jin-wook': '당신은 차분하고 강렬한 매력의 이진욱과 닮았습니다! 어딘가 묵직한 분위기를 풍기네요!',
+                'Kim Ji-hoon': '당신은 날카롭고 신비로운 매력의 김지훈과 닮았습니다! 독특한 개성을 가진 스타일이에요!',
+                'Kang Ha-neul': '당신은 훈훈하고 다정한 매력의 강하늘과 닮았습니다! 누구에게나 편안함을 주는 타입이에요!',
+                'Shin Sung-rok': '당신은 신비로운 분위기와 카리스마의 신성록과 닮았습니다! 어딘가 차가운 매력이 매력적이네요!',
+                'Ryu Seung-ryong': '당신은 묵직하고 신뢰감을 주는 류승룡과 닮았습니다! 든든한 존재감이 느껴지네요!',
+                'Song Seung-heon': '당신은 따뜻하고 다정한 매력의 송승헌과 닮았습니다! 모든 사람에게 호감을 사는 스타일이에요!',
+                'Jung Joon-young': '당신은 자유롭고 개성 넘치는 매력의 정준영과 닮았습니다! 독특한 분위기가 매력적이에요!',
+                'Lee Jae-wook': '당신은 부드럽고 다정한 매력의 이재욱과 닮았습니다! 어디서든 눈에 띄는 스타일이에요!',
+                'Kang Min-hyuk': '당신은 순수하고 귀여운 매력의 강민혁과 닮았습니다! 밝은 에너지로 주위를 환하게 만들어요!'// 남자 연예인 데이터 추가...
+            },
+            female: {
+                'Minji (NewJeans)': '당신은 귀여움과 세련미가 공존하는 민지와 닮았군요! 상큼한 매력에 모두가 반하겠어요!',
+                'Hanni (NewJeans)': '당신은 사랑스러움이 가득한 하니와 닮았습니다! 밝고 활기찬 매력으로 주위를 환하게 하네요!',
+                'Danielle (NewJeans)': '당신은 개성과 발랄함이 돋보이는 다니엘과 닮았습니다! 어디서든 눈길을 끄는 타입이에요!',
+                'Haerin (NewJeans)': '당신은 고양이 같은 매력의 해린과 닮았네요! 신비롭고 매혹적인 분위기가 매력적이에요!',
+                'Hyein (NewJeans)': '당신은 풋풋하고 귀여운 매력의 혜인과 닮았습니다! 순수한 에너지가 넘치는 스타일이에요!',
+                'Nana (After School)': '당신은 도시적이고 세련된 매력의 나나와 닮았습니다! 고급스러운 분위기가 돋보이는군요!',
+                'Uee (After School)': '당신은 밝고 건강미 넘치는 유이와 닮았습니다! 활동적인 매력으로 시선을 끌겠어요!',
+                'Kahi (After School)': '당신은 강렬하고 카리스마 있는 카희와 닮았습니다! 무대 위의 스타 같은 분위기가 있네요!',
+                'Raina (After School)': '당신은 상큼하고 사랑스러운 매력의 레이나와 닮았습니다! 주위를 기분 좋게 만드는 스타일!',
+                'Lizzy (After School)': '당신은 활기차고 귀여운 매력의 리지와 닮았습니다! 유쾌한 에너지가 넘치네요!',
+                'Hyuna (4Minute)': '당신은 섹시하고 강렬한 매력의 현아와 닮았습니다! 개성 있는 스타일로 모두를 사로잡겠어요!',
+                'Jihyun (4Minute)': '당신은 우아하고 차분한 매력의 지현과 닮았습니다! 신비로운 분위기가 돋보이네요!',
+                'Gayoon (4Minute)': '당신은 감성적이고 신비로운 매력의 가윤과 닮았습니다! 주변을 사로잡는 눈빛이 인상적이에요!',
+                'Jiyoon (4Minute)': '당신은 에너지 넘치고 개성 있는 매력의 지윤과 닮았습니다! 어디서든 눈에 띄는 스타일이에요!',
+                'Sohyun (4Minute)': '당신은 청량하고 귀여운 매력의 소현과 닮았습니다! 밝고 활기찬 분위기가 매력적이에요!',
+                'Eunha (GFriend)': '당신은 사랑스럽고 귀여운 매력의 은하와 닮았습니다! 주변 사람들을 미소 짓게 만드는 스타일!',
+                'Sowon (GFriend)': '당신은 차분하고 세련된 매력의 소원과 닮았습니다! 고급스러운 분위기가 인상적이에요!',
+                'Yuju (GFriend)': '당신은 에너지 넘치고 활기찬 매력의 유주와 닮았습니다! 주위를 환하게 만드는 스타일이에요!',
+                'Yerin (GFriend)': '당신은 상큼하고 귀여운 매력의 예린과 닮았습니다! 사랑스러운 분위기가 돋보이는군요!',
+                'SinB (GFriend)': '당신은 도도하고 신비로운 매력의 신비와 닮았습니다! 개성 있는 스타일로 눈길을 끌어요!',
+                'Umji (GFriend)': '당신은 부드럽고 따뜻한 매력의 엄지와 닮았습니다! 다정한 분위기로 주위를 밝게 만들어요!',
+                'Seolhyun (AOA)': '당신은 건강미 넘치는 설현과 닮았습니다! 밝고 상큼한 매력으로 모두의 시선을 사로잡겠어요!',
+                'Jimin (AOA)': '당신은 에너지 넘치고 유쾌한 매력의 지민과 닮았습니다! 개성 넘치는 스타일이 돋보이네요!',
+                'Chanmi (AOA)': '당신은 상큼하고 발랄한 매력의 찬미와 닮았습니다! 밝고 활기찬 에너지가 넘치네요!',
+                'Yuna (AOA)': '당신은 부드럽고 따뜻한 매력의 유나와 닮았습니다! 편안하고 다정한 분위기가 매력적이에요!',
+                'Hyejeong (AOA)': '당신은 세련되고 우아한 매력의 혜정과 닮았습니다! 고급스러운 분위기로 주목받는 스타일이에요!',
+                'Mina (AOA)': '당신은 사랑스럽고 귀여운 매력의 민아와 닮았습니다! 모두를 미소 짓게 만드는 스타일이에요!',
+                'Hani (EXID)': '당신은 발랄하고 유쾌한 매력의 하니와 닮았습니다! 사람들에게 밝은 에너지를 전달하는군요!',
+                'Solji (EXID)': '당신은 진중하고 따뜻한 매력의 솔지와 닮았습니다! 감성적인 분위기가 인상적이에요!',
+                'LE (EXID)': '당신은 강렬하고 개성 넘치는 매력의 LE와 닮았습니다! 카리스마가 넘치는 스타일이에요!',
+                'Hyelin (EXID)': '당신은 밝고 사랑스러운 매력의 혜린과 닮았습니다! 주변을 미소 짓게 만드는 타입이네요!',
+                'Jeonghwa (EXID)': '당신은 상큼하고 유쾌한 매력의 정화와 닮았습니다! 발랄한 에너지가 넘치는 스타일이에요!',
+                'Hyolyn (SISTAR)': '당신은 파워풀하고 강렬한 매력의 효린과 닮았습니다! 카리스마가 돋보이는군요!',
+                'Bora (SISTAR)': '당신은 상큼하고 발랄한 매력의 보라와 닮았습니다! 활기찬 에너지가 넘쳐나는 스타일이에요!',
+                'Dasom (SISTAR)': '당신은 부드럽고 따뜻한 매력의 다솜과 닮았습니다! 포근한 분위기로 주변을 밝게 만드네요!',
+                'Soyou (SISTAR)': '당신은 진중하고 우아한 매력의 소유와 닮았습니다! 고급스러운 분위기가 인상적이에요!',
+                'Krystal (f(x))': '당신은 도도하고 세련된 매력의 크리스탈과 닮았습니다! 차분한 카리스마가 매력적이에요!',
+                'Victoria (f(x))': '당신은 강렬하고 독립적인 매력의 빅토리아와 닮았습니다! 개성 넘치는 스타일이 돋보여요!',
+                'Luna (f(x))': '당신은 밝고 긍정적인 매력의 루나와 닮았습니다! 주변 사람들에게 활기를 주는 스타일이에요!',
+                'Amber (f(x))': '당신은 개성 있고 쿨한 매력의 엠버와 닮았습니다! 누구와도 쉽게 친해질 수 있는 타입이네요!',
+                'Jessica Jung (제시카 정)': '당신은 우아하고 도도한 매력의 제시카와 닮았습니다! 시크한 분위기가 매력적이에요!',
+                'BoA (보아)': '당신은 카리스마 넘치는 매력의 보아와 닮았습니다! 무대 위의 스타 같은 존재감이 느껴지네요!',
+                'Lee Hyori (이효리)': '당신은 유쾌하고 대담한 매력의 이효리와 닮았습니다! 개성 넘치는 스타일이 돋보여요!',
+                'IU (아이유)': '당신은 깜찍하고 발랄한 매력의 아이유와 닮았습니다! 보는 사람들을 미소 짓게 만드는군요!',
+                'Jeon Ji-hyun (전지현)': '당신은 도도하고 세련된 매력의 전지현과 닮았습니다! 고급스러운 분위기가 인상적이에요!',
+                'Song Hye-kyo (송혜교)': '당신은 우아하고 차분한 매력의 송혜교와 닮았습니다! 따뜻하고 포근한 인상을 주는군요!',
+                'Park Shin-hye (박신혜)': '당신은 청순하고 순수한 매력의 박신혜와 닮았습니다! 풋풋한 매력이 돋보이네요!',
+                'Son Ye-jin (손예진)': '당신은 따뜻하고 부드러운 매력의 손예진과 닮았습니다! 다정한 분위기가 매력적이에요!',
+                'Han Ji-min (한지민)': '당신은 상큼하고 사랑스러운 매력의 한지민과 닮았습니다! 사람들에게 호감을 주는 타입이에요!',
+                'Kim Tae-hee (김태희)': '당신은 청순하고 우아한 매력의 김태희와 닮았습니다! 고급스러운 분위기가 돋보이네요!',
+                'Kim Go-eun (김고은)': '당신은 개성 있고 세련된 매력의 김고은과 닮았습니다! 특별한 분위기를 자아내네요!',
+                'Kim Hye-soo (김혜수)': '당신은 카리스마 넘치는 매력의 김혜수와 닮았습니다! 강렬한 인상을 주는 스타일이에요!',
+                'Bae Doona (배두나)': '당신은 신비롭고 독특한 매력의 배두나와 닮았습니다! 특별한 분위기가 매력적이네요!',
+                'Park Bo-young (박보영)': '당신은 귀엽고 사랑스러운 매력의 박보영과 닮았습니다! 사람들에게 호감을 사는 타입이에요!',
+                'Shin Min-a (신민아)': '당신은 상큼하고 발랄한 매력의 신민아와 닮았습니다! 어디서나 환영받는 스타일이에요!',
+                'Gong Hyo-jin (공효진)': '당신은 유쾌하고 독특한 매력의 공효진과 닮았습니다! 개성 있는 스타일이 돋보이네요!',
+                'Jung So-min (정소민)': '당신은 사랑스럽고 청순한 매력의 정소민과 닮았습니다! 밝고 활기찬 분위기가 넘쳐요!',
+                'Lee Young-ae (이영애)': '당신은 차분하고 우아한 매력의 이영애와 닮았습니다! 고급스러운 분위기가 인상적이에요!',
+                'Kim Ji-won (김지원)': '당신은 상큼하고 귀여운 매력의 김지원과 닮았습니다! 주변에 활기를 불어넣는 스타일이에요!',
+                'Choi Ji-woo (최지우)': '당신은 우아하고 부드러운 매력의 최지우와 닮았습니다! 고급스러운 인상이 강하게 남네요!',
+                'Ha Ji-won (하지원)': '당신은 강렬하고 진취적인 매력의 하지원과 닮았습니다! 강한 인상을 주는 스타일이에요!',
+                'Shin Se-kyung (신세경)': '당신은 청순하고 사랑스러운 매력의 신세경과 닮았습니다! 풋풋한 느낌이 매력적이에요!',
+                'Park Min-young (박민영)': '당신은 밝고 상큼한 매력의 박민영과 닮았습니다! 주위 사람들에게 기분 좋은 에너지를 전달하네요!',
+                'Kim So-hyun (김소현)': '당신은 사랑스럽고 청초한 매력의 김소현과 닮았습니다! 따뜻한 분위기가 매력적이에요!',
+                'Kim Yoo-jung (김유정)': '당신은 발랄하고 귀여운 매력의 김유정과 닮았습니다! 풋풋한 에너지가 넘쳐나는 스타일이에요!',
+                'Lee Sung-kyung (이성경)': '당신은 유쾌하고 개성 넘치는 매력의 이성경과 닮았습니다! 어디서나 시선을 끌어요!',
+                'Seo Ye-ji (서예지)': '당신은 도도하고 신비로운 매력의 서예지와 닮았습니다! 독특한 분위기로 사람들의 관심을 끌어요!',
+                'Kim Sae-ron (김새론)': '당신은 청순하고 귀여운 매력의 김새론과 닮았습니다! 순수한 에너지가 넘치는 스타일이에요!',
+                'Oh Yeon-seo (오연서)': '당신은 밝고 상큼한 매력의 오연서와 닮았습니다! 주위에 좋은 에너지를 전달하네요!',
+                'Go Ara (고아라)': '당신은 신비롭고 독특한 매력의 고아라와 닮았습니다! 개성 있는 스타일로 눈길을 사로잡네요!',
+                'Lee Da-hae (이다해)': '당신은 청순하고 우아한 매력의 이다해와 닮았습니다! 고급스러운 분위기가 돋보이는군요!',
+                'Park Ha-sun (박하선)': '당신은 사랑스럽고 다정한 매력의 박하선과 닮았습니다! 따뜻한 분위기로 주위를 밝게 만드네요!',
+                'Han Hyo-joo (한효주)': '당신은 청순하고 맑은 매력의 한효주와 닮았습니다! 순수한 에너지가 매력적이에요!',
+                'Yoon Eun-hye (윤은혜)': '당신은 발랄하고 사랑스러운 매력의 윤은혜와 닮았습니다! 유쾌한 분위기가 넘쳐나는 스타일이에요!',
+                'Kim Hee-sun (김희선)': '당신은 우아하고 세련된 매력의 김희선과 닮았습니다! 고급스러운 분위기로 주위를 사로잡아요!',
+                'Kim Sung-ryung (김성령)': '당신은 차분하고 지적인 매력의 김성령과 닮았습니다! 고급스러운 분위기가 인상적이에요!',
+                'Lee Honey (이하늬)': '당신은 도도하고 우아한 매력의 이하늬와 닮았습니다! 고급스럽고 세련된 인상을 주네요!',
+                'Kim Hyun-joo (김현주)': '당신은 차분하고 부드러운 매력의 김현주와 닮았습니다! 따뜻하고 안정감을 주는 인상이네요!',
+                'Seo Ji-hye (서지혜)': '당신은 도도하고 세련된 매력의 서지혜와 닮았습니다! 차분한 카리스마가 돋보입니다!',
+                'Lee Ji-eun (이지은)': '당신은 깜찍하고 발랄한 매력의 이지은과 닮았습니다! 보고만 있어도 웃음이 나는 스타일이에요!',
+                'Park Ji-yeon (박지연)': '당신은 상큼하고 청순한 매력의 박지연과 닮았습니다! 풋풋한 에너지가 넘쳐나요!',
+                'Jung Eun-ji (정은지)': '당신은 발랄하고 활기찬 매력의 정은지와 닮았습니다! 주변에 생기를 불어넣는 스타일이에요!',
+                'Apink Chorong (에이핑크 초롱)': '당신은 사랑스럽고 다정한 매력의 초롱과 닮았습니다! 모든 사람에게 사랑받는 스타일이에요!',
+                'Na-Eun (나은)': '당신은 상큼하고 발랄한 매력의 나은과 닮았습니다! 주위 사람들에게 밝은 에너지를 전달해요!',
+                'Bomi (에이핑크 보미)': '당신은 귀엽고 사랑스러운 매력의 보미와 닮았습니다! 보는 사람들을 기분 좋게 만드는 스타일이에요!',
+                'Hayoung (에이핑크 하영)': '당신은 청량하고 발랄한 매력의 하영과 닮았습니다! 상큼한 에너지가 넘쳐나요!',
+                'Namjoo (에이핑크 남주)': '당신은 발랄하고 귀여운 매력의 남주와 닮았습니다! 주위 사람들에게 웃음을 주는 스타일이에요!',
+                'Goo Hara (구하라)': '당신은 상큼하고 사랑스러운 매력의 구하라와 닮았습니다! 주변을 환하게 만드는 매력이 있네요!',
+                'Kang Ji-young (강지영)': '당신은 발랄하고 유쾌한 매력의 강지영과 닮았습니다! 에너지가 넘쳐 주위 사람들에게 생기를 불어넣어요!',
+                'Nicole (카라 니콜)': '당신은 밝고 활기찬 매력의 니콜과 닮았습니다! 누구에게나 친근한 느낌을 주는 스타일이에요!',
+                'Park Gyuri (박규리)': '당신은 우아하고 세련된 매력의 박규리와 닮았습니다! 고급스럽고 차분한 분위기가 매력적이에요!',
+                'Seungyeon (승연)': '당신은 상큼하고 귀여운 매력의 승연과 닮았습니다! 활기찬 에너지가 넘쳐나는 스타일이에요!',
+                'Jiyeon (지연)': '당신은 발랄하고 귀여운 매력의 지연과 닮았습니다! 사람들을 기분 좋게 만드는 타입이에요!',
+                'Eunjung (은정)': '당신은 차분하고 진지한 매력의 은정과 닮았습니다! 따뜻한 분위기를 주위에 퍼뜨리네요!',
+                'Hyomin (효민)': '당신은 개성 있고 도도한 매력의 효민과 닮았습니다! 신비롭고 독특한 분위기가 매력적이에요!',
+                'Qri (큐리)': '당신은 부드럽고 따뜻한 매력의 큐리와 닮았습니다! 다정한 분위기로 주위를 밝게 만들어요!',
+                'Soyeon (소연)': '당신은 발랄하고 상큼한 매력의 소연과 닮았습니다! 유쾌한 에너지로 주변을 환하게 만드네요!',
+                'Boram (보람)': '당신은 다정하고 따뜻한 매력의 보람과 닮았습니다! 포근한 분위기를 주위에 전하는 타입이에요!',
+                'Nana (나나)': '당신은 도시적이고 세련된 매력의 나나와 닮았습니다! 고급스러운 분위기가 돋보이는군요!',
+                'Kahi (가희)': '당신은 강렬하고 카리스마 있는 매력의 가희와 닮았습니다! 무대 위의 스타 같은 분위기예요!',
+                'Lizzy (리지)': '당신은 유쾌하고 발랄한 매력의 리지와 닮았습니다! 모두에게 사랑받는 매력적인 스타일이에요!',
+                'Raina (레이나)': '당신은 상큼하고 사랑스러운 매력의 레이나와 닮았습니다! 밝고 귀여운 느낌이 인상적이에요!',
+                'UEE (유이)': '당신은 청순하고 사랑스러운 매력의 유이와 닮았습니다! 상큼한 에너지가 넘쳐나는 스타일이에요!',
+                'Sandara Park (산다라박)': '당신은 신비롭고 독특한 매력의 산다라박과 닮았습니다! 개성 있는 스타일로 주목받는 타입이에요!',
+                'Park Bom (박봄)': '당신은 강렬하고 유니크한 매력의 박봄과 닮았습니다! 누구도 따라올 수 없는 특별한 분위기예요!',
+                'CL (씨엘)': '당신은 강렬하고 카리스마 넘치는 매력의 씨엘과 닮았습니다! 파워풀한 분위기가 돋보이네요!',
+                'Minzy (민지)': '당신은 발랄하고 유쾌한 매력의 민지와 닮았습니다! 긍정적 에너지가 주위 사람들에게 전달돼요!',
+                'Jeon Somi (전소미)': '당신은 상큼하고 발랄한 매력의 전소미와 닮았습니다! 청량하고 밝은 분위기로 모두를 환하게 만드네요!',
+                'Chungha (청하)': '당신은 강렬하고 카리스마 있는 매력의 청하와 닮았습니다! 무대 위의 빛나는 스타 같은 분위기예요!',
+                'Hyolyn (효린)': '당신은 파워풀하고 강렬한 매력의 효린과 닮았습니다! 어디서든 주목받는 스타일이에요!',
+                'Yubin (유빈)': '당신은 독립적이고 도도한 매력의 유빈과 닮았습니다! 차분하면서도 카리스마 넘치는 분위기예요!',
+                'Sunmi (선미)': '당신은 도도하고 신비로운 매력의 선미와 닮았습니다! 독특한 분위기가 주위 사람들의 눈길을 사로잡아요!',
+                'Wonder Girls Yenny (원더걸스 예은)': '당신은 차분하고 따뜻한 매력의 예은과 닮았습니다! 포근한 분위기로 주위를 편안하게 만들어 줘요!',
+                'Sohee (소희)': '당신은 사랑스럽고 귀여운 매력의 소희와 닮았습니다! 밝은 에너지가 넘치는 스타일이에요!',
+                'Lim (림)': '당신은 상큼하고 발랄한 매력의 림과 닮았습니다! 긍정적인 에너지가 주위 사람들을 기분 좋게 해주네요!',
+                'Seohyun (서현)': '당신은 청순하고 단아한 매력의 서현과 닮았습니다! 부드럽고 고급스러운 분위기를 지니고 있어요!',
+                'Tiffany (티파니)': '당신은 밝고 활기찬 매력의 티파니와 닮았습니다! 유쾌하고 친근한 인상이 돋보여요!',
+                'Jessica (제시카)': '당신은 우아하고 도도한 매력의 제시카와 닮았습니다! 차분하고 세련된 분위기를 지니고 있어요!',
+                'Sunny (써니)': '당신은 밝고 유쾌한 매력의 써니와 닮았습니다! 에너지 넘치는 스타일로 주위를 즐겁게 만들어요!',
+                'Yoona (윤아)': '당신은 상큼하고 사랑스러운 매력의 윤아와 닮았습니다! 밝고 활기찬 분위기가 돋보여요!',
+                'Hyoyeon (효연)': '당신은 개성 넘치고 쿨한 매력의 효연과 닮았습니다! 독특한 매력으로 주위를 사로잡는 스타일이에요!',
+                'Sooyoung (수영)': '당신은 유쾌하고 활기찬 매력의 수영과 닮았습니다! 친근하고 따뜻한 분위기로 모두에게 사랑받는 스타일이에요!'
+                // 여자 연예인 데이터 추가...
+            }
+        };
 
 
-							// 여기가 아래 그래프 기능이겠지
-							var barWidth;
-							for (let i = 0; i < 5; i++) {
-								if (prediction[i].probability.toFixed(2) > 0.1) { //toFixed(2) = 소수점 두째자리 표시했을 때 0.1 보다 크면...
-									barWidth = Math.round(prediction[i].probability.toFixed(2) * 100) + '%'; // 반올림한 숫자에 100 곱하고 % 달아서 barwidth에 넣어라
-								} else if (prediction[i].probability.toFixed(2) >= 0.01) {
-									barWidth = '4%';
-								} else {
-									barWidth = '2%';
-								}
-								// var labelTitle = prediction[i].className;
-								var labelTitle = prediction[i].className;
-								
-								// switch (prediction[i].className) {
-								// 	case 'dog':
-								// 		labelTitle = '강아지상';
-								// 		break;
-								// 	case 'cat':
-								// 		labelTitle = '고양이상';
-								// 		break;
-								// 	case 'rabbit':
-								// 		labelTitle = '토끼상';
-								// 		break;
-								// 	case 'dinosaur':
-								// 		labelTitle = '공룡상';
-								// 		break;
-								// 	case 'bear':
-								// 		labelTitle = '곰상';
-								// 		break;
-								// 	case 'deer':
-								// 		labelTitle = '사슴상';
-								// 		break;
-								// 	case 'fox':
-								// 		labelTitle = '여우상';
-								// 		break;
-								// 	default:
-								// 		labelTitle = '알수없음';
-								// }
-								
-								
-								var label =
-									"<div class='animal-label d-flex align-items-center'>" +
-									labelTitle +
-									'</div>';
-								
-								
-								var bar =
-									"<div class='bar-container position-relative container'><div class='" +
-									labelTitle +
-									"-box'></div><div class='d-flex justify-content-center align-items-center " +
-									prediction[i].className +
-									"-bar' style='width: " +
-									barWidth +
-									"'><span class='d-block percent-text'>" +
-									Math.round(prediction[i].probability.toFixed(2) * 100) +
-									'%</span></div></div>';
-								
-								
-								labelContainer.childNodes[i].innerHTML = label + bar;
-							} // 여기가 아래 그래프 기능이겠지
-						}
-		</script>
-		<!-- Javascript AI관련된 부분 -->
+        // celebrityNames 변수 추가
+        const celebrityNames = {
+            male: ['RM', 'Jin', 'Suga', 'J-Hope', 'Jimin', 'V', 'Jungkook', 
+                'Suho', 'Baekhyun', 'Chanyeol', 'D.O.', 'Kai', 'Sehun', 'Taeyong', 'Jaehyun', 
+                'Mark', 'Haechan', 'Johnny', 'Doyoung', 'Yuta', 'S.Coups', 'Jeonghan', 
+                'Joshua', 'Jun', 'Hoshi', 'Wonwoo', 'Woozi', 'DK', 'Mingyu', 'The8', 
+                'Seungkwan', 'Vernon', 'Dino', 'Onew', 'Key', 'Minho', 'Taemin', 'Leeteuk', 
+                'Heechul', 'Yesung', 'Shindong', 'Donghae', 'Eunhyuk', 'Siwon', 'Ryeowook', 
+                'Kyuhyun', 'Bang Chan', 'Lee Know', 'Changbin', 'Hyunjin', 'Han', 'Felix', 
+                'Seungmin', 'I.N', 'Cha Eun-woo', 'Moonbin', 'MJ', 'JinJin', 'Rocky', 
+                'Yoon San-ha', 'JB', 'Mark (GOT7)', 'Jackson', 'Jinyoung', 'Youngjae', 
+                'BamBam', 'Yugyeom', 'Sangyeon', 'Jacob', 'Younghoon', 'Hyunjae', 'Juyeon', 
+                'Kevin', 'New', 'Q', 'Juhaknyeon', 'Eric', 'Sunwoo', 'Hongjoong', 'Seonghwa', 
+                'Yunho', 'Yeosang', 'San', 'Mingi', 'Wooyoung', 'Jongho', 'Im Si-wan', 
+                'Kim Soo-hyun', 'Park Seo-joon', 'Ji Chang-wook', 'Lee Jong-suk', 'Gong Yoo', 
+                'Lee Min-ho', 'Hyun Bin', 'Song Joong-ki', 'Jung Hae-in', 'Ju Ji-hoon', 
+                'Ryu Jun-yeol', 'Yoo Ah-in', 'Choi Woo-shik', 'Nam Joo-hyuk', 'Seo In-guk', 
+                'Lee Seung-gi', 'Park Bo-gum', 'Kang Dong-won', 'Kim Woo-bin', 'Cho Seung-woo', 
+                'Jang Hyuk', 'Cha Tae-hyun', 'Lee Je-hoon', 'Park Hae-jin', 'Kim Bum', 
+                'Yoon Kyun-sang', 'Yoon Shi-yoon', 'Lee Jun-ho', 'Jung Kyung-ho', 'Kim Jae-wook', 
+                'Yoo Yeon-seok', 'Park Hyung-sik', 'Lee Dong-wook', 'Jo Jung-suk', 'Jang Ki-yong', 
+                'Kim Jae-joong', 'Lee Kwang-soo', 'Jung Il-woo', 'Woo Do-hwan', 'Ahn Bo-hyun', 
+                'Kim Seon-ho', 'Lee Joon-gi', 'Jung Woo-sung', 'Jo In-sung', 'Shin Ha-kyun', 
+                'Kim Nam-gil', 'Yoon Sang-hyun', 'Song Kang', 'Choi Jin-hyuk', 'Go Kyung-pyo', 
+                'Park Ki-woong', 'Kim Min-jae', 'Ha Seok-jin', 'Jang Dong-yoon', 'Lee Soo-hyuk', 
+                'Park Sung-hoon', 'Bae In-hyuk', 'Nam Da-reum', 'Cha Seung-won', 'Lee Jin-wook', 
+                'Kim Ji-hoon', 'Kang Ha-neul', 'Shin Sung-rok', 'Ryu Seung-ryong', 'Song Seung-heon', 
+                'Jung Joon-young', 'Lee Jae-wook', 'Kang Min-hyuk'],
+            female: [
+                'Minji (NewJeans)', 'Hanni (NewJeans)', 'Danielle (NewJeans)', 'Haerin (NewJeans)', 'Hyein (NewJeans)',
+                'Nana (After School)', 'Uee (After School)', 'Kahi (After School)', 'Raina (After School)', 'Lizzy (After School)',
+                'Hyuna (4Minute)', 'Jihyun (4Minute)', 'Gayoon (4Minute)', 'Jiyoon (4Minute)', 'Sohyun (4Minute)',
+                'Eunha (GFriend)', 'Sowon (GFriend)', 'Yuju (GFriend)', 'Yerin (GFriend)', 'SinB (GFriend)', 'Umji (GFriend)',
+                'Seolhyun (AOA)', 'Jimin (AOA)', 'Chanmi (AOA)', 'Yuna (AOA)', 'Hyejeong (AOA)', 'Mina (AOA)',
+                'Hani (EXID)', 'Solji (EXID)', 'LE (EXID)', 'Hyelin (EXID)', 'Jeonghwa (EXID)',
+                'Hyolyn (SISTAR)', 'Bora (SISTAR)', 'Dasom (SISTAR)', 'Soyou (SISTAR)',
+                'Krystal (f(x))', 'Victoria (f(x))', 'Luna (f(x))', 'Amber (f(x))',
+                'Jessica Jung (제시카 정)', 'BoA (보아)', 'Lee Hyori (이효리)', 'IU (아이유)',
+                'Jeon Ji-hyun (전지현)', 'Song Hye-kyo (송혜교)', 'Park Shin-hye (박신혜)', 'Son Ye-jin (손예진)', 'Han Ji-min (한지민)',
+                'Kim Tae-hee (김태희)', 'Kim Go-eun (김고은)', 'Kim Hye-soo (김혜수)', 'Bae Doona (배두나)', 'Park Bo-young (박보영)',
+                'Shin Min-a (신민아)', 'Gong Hyo-jin (공효진)', 'Jung So-min (정소민)', 'Lee Young-ae (이영애)', 'Kim Ji-won (김지원)',
+                'Choi Ji-woo (최지우)', 'Ha Ji-won (하지원)', 'Shin Se-kyung (신세경)', 'Park Min-young (박민영)', 'Kim So-hyun (김소현)',
+                'Kim Yoo-jung (김유정)', 'Lee Sung-kyung (이성경)', 'Seo Ye-ji (서예지)', 'Kim Sae-ron (김새론)', 'Oh Yeon-seo (오연서)',
+                'Go Ara (고아라)', 'Lee Da-hae (이다해)', 'Park Ha-sun (박하선)', 'Han Hyo-joo (한효주)', 'Yoon Eun-hye (윤은혜)',
+                'Kim Hee-sun (김희선)', 'Kim Sung-ryung (김성령)', 'Lee Honey (이하늬)', 'Kim Hyun-joo (김현주)', 'Seo Ji-hye (서지혜)',
+                'Lee Ji-eun (이지은)', 'Park Ji-yeon (박지연)', 'Jung Eun-ji (정은지)', 'Apink Chorong (에이핑크 초롱)', 'Na-Eun (나은)',
+                'Bomi (에이핑크 보미)', 'Hayoung (에이핑크 하영)', 'Namjoo (에이핑크 남주)', 'Goo Hara (구하라)', 'Kang Ji-young (강지영)',
+                'Nicole (카라 니콜)', 'Park Gyuri (박규리)', 'Seungyeon (승연)', 'Jiyeon (지연)', 'Eunjung (은정)', 'Hyomin (효민)',
+                'Qri (큐리)', 'Soyeon (소연)', 'Boram (보람)', 'Nana (나나)', 'Kahi (가희)', 'Lizzy (리지)', 'Raina (레이나)', 'UEE (유이)',
+                'Sandara Park (산다라박)', 'Park Bom (박봄)', 'CL (씨엘)', 'Minzy (민지)', 'Jeon Somi (전소미)', 'Chungha (청하)',
+                'Hyolyn (효린)', 'Yubin (유빈)', 'Sunmi (선미)', 'Wonder Girls Yenny (원더걸스 예은)', 'Sohee (소희)', 'Lim (림)',
+                'Seohyun (서현)', 'Tiffany (티파니)', 'Jessica (제시카)', 'Sunny (써니)', 'Yoona (윤아)', 'Hyoyeon (효연)', 'Sooyoung (수영)'
+            ]
+        };
 
-		<script>
-			<!-- 아래에 댓글창 다는거 -->
-						function iosApp() {
-							document.getElementById('coupang').style.display = 'none';
-							$('#coupang ins').hide();
-							document.getElementById('addThis').style.display = 'none';
-							document.getElementById('disqus_thread').style.display = 'none';
-							var kakao = document.getElementsByClassName('kakao_ad_area');
-							for (var i = 0; i < kakao.length; i++) {
-								if (kakao[i]) {
-									kakao[i].style.display = 'none';
-								}
-							}
-							document.getElementById('yotube-top-link').style.display = 'none';
-							document.getElementById('yotube-mid-link').style.display = 'none';
-							document.getElementById('yotube-bottom-link').style.display = 'none';
-						}
-		</script>
-		<!-- 여기는 댓글창 다는거 -->
-		<!-- <div id="disqus_thread"></div>
-		<script>
-			/**
-			 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-			 *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-			/*
-			var disqus_config = function () {
-			this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-			this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-			};
-			*/
-			(function () {
-				// DON'T EDIT BELOW THIS LINE
-				var d = document,
-					s = d.createElement('script');
-				s.src = 'https://seoyoul0510.disqus.com/embed.js';
-				s.setAttribute('data-timestamp', +new Date());
-				(d.head || d.body).appendChild(s);
-			})();
-		</script>
-		<noscript
-			>Please enable JavaScript to view the
-			<a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
-		> -->
-		<!-- 여기는 댓글창 다는거 -->
-	</body>
-	<!-- 
-image input box
-Copyright (c) 2020 by Aaron Vanston (https://codepen.io/aaronvanston/pen/yNYOXR)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        // 모델 로드 함수
+        async function loadGenderModel() {
+            const modelPath = isMaleModel ? modelPaths.male : modelPaths.female;
+            try {
+                model = await tf.loadLayersModel(modelPath);
+                console.log(`${isMaleModel ? "남자" : "여자"} 모델이 로드되었습니다.`);
+            } catch (error) {
+                console.error('Error loading the model:', error);
+            }
+        }
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+        // 페이지 로드 시 모델 로드 및 성별 전환 이벤트 핸들러 설정
+        window.onload = function() {
+            isMaleModel = document.getElementById('gender').checked;
+            loadGenderModel();
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            document.getElementById('gender').addEventListener('change', () => {
+                isMaleModel = document.getElementById('gender').checked;
+                loadGenderModel();
+            });
+        };
 
-gender toggle
-Copyright (c) 2020 by Mert Cukuren (https://codepen.io/knyttneve/pen/bPpEZY)
+        // 이미지 업로드 및 표시 함수
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.querySelector('.image-upload-wrap').style.display = 'none';
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('face-image').src = e.target.result;
+                    document.querySelector('.file-upload-content').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+                setTimeout(() => {
+                    predict();
+                    document.getElementById('loading').style.display = 'none';
+                }, 2000);
+            }
+        }
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        // 예측 함수에서 displayTop5Predictions를 호출하여 상위 5개를 표시
+        // 예측 및 설명 표시 함수
+        async function predict() {
+                    try {
+                        if (!model) throw new Error("모델이 아직 로드되지 않았습니다.");
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+                        const imgElement = document.getElementById('face-image');
+                        const img = tf.browser.fromPixels(imgElement)
+                                            .resizeNearestNeighbor([224, 224])
+                                            .toFloat()
+                                            .div(tf.scalar(255))
+                                            .expandDims();
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- -->
+                        const predictions = await model.predict(img).data();
+                        const topPredictions = Array.from(predictions)
+                                                    .map((p, i) => ({
+                                                        probability: p,
+                                                        className: celebrityNames[isMaleModel ? 'male' : 'female'][i]
+                                                    }))
+                                                    .sort((a, b) => b.probability - a.probability);
+
+                        displayTop5Predictions(topPredictions);
+
+                        const topCelebrity = topPredictions[0];
+                        document.querySelector(".result-message").innerText =
+                            `${topCelebrity.className}와 닮으셨네요! (${Math.round(topCelebrity.probability * 100)}%)`;
+                        document.querySelector(".result-description").innerText =
+                            celebrityData[isMaleModel ? 'male' : 'female'][topCelebrity.className] || '설명 없음';
+
+                    } catch (error) {
+                        console.error('Error during prediction:', error);
+                    }
+                }
+
+        // 가장 비슷한 5명의 연예인과 확률을 그래프로 보여주기
+        function displayTop5Predictions(predictions) {
+            const top5 = predictions.slice(0, 5);
+            let labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; // 기존 내용 삭제
+
+            top5.forEach((prediction) => {
+                const probability = Math.round(prediction.probability * 100);
+                const barWidth = probability > 10 ? `${probability}%` : '2%';
+
+                const label = `<div class='label d-flex align-items-center'>${prediction.className}</div>`;
+                const bar = `
+                    <div class='bar-container position-relative'>
+                        <div class='bar' style='width: ${barWidth};'>
+                            <span class='percent-text'>${probability}%</span>
+                        </div>
+                    </div>
+                `;
+
+                labelContainer.innerHTML += `<div class='result-item'>${label}${bar}</div>`;
+            });
+        }
+
+
+    </script>
+</body>
 </html>
