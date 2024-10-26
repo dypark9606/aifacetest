@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-
-				<!-- 네이버 웹마스터도구 -->
-		<meta name="naver-site-verification" content="3f75b7ef8734d657c125381f3009154cc3c273bd" />
-		<meta name="naver-site-verification" content="08203b65fe0d7296aab757c8099263a1610d5b42" />
-		<!-- 네이버 웹마스터도구 -->
 		<!-- meta 태그는 해당 문서에 대한 정보인 메타데이터(metadata)를 정의할 때 사용 		 -->
 		<meta charset="UTF-8" />
 		<!--코딩의 시작 UTF-8로 주로 시작 -->
@@ -23,7 +18,31 @@
 		/>
 		<!-- integrity는 rel 파일이 수정되지 않았음을 확인하기 위해 사용되는 해쉬 값 (hash value, crossorigin = 교차 출처 리소스 공유 -->
 		<title>동물상 테스트</title>
+		<meta name="title" content="동물상 테스트" />
+		<meta name="subject" content="얼굴로 보는 나와 닮은 동물상 테스트?" />
+		<meta
+			name="keywords"
+			content="인공지능 얼굴상, AI 얼굴상, AI 얼굴 점수, 외모 테스트, face AI, face artificial intelligence, animal face, 
+					 인공지능 동물상, AI 얼굴 점수, 외모 테스트, 인공지능 외모 점수 평가, 동물상 테스트, 인공지능 동물상 테스트, 
+					 나와 닮은 동물, 동물상 찾기, 얼굴로 보는 동물상, 얼굴 동물, 동물얼굴, 
+					 강아지상, 고양이상, 여우상, 사슴상, 토끼상, 곰상, 공룡상 "
+		/>
+		<meta name="author" content="PDY" />
 		<link rel="stylesheet" href="style_Sec3.css" />
+		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- 대표 홈페이지 주소를 rel="canonical" 로 표시하는거다 -->
+		<meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+		<!-- og = open graph, og:title = 콘텐츠 제목, og:type =  웹페이지 타입 (blog, website 등, og:title = 웹사이트 이름) -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="동물상 테스트" />
+		<meta
+			property="og:description"
+			content="얼굴로 살펴보는 동물상 테스트!
+					 다양한 연예인 사진으로부터 동물상을 분석하고 나의 얼굴을 분석합니다. 
+					 회원 가입없이 화면에서 바로 확인 가능합니다. 
+					 사진 데이터는 어디에도 사용 및 전송되지 않습니다."
+		/>
+
 		<!-- 이게 공유 관련된 부분 -->
 		<!-- Go to www.addthis.com/dashboard to customize your tools -->
 		<script
@@ -121,11 +140,11 @@
 			</div>
 		</div>
 
-		<!-- <footer class="footer pt-5 container d-flex justify-content-center">
+		<footer class="footer pt-5 container d-flex justify-content-center">
 			<div>
 				<p>&copy; Industrial AI 2020. All Rights Reserved.</p>
 			</div>
-		</footer> -->
+		</footer>
 
 		<script>
 			<!-- Javascript 파일 upload와 remove관련	 -->
@@ -199,85 +218,69 @@
 							if (document.getElementById('gender').checked) {
 								switch (prediction[0].className) {
 									case 'dog':
-										resultTitle = '귀여운 순둥이 강아지상';
-										resultExplain =
-											'다정다감하고 귀여운 당신은 모든 사람들에게 즐거움을 주는 호감형이다! 친절하고 활발한 성격으로 어디에서도 인기폭발이며 애교와 웃음이 많아 연인에게 특히나 사랑스럽다. 당신은 애인바라기로 애인의 관심이 부족하면 시무룩해지고 외로움을 타는 모습이 마치 강아지와 똑 닮았다!';
-										resultCeleb = '강아지상 연예인: 강다니엘, 백현(엑소), 박보검, 송중기';
+										resultTitle = '귀여운 충성심 가득한 강아지상';
+										resultExplain = '귀엽고 다정한 당신은 사람들에게 언제나 사랑받는 스타일! 활발하고 애교 넘치는 성격으로 사랑스러움을 뿜뿜~! 연인에게 관심받고 싶어 살짝 시무룩할 때도 있지만, 그 모습마저 사랑스러운 강아지 같은 매력을 지녔습니다. 친구들과 연인에게 항상 “멍멍~”하며 애교 폭발!';
+										resultCeleb = '강아지상 연예인: 박보검, 지민(방탄소년단), 차은우, 정해인';
 										break;
 									case 'cat':
-										resultTitle = '츤데레 매력쟁이 고양이상';
-										resultExplain =
-											'무뚝뚝한 당신의 첫인상은 차가워 보이지만 묘한 매력을 풍겨 언제나 인기가 넘친다. 자존심이 세계 1등과 맞먹지만 관심 받는 것을 좋아하고 연인에게는 은근히 애교쟁이다. 시크한 츤데레로 연인에게 끊임없이 설렘을 안겨주는 당신은 고양이와 닮았다!';
-										resultCeleb =
-											'고양이상 연예인: 황민현(뉴이스트), 시우민(엑소), 강동원, 이종석, 이준기';
+										resultTitle = '매력만점 츤데레 고양이상';
+										resultExplain = '한 번 보면 냉철하고 시크해 보이는 당신, 하지만 알고 보면 은근히 애정 넘치는 타입! 연인에게 가끔은 차갑지만, 또 때로는 다정해서 상대방이 매번 심쿵하게 만드는 고양이 같은 매력! 자존감과 자신감이 넘쳐서 누가 뭐래도 “나만의 길을 간다옹~”';
+										resultCeleb = '고양이상 연예인: 제니(블랙핑크), 이준기, 강동원, 아이유, 황민현';
 										break;
 									case 'rabbit':
-										resultTitle = '천진난만한 매력의 토끼상';
-										resultExplain =
-											'천진난만하고 귀여운 당신은 주변 사람들에게 기쁨을 주는 행복바이러스다! 호기심이 많아 활발하며 귀엽고 순수한 외모로 연인의 보호본능을 자극한다. 존재 자체가 상큼한 당신은 특별한 애교 없이도 연인에게 너무나도 사랑스럽다!';
-										resultCeleb =
-											'토끼상 연예인: 정국(방탄소년단), 바비(아이콘), 박지훈(워너원), 수호(엑소)';
+										resultTitle = '상큼발랄 토끼상';
+										resultExplain = '호기심이 많고 천진난만한 당신! 웃음 가득한 매력으로 주변 사람들에게 행복을 전파하는 ‘행복 바이러스’ 역할을 톡톡히 합니다. 귀엽고 순수한 외모 덕분에 모든 사람의 보호본능을 자극하며, 한 번만 웃어도 보는 사람을 심쿵하게 만드는 사랑스러운 존재!';
+										resultCeleb = '토끼상 연예인: 정국(방탄소년단), 이성경, 박보영, 유정(위키미키), 김수현';
 										break;
 									case 'dinosaur':
-										resultTitle = '따뜻한 나쁜남자 공룡상';
-										resultExplain =
-											'무심한 성격에 첫인상은 나쁜 남자 같지만, 알고 보면 따뜻함이 묻어나는 당신! 시크한 매력에 선뜻 다가가지 못하지만 한번 다가가면 헤어나올 수 없는 터프한 매력을 가진 카리스마 있는 남자다.';
-										resultCeleb =
-											'공룡상 연예인: 윤두준(하이라이트), 이민기, 김우빈, 육성재(비투비), 공유';
+										resultTitle = '카리스마 넘치는 나쁜남자 공룡상';
+										resultExplain = '강렬한 인상으로 첫 만남에선 다가가기 어렵지만, 알고 보면 따뜻한 마음을 지닌 당신! 살짝 무심한 듯 시크하지만 매력으로 상대를 끌어당기는 터프한 스타일입니다. “뭐, 별거 아니야”라며 쿨한 척 해도 내면에는 은근히 다정한 면모가 가득한 나쁜남자 매력!';
+										resultCeleb = '공룡상 연예인: 김우빈, 공유, 송강, 박서준, 윤두준';
 										break;
 									case 'bear':
-										resultTitle = '포근한 매력의 곰상';
-										resultExplain =
-											'첫 인상은 무서워 보이지만 알고 보면 귀여운 매력의 당신! 꼼꼼하고 섬세한 성격으로 연인을 헌신적으로 챙겨주는 당신은 연인에게 듬직한 존재! 포근한 매력에 듬직함까지 갖춘 최고의 남자다!';
-										resultCeleb = '곰상 연예인: 마동석, 조진웅, 조세호, 안재홍';
+										resultTitle = '포근하고 든든한 곰상';
+										resultExplain = '첫 인상은 무뚝뚝해 보일 수 있지만 알고 보면 세상 제일 따뜻한 마음을 지닌 당신! 꼼꼼하고 섬세해 연인에게 헌신적이고 듬직한 파트너가 되어주는 스타일입니다. 귀여움과 든든함이 한데 어우러져 있는 곰 같은 매력으로 상대방을 편안하게 만듭니다!';
+										resultCeleb = '곰상 연예인: 마동석, 조진웅, 손호준, 성훈, 차태현';
 										break;
 									default:
-										resultTitle = '알수없음';
+										resultTitle = '알 수 없음';
 										resultExplain = '';
 										resultCeleb = '';
 								}
+
 							} else {
 								switch (prediction[0].className) {
 									case 'dog':
-										resultTitle = '귀여운 순둥이 강아지상';
-										resultExplain =
-											'다정다감하고 귀여운 당신은 모든 사람들에게 즐거움을 주는 호감형이다! 상냥하고 활발한 성격으로 어디에서도 인기폭발이지만, 애교와 웃음이 많아 연인에게 특히나 사랑스럽다. 당신은 애인바라기로 애인의 관심이 부족하면 시무룩해지고 외로움을 타는 모습이 마치 강아지와 똑 닮았다!';
-										resultCeleb =
-											'강아지상 연예인: 박보영, 아이유, 윤승아, 민아(걸스데이), 한지민';
+										resultTitle = '귀엽고 충성스러운 강아지상';
+										resultExplain = '다정하고 따뜻한 당신은 호감도 만렙! 누구와도 금세 친해지며 연인에게는 애교쟁이로 불리죠. 애인과 잠시만 떨어져도 시무룩해지는 귀여움까지, 사랑받을 수밖에 없는 순둥이 스타일! 진정한 사랑의 한결같은 모습, 그야말로 사랑에 충성하는 강아지 같은 매력!';
+										resultCeleb = '강아지상 연예인: 박보영, 아이유, 지민(방탄소년단), 차은우, 한지민';
 										break;
 									case 'cat':
-										resultTitle = '츤데레 매력쟁이 고양이상';
-										resultExplain =
-											'도도하고 섹시한 당신은 첫인상은 차가워 보이지만 묘한 매력을 풍겨 언제나 인기가 넘친다. 자존심이 세계 1등과 맞먹지만 관심 받는 것을 좋아하고 애인에게 관심이 받고 싶을 때는 애교도 부릴 줄 아는 귀여운 매력을 가졌다. 시크한 츤데레로 연인에게 끊임없이 설렘을 안겨주는 당신은 고양이와 닮았다!';
-										resultCeleb =
-											'고양이상 연예인: 안소희(원더걸스), 오연서, 한예슬, 이성경, 이효리';
+										resultTitle = '도도한 매력쟁이 고양이상';
+										resultExplain = '겉으로는 도도하고 시크해 보이지만 알고 보면 애교가 넘치는 당신! 연인에게 은근히 관심받기를 좋아하며, 사랑스러운 츤데레 면모가 매력 포인트! 주변 사람들에게 미스터리한 매력을 풍기며 항상 인기를 독차지하는 고양이 같은 당신!';
+										resultCeleb = '고양이상 연예인: 제니(블랙핑크), 안소희, 이효리, 이성경, 한예슬';
 										break;
 									case 'rabbit':
-										resultTitle = '상큼발랄한 매력의 토끼상';
-										resultExplain =
-											'발랄하고 귀여운 당신은 주변 사람들에게 기쁨을 주는 행복바이러스다! 호기심이 많아 활발하며 귀엽고 순수한 외모로 연인의 보호본능을 자극한다. 존재 자체가 상큼하고 깜찍한 당신은 특별한 애교 없이도 연인에게 너무나도 사랑스럽다!';
-										resultCeleb =
-											'토끼상 연예인: 수지, 나연(트와이스), 예린(여자친구), 한승연(카라), 문채원';
+										resultTitle = '상큼발랄 토끼상';
+										resultExplain = '발랄함과 순수함이 가득한 당신은 어디서나 주변 사람들에게 기쁨을 주는 행복바이러스! 호기심 많고 활발한 성격 덕분에 연인의 보호본능을 자극하는 귀염둥이 타입! 웃기만 해도 상큼하고 깜찍한 매력이 넘쳐나는 토끼 같은 당신!';
+										resultCeleb = '토끼상 연예인: 수지, 나연(트와이스), 정국(방탄소년단), 문채원, 유리(소녀시대)';
 										break;
 									case 'deer':
-										resultTitle = '온순하고 우아한 사슴상';
-										resultExplain =
-											'맑고 영롱한 분위기의 당신은 사슴처럼 차분한 성격의 소유자다. 초롱초롱한 눈망울이 당신의 가장 큰 트레이드마크며 따스하고 온순한 눈빛을 가져 사랑스러움을 항상 머금고 있다! 부끄러움이 많아 애정표현이 낯설은 당신은 연인에게조차 신비한 존재지만 따뜻한 성격으로 연인의 마음을 사로잡는 능력을 가졌다.';
-										resultCeleb =
-											'사슴상 연예인: 윤아(소녀시대), 이연희, 고아라, 문근영, 정유미(부산행 배우)';
+										resultTitle = '우아하고 청순한 사슴상';
+										resultExplain = '초롱초롱한 눈망울과 맑은 분위기를 지닌 당신은 사슴처럼 청순하고 온순한 매력을 가졌어요. 연인에게도 부드럽고 따뜻한 마음을 보여주는 스타일로, 사랑스러움이 철철 넘치며 신비한 매력까지 겸비한 당신! 연인에게는 항상 “아, 너무 사랑스러워~”라는 말을 들을 듯!';
+										resultCeleb = '사슴상 연예인: 윤아(소녀시대), 이연희, 고아라, 정유미, 수지';
 										break;
 									case 'fox':
-										resultTitle = '섹시한 밀당고수 여우상';
-										resultExplain =
-											'사람을 홀리는 매력을 가진 당신은 선뜻 다가가기 힘든 섹시한 매력을 가졌다. 우아한 외모에 더해 뛰어난 센스의 성격을 가진 당신은 어딜가도 주목받는 주인공이다! 사교적인 성격을 가져 연인에게도 적극적으로 애정표현을 하지만 밀당의 고수인 당신은 연인의 혼을 쏙 빼놓는 매력쟁이다.';
-										resultCeleb =
-											'여우상 연예인: 경리(나인뮤지스), 예지(있지), 한혜진(모델), 헤이즈, 지연(티아라)';
+										resultTitle = '섹시한 밀당의 여왕 여우상';
+										resultExplain = '사람의 마음을 쏙 빼놓는 매력을 지닌 당신은 은근히 섹시한 외모와 분위기로 주목받는 스타일! 센스 넘치고 사교적인 성격 덕분에 어딜 가도 시선을 사로잡습니다. 사랑에 빠진 상대방은 당신의 밀당에 푹 빠져서 허우적대기 마련! 연인에게 끊임없이 설렘을 주는 매력적인 여우상!';
+										resultCeleb = '여우상 연예인: 한예슬, 경리(나인뮤지스), 예지(있지), 헤이즈, 지연(티아라)';
 										break;
 									default:
-										resultTitle = '알수없음';
+										resultTitle = '알 수 없음';
 										resultExplain = '';
 										resultCeleb = '';
 								}
+
 							}
 
 							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
@@ -375,7 +378,7 @@
 		</script>
 		<!-- 이거는 광고 -->
 		<!-- 여기는 댓글창 다는거 -->
-		<!-- <div id="disqus_thread"></div>
+		<div id="disqus_thread"></div>
 		<script>
 			/**
 			 *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
@@ -398,7 +401,7 @@
 		<noscript
 			>Please enable JavaScript to view the
 			<a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
-		> -->
+		>
 		<!-- 여기는 댓글창 다는거 -->
 	</body>
 	<!-- 
