@@ -1,6 +1,6 @@
 body {
 	font-family: 'Jua', sans-serif;
-	background-image: url('img/img_back_1.jpg');
+	background-image: url('img/img_back_6.jfif');
 	background-repeat: repeat;
 	color: #35465d;
 	height: 100%;
@@ -148,14 +148,14 @@ body {
 .title {
 	line-height: 1.0;
 	text-align: center;
-	color: #237A57;
-	font-size: 2.7rem;
+	color: #35465d;
+	font-size: 2.5rem;
 }
 
 .subtitle {
 	line-height: 1.53;
 	text-align: center;
-	color: #093637;
+	color: #35465d;
 	font-size: 2.0rem;
 }
 
@@ -2456,24 +2456,14 @@ body {
 	margin: 0 auto;
 }
 
-/* .result-message {
+.result-message {
 	font-size: 2.5rem;
 	color: #283c86;
-} */
-
-.result_title {
-	font-size: 2.2rem;
-	color: #fc4a1a;
 }
 
 .animal-explain {
-	font-size: 1.7rem;
+	font-size: 1.5rem;
 	color: #093637;
-}
-
-.result_celeb {
-	font-size: 2.0rem;
-	color: #642B73;
 }
 
 
@@ -2559,6 +2549,6 @@ input:checked + label > .knob > i:before {
 }
 
 .ad-banner {
-	width: 90%;
+	width: 320px;
 	margin: 0 auto;
 }

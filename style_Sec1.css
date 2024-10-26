@@ -148,14 +148,14 @@ body {
 .title {
 	line-height: 1.0;
 	text-align: center;
-	color: #EF3B36;
-	font-size: 2.7rem;
+	color: #35465d;
+	font-size: 2.5rem;
 }
 
 .subtitle {
 	line-height: 1.53;
 	text-align: center;
-	color: #093637;
+	color: #35465d;
 	font-size: 2.0rem;
 }
 
@@ -216,7 +216,7 @@ body {
 	height: 2rem;
 	border-radius: 10px;
 	width: 100%;
-	background-color: rgba(117, 100, 84, 0.2);
+	background-color: rgba(117, 204, 84, 0.2);
 }
 .handsome_20-bar {
 	position: absolute;
@@ -224,7 +224,7 @@ body {
 	left: 0;
 	height: 2rem;
 	border-radius: 10px;
-	background-color: rgba(117, 100, 84, 1);
+	background-color: rgba(117, 204, 84, 1);
 }
 .handsome_50-box {
 	position: absolute;
@@ -309,24 +309,14 @@ body {
 	margin: 0 auto;
 }
 
-/* .result-message {
+.result-message {
 	font-size: 2.5rem;
 	color: #283c86;
-} */
-
-.result_title {
-	font-size: 2.2rem;
-	color: #fc4a1a;
 }
 
 .animal-explain {
-	font-size: 1.7rem;
+	font-size: 1.5rem;
 	color: #093637;
-}
-
-.result_celeb {
-	font-size: 2.0rem;
-	color: #642B73;
 }
 
 
@@ -412,7 +402,6 @@ input:checked + label > .knob > i:before {
 }
 
 .ad-banner {
-	width: 90%;
+	width: 320px;
 	margin: 0 auto;
 }
-
