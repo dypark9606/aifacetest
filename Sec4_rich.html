@@ -9,7 +9,7 @@
         <link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
-        <link rel="stylesheet" href="style_Sec2.css" />
+        <link rel="stylesheet" href="style_Sec4.css" />
     
         <!-- Open Graph 태그 -->
         <meta property="og:type" content="website" />
@@ -79,7 +79,7 @@
 
     <footer class="footer pt-5 container d-flex justify-content-center">
         <div>
-            <p>&copy; Industrial AI 2020. All Rights Reserved.</p>
+            <p>    사진은 저장되지 않습니다. </br> &copy;  Industrial AI 2020. All Rights Reserved.</p>
         </div>
     </footer>
 
@@ -91,86 +91,87 @@
         let model;
         let isMaleModel = true;
 
-        // 부자 얼굴 데이터 (이름 및 설명)
+        // 부자 얼굴 데이터 (이름 제외 및 두괄식으로 강조된 설명)
         const celebrityData = {
-		male: {
-        'Jay Y. Lee (이재용)': '이재용님처럼 강력한 리더십과 끈기 있는 성격을 가진 성공의 아이콘이군요! 당신은 반드시 부자가 될 수 있어요!',
-        'Cho Jung-ho (조정호)': '조정호님처럼 전략적 사고와 철저한 계획으로 사업을 이끄는 분이시네요! 성공이 곁에 있습니다!',
-        'Seo Jung-jin (서정진)': '서정진님 같은 혁신적 기업가의 기질을 가지셨습니다. 당신은 성공과 함께 걷고 있어요!',
-        'Mong-Koo Chung (정몽구)': '정몽구님처럼 도전정신과 한계를 모르는 의지가 강하신 분이십니다! 부자가 될 자격 충분해요!',
-        'Euisun Chung (정의선)': '정의선님처럼 창의적 시선으로 새로운 길을 여는 타입이세요! 부자로의 길이 보장되었습니다!',
-        'Kwon Hyuk-bin (권혁빈)': '권혁빈님과 같은 독창적 비전으로 사업을 확장해가는 모습이 성공적입니다! 부자가 될 가능성이 높아요!',
-        'Kim Beom-su (김범수)': '김범수님처럼 사회적 기여와 성장을 중요시하는 타입! 성공이 기대됩니다!',
-        'Park Soon-jae (박순재)': '박순재님 같은 철저함과 성실함으로 성공을 향해 걷는 분이시군요! 부자가 될 운명을 가지셨습니다!',
-        'Kwak Dong Shin (곽동신)': '곽동신님처럼 사람과 사업을 연결시키는 능력이 탁월합니다! 성공이 보장되어 있어요!',
-        'Bang Si-hyuk (방시혁)': '방시혁님처럼 창의적 리더십과 독창성으로 세상을 변화시키는 분입니다! 부자의 길이 보장되어 있습니다!',
-        'Koo Kwang-mo (구광모)': '구광모님처럼 안정감과 책임감으로 사업을 이끄는 리더십을 가지셨습니다. 성공이 곧 찾아올 것입니다!',
-        'Kim Jung-min (김정민)': '김정민님처럼 혁신적이고 적극적 성격으로 사업을 번창시키는 타입입니다! 부자로 향하는 길이 열려 있습니다!',
-        'Kim Ki-duk (김기덕)': '김기덕님처럼 예술적 감각과 창의성으로 성공을 이끄는 당신은 부자의 운명을 타고났습니다!',
-        'Lee Woo-jong (이우종)': '이우종님 같은 조직 관리 리더십을 가진 분이군요! 부자가 될 가능성이 높습니다!',
-        'Kang Dae-soo (강대수)': '강대수님처럼 신중함과 전략적 사고로 성장하는 분이세요! 성공이 보장되어 있습니다!',
-        'Choi Jung-hoon (최정훈)': '최정훈님처럼 단단한 의지로 사업에 도전하는 모습이 성공을 예고합니다! 부자가 될 운명을 타고나셨습니다!',
-        'Kim Kwang-tae (김광태)': '김광태님처럼 통찰력과 끈기로 성공을 이뤄내는 분이시네요! 부자가 될 가능성이 높습니다!',
-        'Lee Hyung-taek (이형택)': '이형택님처럼 탄탄한 기본기를 바탕으로 성장하는 분입니다. 성공은 이미 보장된 것 같아요!',
-        'Lee Chang-keun (이창근)': '이창근님처럼 강한 의지로 장애를 극복하며 성공을 쌓아가시는 분이세요! 부자가 될 기회가 다가오고 있습니다!',
-        'Park Kyung-woo (박경우)': '박경우님 같은 세심함과 철저함으로 사업에 임하는 타입이세요! 성공이 가까이에 있습니다!',
-        
-        // 가난한 인물들
-        'Park Soo-hong (박수홍)': '사업에 대한 끊임없는 도전! 박수홍님처럼 실패에도 굴하지 않는 모습이 멋져요. 부자는 다음 생에 기대하세요!',
-        'Kim Kook-jin (김국진)': '김국진님 같은 끈질긴 도전정신이 있으시군요! 부자는… 다음 생에서 만나요!',
-        'Yoo Jae-suk (유재석)': '유재석님처럼 항상 긍정적이고 도전을 즐기는 모습이세요! 부자는 아닐지라도 행복을 얻으실 겁니다!',
-        'Shin Dong-yup (신동엽)': '신동엽님 같은 유쾌한 성격으로 도전을 즐기는 타입! 부자는… 다음 생에서 기대해보세요!',
-        'Yoon Jung-soo (윤정수)': '윤정수님처럼 실패를 배우며 나아가는 분이세요. 부자는 다음 기회에 기대하는 게 좋겠어요!',
-        'Hong Seok-cheon (홍석천)': '사업은 접었지만 여전히 빛나는 모습! 부자는 아니더라도 인생의 성공은 이미 있으시네요!',
-        'Lee Kyung-kyu (이경규)': '이경규님처럼 다양한 도전을 즐기며 배움을 얻는 타입! 부자는 아니지만 인생의 즐거움이 가득할 겁니다!',
-        'Kim Hee-chul (김희철)': '김희철님처럼 늘 새로운 도전을 꿈꾸는 분이세요! 부자는 아닐지라도 멋진 삶을 즐기실 겁니다!',
-        'Ha Dong-hoon (하동훈)': '하동훈님 같은 유쾌한 에너지로 도전을 이어가세요! 부자는… 다음 생에 기대해봅시다!',
-        'Kim Tae-gyun (김태균)': '김태균님처럼 열정적으로 도전하며 배움을 얻는 타입이세요! 부자는 다음 기회에 기대하세요!',
-        'Seo Jang-hoon (서장훈)': '서장훈님 같은 끊임없는 도전정신! 부자는 아니지만 인생의 즐거움은 충분할 거예요!',
-        'Jung Hyung-don (정형돈)': '정형돈님처럼 실패해도 굴하지 않고 도전하는 모습이 멋져요. 부자는 아니지만 인생을 즐기세요!',
-        'Park Myung-soo (박명수)': '박명수님 같은 끊임없는 도전과 실패의 반복! 부자는… 다음 생에서 기대해봐요!',
-        'Lee Soo-geun (이수근)': '이수근님처럼 유머와 열정으로 도전하는 모습이 인상적입니다! 부자는 잠시 미뤄두죠!',
-        'Noh Hong-chul (노홍철)': '노홍철님 같은 밝은 에너지로 도전을 이어가세요! 부자는 다음 생에서 기대해보세요!',
-        'Lee Sang-min (이상민)': '이상민님처럼 실패해도 웃으며 도전하는 모습! 부자는 아니지만 인생의 재미는 보장됩니다!',
-        'Jo Se-ho (조세호)': '조세호님처럼 끈질긴 도전정신으로 실패 속에서도 웃음을 잃지 마세요! 부자는 다음 기회에!',
-        'Kim Byung-man (김병만)': '김병만님 같은 무모한 도전정신으로 계속 도전하세요! 부자는 다음 생에 기대해보세요!',
-        'Defconn (데프콘)': '데프콘님처럼 끊임없는 도전과 배움을 추구하는 분입니다. 부자는 다음 기회에 기대해봅시다!',
-        'Jang Do-yeon (장도연)': '장도연님처럼 실패도 웃음으로 승화시키는 당신, 부자는 아닐지라도 행복은 보장될 거예요!'
-		},
-    	female: {
-			'Hong Ra-hee (홍라희)': '홍라희님처럼 세련된 안목과 자산 관리 능력을 가진 성공의 여왕이십니다! 당신은 반드시 부자가 될 수 있어요!',
-			'Lee Boo-jin (이부진)': '이부진님처럼 냉철하고 카리스마 넘치는 리더십으로 성공을 이끄는 모습이 멋져요! 부자가 될 수 있는 자질이 충만합니다!',
-			'Yoo Jung-hyun (유정현)': '유정현님과 같은 전략가의 성향을 가지셨네요. 성공은 이미 보장된 것 같군요! 부자로 가는 길이 열려 있습니다!',
-			'Lee Seo-hyun (이서현)': '이서현님처럼 창의적이며 결단력이 뛰어난 당신은 이미 성공의 길 위에 있습니다. 부자가 될 기회가 다가오고 있어요!',
-			'Lee Su-jin (이수진)': '이수진님 같은 철저함과 책임감으로 사업을 성장시키는 주역이십니다! 부자가 될 운명을 타고났군요!',
-			'Kim Jung-youn (김정윤)': '김정윤님처럼 자신감과 냉철함으로 사업을 이끄는 파워풀한 리더입니다! 부자가 될 가능성이 높습니다!',
-			'Park Young-sook (박영숙)': '박영숙님처럼 대담하면서도 섬세한 감각으로 모든 사업을 이끌 수 있는 자질이 넘칩니다. 성공이 눈앞에 있어요!',
-			'Kim Hye-sun (김혜선)': '김혜선님처럼 목표를 이루기 위해 끈질기게 도전하는 모습이 성공으로 이끌 것입니다. 당신은 반드시 부자가 될 수 있어요!',
-			'Yoon Sun-mi (윤선미)': '윤선미님처럼 도전적이고 주도적인 성격으로 모든 것을 이겨내는 당신, 부자가 될 운명을 타고났습니다!',
-			'Shin Ji-yoon (신지윤)': '신지윤님 같은 뛰어난 리더십과 창의성을 가진 분, 성공은 이미 보장된 것 같군요! 당신은 부자가 될 가능성이 높습니다!',
+            male: {
+                'Jay Y. Lee (이재용)': '부자가 될 운명이 다가오고 있습니다! 강력한 리더십과 끈기로 모든 도전을 헤쳐 나가는 추진력이 돋보입니다. 성공은 손에 있습니다!',
+                'Cho Jung-ho (조정호)': '부자 DNA 탑재 완료! 전략적 사고와 꼼꼼한 계획으로 누구보다 성공에 가까운 분입니다. 기회는 언제나 당신 편이에요!',
+                'Seo Jung-jin (서정진)': '성공은 이미 확정적! 혁신적인 아이디어와 변화를 즐기는 기업가 정신이 뛰어나네요. 부자의 길이 눈앞에 펼쳐지고 있습니다!',
+                'Mong-Koo Chung (정몽구)': '부자 될 준비 완료! 한계를 모르는 도전정신으로 세상에 새로운 길을 만드는 분입니다. 성공이 바로 코앞에!',
+                'Euisun Chung (정의선)': '부자 리스트에 이름을 올릴 예정입니다! 창의적 시선과 세상을 보는 눈으로 모든 장벽을 넘을 분입니다. 부자는 당신의 이름입니다!',
+                'Kwon Hyuk-bin (권혁빈)': '부자가 될 가능성이 매우 높습니다! 독창적인 비전으로 사업을 확장하며, 항상 다음 성공을 향해 달려갑니다!',
+                'Kim Beom-su (김범수)': '부자의 길이 확실합니다! 사회적 기여와 성장을 중요시하며 사람들에게 영감을 주는 모습을 보여줍니다.',
+                'Park Soon-jae (박순재)': '성공을 향한 부자 DNA 완벽 장착! 철저함과 성실함으로 자신이 원하는 목표를 향해 나아가는 분입니다.',
+                'Kwak Dong Shin (곽동신)': '부자 확률 100%! 사업과 사람을 잇는 능력이 탁월하여 누구보다 성공에 가까운 삶을 사는 분입니다.',
+                'Bang Si-hyuk (방시혁)': '부자의 꿈이 현실이 될 것입니다! 창의적인 리더십과 독창성으로 세상을 변화시키는 데 탁월한 능력을 지니고 있네요.',
+                'Koo Kwang-mo (구광모)': '부자 될 운명! 안정감과 책임감으로 사업을 성공적으로 이끄는 리더십이 돋보입니다. 성공은 이미 예약된 상태입니다.',
+                'Kim Jung-min (김정민)': '부자로 향하는 길이 열렸습니다! 혁신적이고 적극적인 성격으로 사업을 번창시키는 데 재능을 발휘합니다.',
+                'Kim Ki-duk (김기덕)': '부자 운명이 예약되었습니다! 예술적 감각과 창의성으로 성공을 이끄는 특별한 재능을 가졌습니다.',
+                'Lee Woo-jong (이우종)': '부자 가능성 매우 높음! 탁월한 조직 관리 리더십으로 성공적인 경영을 보여주고 있습니다.',
+                'Kang Dae-soo (강대수)': '부자 확률 99%! 신중한 계획과 전략적 사고로 성공적인 성장을 이끄는 분입니다.',
+                'Choi Jung-hoon (최정훈)': '성공이 예고된 부자 타입! 단단한 의지와 결단력으로 모든 도전을 극복할 분입니다.',
+                'Kim Kwang-tae (김광태)': '부자 행운이 보장되었습니다! 통찰력과 끈기로 목표를 이뤄내는 모습이 돋보입니다.',
+                'Lee Hyung-taek (이형택)': '부자 리스트에 이름을 올릴 준비 완료! 기본기에 충실하며, 안정적인 성공을 만들어 갑니다.',
+                'Lee Chang-keun (이창근)': '부자 될 준비 완료! 장애를 극복하며 강한 의지로 성공을 쌓아가는 타입입니다.',
+                'Park Kyung-woo (박경우)': '성공이 보장된 인물! 철저함과 세심한 계획으로 항상 목표를 향해 나아갑니다.',
 
-			// Poor female
-			'Lee Young-ja (이영자)': '이영자님처럼 넘치는 유머 감각으로 힘든 순간을 이겨내시는 분! 부자는... 다음 생에 기대하세요!',
-			'Kim Sook (김숙)': '김숙님과 같은 쾌활한 성격으로 주변을 즐겁게 하는 분이세요. 부자는 다음 생에 기대하는 게 좋겠어요!',
-			'Park Na-rae (박나래)': '박나래님처럼 유머와 개성으로 사랑받는 타입! 성공은 따로 있겠지만, 부자는… 다음 기회에!',
-			'Ahn Young-mi (안영미)': '안영미님처럼 언제나 즐거움을 주는 당신, 부자보다는 행복을 얻을 가능성이 높군요!',
-			'Shin Bong-sun (신봉선)': '신봉선님처럼 밝은 에너지를 가진 분, 성공은 멀지 않았지만, 부자는 다음 생에서 만나요!',
-			'Hong Hyun-hee (홍현희)': '홍현희님 같은 유쾌함으로 모두에게 행복을 주시는 분이시네요. 부자는 잠시 뒤로 미뤄두죠!',
-			'Jessi (제시)': '제시님처럼 강한 개성과 자신감이 넘치는 분! 부자는 아니더라도 멋진 인생은 보장됩니다!',
-			'Song Eun-i (송은이)': '송은이님 같은 따뜻한 매력으로 어려움 속에서도 도전하는 당신을 응원합니다! 부자는 아니더라도 행복한 삶이 기다리고 있어요!',
-			'Kim Shin-young (김신영)': '김신영님처럼 실패 속에서도 웃음을 잃지 않는 긍정적인 에너지를 가진 분! 부자는 다음 생에서 기대하세요!',
-			'Kim Ji-min (김지민)': '김지민님처럼 실패해도 다시 도전하는 밝은 에너지가 돋보이는 스타일이세요!',
+                // 가난한 인물들
+                'Park Soo-hong (박수홍)': '부자는... 다음 생에서! 실패에도 굴하지 않고 끊임없이 도전하는 모습이 인상적입니다.',
+                'Kim Kook-jin (김국진)': '부자는 잠시 미뤄둡니다! 끈질긴 도전정신으로 긍정적인 삶을 살아가는 타입이네요.',
+                'Yoo Jae-suk (유재석)': '행복의 길로 가고 있습니다! 긍정적인 에너지로 주변에 좋은 영향을 주는 분이세요.',
+                'Shin Dong-yup (신동엽)': '부자는 잠시 뒤로! 유쾌한 성격으로 항상 웃음을 주는 분위기 메이커입니다.',
+                'Yoon Jung-soo (윤정수)': '부자보다는 따뜻한 인생이 더 잘 어울립니다! 실패를 배움으로 삼아 성장을 이룬 모습이 돋보입니다.',
+                'Hong Seok-cheon (홍석천)': '부자보다는 인간적인 성공을 이뤘습니다! 진심이 담긴 도전으로 주위 사람들에게 좋은 영향을 미칩니다.',
+                'Lee Kyung-kyu (이경규)': '인생의 즐거움이 넘쳐납니다! 다양한 도전으로 자신만의 삶을 즐기는 타입이시군요.',
+                'Kim Hee-chul (김희철)': '행복한 삶이 예약되었습니다! 항상 새로운 도전을 즐기며 멋진 인생을 살아가고 있습니다.',
+                'Ha Dong-hoon (하동훈)': '부자는 잠시 미뤄둡니다! 유쾌하고 에너지 넘치는 성격으로 주위에 긍정적인 영향을 주는 분이네요.',
+                'Kim Tae-gyun (김태균)': '다음 생에서 부자를 기대해봅시다! 열정적으로 삶을 즐기며 다양한 배움을 얻는 타입입니다.',
+                'Seo Jang-hoon (서장훈)': '행복한 인생을 추구하는 분입니다! 도전정신으로 삶을 풍부하게 만드는 재능이 있습니다.',
+                'Jung Hyung-don (정형돈)': '부자보다는 웃음이 더 잘 어울립니다! 실패에도 굴하지 않고 삶을 즐길 줄 아는 타입입니다.',
+                'Park Myung-soo (박명수)': '부자는... 아쉽게도 잠시 미뤄집니다! 끝없는 도전과 실패 속에서도 웃음을 잃지 않는 분입니다.',
+                'Lee Soo-geun (이수근)': '부자보다도 웃음 넘치는 삶을 추구합니다! 밝은 에너지로 모든 순간을 즐기며 살아가는 타입입니다.',
+                'Noh Hong-chul (노홍철)': '행복한 인생이 더 어울립니다! 긍정적인 마인드와 유쾌한 성격으로 주위 사람들을 웃게 합니다.',
+                'Lee Sang-min (이상민)': '부자는 잠시 미뤄두고 인생을 즐기세요! 실패해도 웃음으로 승화시키는 멋진 인생을 살아가고 있습니다.',
+                'Jo Se-ho (조세호)': '부자는 다음 기회에! 끈질긴 도전정신으로 어려움 속에서도 긍정적인 삶을 살아가는 분입니다.',
+                'Kim Byung-man (김병만)': '부자는 다음 생에서! 무모한 도전정신으로 세상에 대한 호기심이 가득한 스타일입니다.',
+                'Defconn (데프콘)': '부자는 잠시 미뤄두고 배움을 즐기세요! 끝없는 도전과 배움으로 인생을 풍요롭게 합니다.',
+                'Jang Do-yeon (장도연)': '행복은 보장된 인생입니다! 실패를 웃음으로 승화시키는 당신은 행복이 함께할 것입니다.'
+            },
+            female: {
+                'Hong Ra-hee (홍라희)': '부자의 운명이 예약되었습니다! 세련된 안목과 자산 관리 능력이 뛰어나며 성공이 곁에 있습니다.',
+                'Lee Boo-jin (이부진)': '부자로 향하는 길이 열렸습니다! 냉철한 판단력과 카리스마 넘치는 리더십으로 주변을 압도합니다.',
+                'Yoo Jung-hyun (유정현)': '부자는 확실합니다! 전략적 사고와 냉철한 분석력으로 성공을 거머쥘 인물입니다.',
+                'Lee Seo-hyun (이서현)': '성공은 이미 손에 있습니다! 창의적 결단력으로 누구보다 앞서 나아가는 타입입니다.',
+                'Lee Su-jin (이수진)': '부자로 가는 길이 보장되었습니다! 철저한 책임감과 성실함으로 사업을 이끄는 리더입니다.',
+                'Kim Jung-youn (김정윤)': '부자가 될 가능성이 매우 높습니다! 자신감과 냉철함으로 성공적인 리더의 자질을 보여줍니다.',
+                'Park Young-sook (박영숙)': '부자가 될 운명이 다가옵니다! 대담한 감각과 섬세한 관리 능력으로 성공을 만들어 갑니다.',
+                'Kim Hye-sun (김혜선)': '성공은 예약된 상태! 목표를 이루기 위해 끈질기게 도전하는 분입니다.',
+                'Yoon Sun-mi (윤선미)': '부자 리스트에 이름을 올릴 예정입니다! 주도적 성격으로 모든 도전을 이겨내는 타입입니다.',
+                'Shin Ji-yoon (신지윤)': '부자가 될 가능성이 매우 높습니다! 리더십과 창의성이 성공의 보증수표입니다.',
 
-			'Park Kyung-rim (박경림)': '박경림님 같은 따뜻하고 꾸준한 도전정신으로 어려움을 헤쳐나가는 분! 부자는… 다음 기회에!',
-			'Jo Hye-ryun (조혜련)': '조혜련님처럼 실패해도 다시 도전하는 밝은 에너지가 넘치는 분이시네요!',
-			'Kim Hyun-sook (김현숙)': '김현숙님 같은 도전 정신으로 실패에도 불구하고 재도전하는 의지가 강한 분! 부자는 다음 생에서 기대하세요!',
-			'Jung Joo-ri (정주리)': '정주리님처럼 어려움을 웃음으로 승화시키며 도전하는 모습이 인상적입니다!',
-			'Lee Gook-joo (이국주)': '이국주님 같은 유머와 긍정적인 마음으로 실패에도 다시 도전하는 타입! 부자는 아니지만 행복한 삶이 기다리고 있어요!',
-			'Jang Do-yeon (장도연)': '장도연님처럼 실패도 웃음으로 승화시키며 재도전을 즐기는 분이세요! 부자는 아니지만 멋진 인생을 즐기세요!',
-			'Kim Mi-hwa (김미화)': '김미화님 같은 강한 의지와 따뜻한 마음으로 실패에도 포기하지 않는 타입! 부자는 아니지만 행복이 곁에 있을 겁니다!',
-			'Yoo Hye-young (유혜영)': '유혜영님처럼 모든 상황에서 웃음을 주는 타입, 부자는 잠시 미뤄두고 행복을 즐기세요!'
-		}
-    };
+                // 가난한 인물들
+                'Lee Young-ja (이영자)': '부자는... 다음 생에 기대해봅시다! 넘치는 유머로 주위에 행복을 주는 타입입니다.',
+                'Kim Sook (김숙)': '부자보다는 행복한 인생이 어울립니다! 쾌활한 성격으로 주변을 즐겁게 만드는 분입니다.',
+                'Park Na-rae (박나래)': '부자는 아쉽게도 다음 기회로! 유머와 개성 넘치는 스타일로 사랑받고 있습니다.',
+                'Ahn Young-mi (안영미)': '행복이 먼저인 인생입니다! 언제나 긍정적 에너지를 전파하는 밝은 성격입니다.',
+                'Shin Bong-sun (신봉선)': '부자는 잠시 미뤄두고 인생을 즐깁니다! 밝은 에너지를 가진 유쾌한 사람입니다.',
+                'Hong Hyun-hee (홍현희)': '부자보다는 행복을 추구합니다! 긍정적 성격으로 모두에게 행복을 전하는 타입입니다.',
+                'Jessi (제시)': '멋진 인생이 예약되었습니다! 강한 개성과 자신감 넘치는 삶을 살아가는 분입니다.',
+                'Song Eun-i (송은이)': '부자는 잠시 미뤄둡니다! 따뜻한 매력으로 어려움을 극복하는 모습을 보여줍니다.',
+                'Kim Shin-young (김신영)': '긍정적인 에너지가 넘칩니다! 실패 속에서도 웃음을 잃지 않는 스타일입니다.',
+                'Kim Ji-min (김지민)': '활기찬 인생을 살아갑니다! 밝은 에너지로 모두를 웃게 만드는 매력을 지녔습니다.',
+
+                'Park Kyung-rim (박경림)': '행복이 보장된 인생입니다! 따뜻한 성격으로 주위 사람들을 행복하게 만듭니다.',
+                'Jo Hye-ryun (조혜련)': '긍정적인 에너지가 빛납니다! 밝은 에너지로 주위 사람들에게 힘을 줍니다.',
+                'Kim Hyun-sook (김현숙)': '부자는 다음 생에서! 도전 정신으로 인생을 즐기며 배움을 추구하는 타입입니다.',
+                'Jung Joo-ri (정주리)': '웃음이 끊이지 않는 인생입니다! 어려움을 유쾌하게 극복하는 모습이 돋보입니다.',
+                'Lee Gook-joo (이국주)': '부자는 아쉽게도 다음 생에! 밝은 마음으로 실패를 극복하며 도전하는 모습이 인상적입니다.',
+                'Jang Do-yeon (장도연)': '멋진 인생이 기다리고 있습니다! 실패도 웃음으로 승화시키며 새로운 도전을 즐깁니다.',
+                'Kim Mi-hwa (김미화)': '행복이 가까이 있는 인생입니다! 따뜻한 마음으로 주변 사람들에게 긍정적인 영향을 줍니다.',
+                'Yoo Hye-young (유혜영)': '행복이 먼저인 삶입니다! 모든 상황에서 웃음을 잃지 않는 매력적인 사람입니다.'
+            }
+        };
+
 
         // celebrityNames 변수 추가
         const celebrityNames = {
@@ -234,43 +235,73 @@
             }
         }
 
-        // 예측 함수에서 displayTop5Predictions를 호출하여 상위 5개를 표시
-        // 예측 및 설명 표시 함수
+        // 이름의 중간 글자를 *로 표시하도록 변환하는 함수
+        function obfuscateName(name) {
+            // 영어 이름 변환 (첫 글자와 마지막 단어의 첫 글자만 남기고 가운데 *로 표시)
+            name = name.replace(/(\b[A-Z])[a-z]+(\b\s*[A-Z])[a-z]+/gi, '$1* $2*');
+
+            // 한글 이름 변환 (괄호 안에 있는 한글 이름에 적용)
+            name = name.replace(/(\()[가-힣]{1}.*[가-힣]{1}(\))/g, (match, p1, p2) => {
+                const [first, ...rest] = match.slice(1, -1); // 괄호 제거하고 첫 글자와 나머지 분리
+                return `${p1}${first}*${rest[rest.length - 1]}${p2}`; // 첫 글자와 마지막 글자만 표시, 중간을 *
+            });
+
+            return name;
+        }
+
+
+
+        // 설명 메시지에서 이름을 가려주는 함수로 변환하여 출력
+        function getObfuscatedDescription(nameKey, isMale) {
+            const description = celebrityData[isMale ? 'male' : 'female'][nameKey];
+            const obfuscatedName = obfuscateName(nameKey);
+            return description.replace(nameKey, obfuscatedName); // 설명 메시지에 이름 가리기 적용
+        }
+
+        // 예측 함수에서 getObfuscatedDescription을 사용하여 출력
         async function predict() {
-                    try {
-                        if (!model) throw new Error("모델이 아직 로드되지 않았습니다.");
+            try {
+                if (!model) throw new Error("모델이 아직 로드되지 않았습니다.");
 
-                        const imgElement = document.getElementById('face-image');
-                        const img = tf.browser.fromPixels(imgElement)
-                                            .resizeNearestNeighbor([224, 224])
-                                            .toFloat()
-                                            .div(tf.scalar(255))
-                                            .expandDims();
+                const imgElement = document.getElementById('face-image');
+                const img = tf.browser.fromPixels(imgElement)
+                    .resizeNearestNeighbor([224, 224])
+                    .toFloat()
+                    .div(tf.scalar(255))
+                    .expandDims();
 
-                        const predictions = await model.predict(img).data();
-                        const topPredictions = Array.from(predictions)
-                                                    .map((p, i) => ({
-                                                        probability: p,
-                                                        className: celebrityNames[isMaleModel ? 'male' : 'female'][i]
-                                                    }))
-                                                    .sort((a, b) => b.probability - a.probability);
+                const predictions = await model.predict(img).data();
+                const topPredictions = Array.from(predictions)
+                    .map((p, i) => ({
+                        probability: p,
+                        className: celebrityNames[isMaleModel ? 'male' : 'female'][i]
+                    }))
+                    .sort((a, b) => b.probability - a.probability);
 
-                        displayTop5Predictions(topPredictions);
+                displayTop5Predictions(topPredictions);
 
-                        const topCelebrity = topPredictions[0];
-                        document.querySelector(".result-message").innerText =
-                            `${topCelebrity.className}와 닮으셨네요! (${Math.round(topCelebrity.probability * 100)}%)`;
-                        document.querySelector(".result-description").innerText =
-                            celebrityData[isMaleModel ? 'male' : 'female'][topCelebrity.className] || '설명 없음';
+                const topCelebrity = topPredictions[0];
+                const obfuscatedName = obfuscateName(topCelebrity.className);  // 이름을 가린 버전으로 출력
+                // 예측 결과 메시지를 조건에 따라 수정
+                document.querySelector(".result-message").innerText = 
+                    celebrityData.male[topCelebrity.className] || celebrityData.female[topCelebrity.className]
+                    ? `당신의 얼굴은 부자들의 상과 ${Math.round(topCelebrity.probability * 100)}% 일치합니다.`
+                    : `당신의 얼굴은 가난한 상과 ${Math.round(topCelebrity.probability * 100)}% 일치합니다.`;
 
-                    } catch (error) {
-                        console.error('Error during prediction:', error);
-                    }
-                }
+                
+                // 설명 부분도 가려진 이름으로 적용하여 출력
+                document.querySelector(".result-description").innerText =
+                    getObfuscatedDescription(topCelebrity.className, isMaleModel);
+
+            } catch (error) {
+                console.error('Error during prediction:', error);
+            }
+        }
+
 
         // 가장 비슷한 5명의 연예인과 확률을 그래프로 보여주기
         function displayTop5Predictions(predictions) {
-            const top5 = predictions.slice(0, 5);
+            const top5 = predictions.slice(0, 1);
             let labelContainer = document.getElementById("label-container");
             labelContainer.innerHTML = ""; // 기존 내용 삭제
 
@@ -278,11 +309,16 @@
                 const probability = Math.round(prediction.probability * 100);
                 const barWidth = probability > 10 ? `${probability}%` : '2%';
 
-                const label = `<div class='label d-flex align-items-center'>${prediction.className}</div>`;
+                // 인물이 부자 그룹인지 가난한 그룹인지에 따라 표시
+                const categoryLabel = celebrityData.male[prediction.className] || celebrityData.female[prediction.className]
+                    ? "부자"
+                    : "가난한";
+
+                const label = `<div class='label d-flex align-items-center'>${categoryLabel}</div>`;
                 const bar = `
                     <div class='bar-container position-relative'>
                         <div class='bar' style='width: ${barWidth};'>
-                            <span class='percent-text'>${probability}%</span>
+                            <span class='percent-text'>${probability}%</span> <!-- 중앙에 % 표시 -->
                         </div>
                     </div>
                 `;
@@ -292,6 +328,39 @@
         }
 
 
+
+
+
     </script>
+
+
+    <!-- 여기는 댓글창 다는거 -->
+    <div id="disqus_thread"></div>
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+        /*
+        var disqus_config = function () {
+        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        */
+        (function () {
+            // DON'T EDIT BELOW THIS LINE
+            var d = document,
+                s = d.createElement('script');
+            s.src = 'https://seoyoul0510.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript
+        >Please enable JavaScript to view the
+        <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+    >
+    <!-- 여기는 댓글창 다는거 -->
+
+
 </body>
 </html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>부자가 될 상인가?</title>
+    
+        <!-- 스타일 및 폰트 -->
+        <link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+              integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+        <link rel="stylesheet" href="style_Sec4.css" />
+    
+        <!-- Open Graph 태그 -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="닮은꼴 연예인" />
+        <meta property="og:description" content="얼굴로 분석하는 나와 닮은 연예인은 누구일까요?" />
+        <meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
+    
+        <!-- TensorFlow.js 라이브러리 -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    
+        <!-- 공유 기능: AddThis (비활성화) -->
+        <!-- <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"></script> -->
+    </head>
+    
+    
+<body>
+    <section class="section">
+        <h1 class="title">인공지능 부자상 분석</h1>
+        <h2 class="subtitle">내가 부자가 될 상인가?</h2>
+    </section>
+
+    <!-- 성별 선택 -->
+    <h3 class="pb-2 d-flex justify-content-center">성별을 선택하세요</h3>
+    <section class="d-flex justify-content-center">
+        <p class="d-flex align-items-center pr-3">여자</p>
+        <div>
+            <input type="checkbox" id="gender"/>
+            <label for="gender">
+                <span class="knob"><i></i></span>
+            </label>
+        </div>
+        <p class="d-flex align-items-center pl-3">남자</p>
+    </section>
+
+    <div class="mt-3 container file-upload">
+        <div class="image-upload-wrap">
+            <input class="file-upload-input" id="file-upload-input" type="file" onchange="readURL(this);" accept="image/*"/>
+            <div class="drag-text">
+                <img src="img/upload.png" class="mt-5 pt-5 upload"/>
+                <h3 class="mb-5 pb-5 pt-4 upload-text">
+                    얼굴 사진을<br> 올려놓거나 <br>눌러서 <br>업로드하세요!
+                </h3>
+            </div>
+        </div>
+
+        <div class="file-upload-content">
+            <img class="file-upload-image" id="face-image" src="#" alt="your image"/>
+            <div id="loading" class="animated bounce">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="text-center">AI가 당신의 외모를 분석중입니다.</p>
+            </div>
+            <!-- 결과 메시지와 설명 요소 추가 -->
+            <p id="result-message" class="result-message"></p> <!-- 예측 결과와 설명을 여기에 표시 -->
+            <p id="result-description" class="result-description"></p> <!-- celebrityData 설명을 여기에 표시 -->
+            
+            <div id="label-container" class="d-flex flex-column justify-content-around"></div> <!-- 막대 그래프 출력 -->
+            <div class="addthis_inline_share_toolbox_czma"></div>
+            <div class="pt-3 image-title-wrap">
+                <button type="button" class="try-again-btn" onclick="window.location.reload();">
+                    <span class="try-again-text">다른 사진으로 재시도</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer pt-5 container d-flex justify-content-center">
+        <div>
+            <p>    사진은 저장되지 않습니다. </br> &copy;  Industrial AI 2020. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const modelPaths = {
+            male: '/AI_model/AI_rich_pool_male/model.json',
+            female: '/AI_model/AI_rich_pool_female/model.json'
+        };
+        let model;
+        let isMaleModel = true;
+
+        // 부자 얼굴 데이터 (이름 및 설명)
+        const celebrityData = {
+		male: {
+        'Jay Y. Lee (이재용)': '이재용님처럼 강력한 리더십과 끈기 있는 성격을 가진 성공의 아이콘이군요! 당신은 반드시 부자가 될 수 있어요!',
+        'Cho Jung-ho (조정호)': '조정호님처럼 전략적 사고와 철저한 계획으로 사업을 이끄는 분이시네요! 성공이 곁에 있습니다!',
+        'Seo Jung-jin (서정진)': '서정진님 같은 혁신적 기업가의 기질을 가지셨습니다. 당신은 성공과 함께 걷고 있어요!',
+        'Mong-Koo Chung (정몽구)': '정몽구님처럼 도전정신과 한계를 모르는 의지가 강하신 분이십니다! 부자가 될 자격 충분해요!',
+        'Euisun Chung (정의선)': '정의선님처럼 창의적 시선으로 새로운 길을 여는 타입이세요! 부자로의 길이 보장되었습니다!',
+        'Kwon Hyuk-bin (권혁빈)': '권혁빈님과 같은 독창적 비전으로 사업을 확장해가는 모습이 성공적입니다! 부자가 될 가능성이 높아요!',
+        'Kim Beom-su (김범수)': '김범수님처럼 사회적 기여와 성장을 중요시하는 타입! 성공이 기대됩니다!',
+        'Park Soon-jae (박순재)': '박순재님 같은 철저함과 성실함으로 성공을 향해 걷는 분이시군요! 부자가 될 운명을 가지셨습니다!',
+        'Kwak Dong Shin (곽동신)': '곽동신님처럼 사람과 사업을 연결시키는 능력이 탁월합니다! 성공이 보장되어 있어요!',
+        'Bang Si-hyuk (방시혁)': '방시혁님처럼 창의적 리더십과 독창성으로 세상을 변화시키는 분입니다! 부자의 길이 보장되어 있습니다!',
+        'Koo Kwang-mo (구광모)': '구광모님처럼 안정감과 책임감으로 사업을 이끄는 리더십을 가지셨습니다. 성공이 곧 찾아올 것입니다!',
+        'Kim Jung-min (김정민)': '김정민님처럼 혁신적이고 적극적 성격으로 사업을 번창시키는 타입입니다! 부자로 향하는 길이 열려 있습니다!',
+        'Kim Ki-duk (김기덕)': '김기덕님처럼 예술적 감각과 창의성으로 성공을 이끄는 당신은 부자의 운명을 타고났습니다!',
+        'Lee Woo-jong (이우종)': '이우종님 같은 조직 관리 리더십을 가진 분이군요! 부자가 될 가능성이 높습니다!',
+        'Kang Dae-soo (강대수)': '강대수님처럼 신중함과 전략적 사고로 성장하는 분이세요! 성공이 보장되어 있습니다!',
+        'Choi Jung-hoon (최정훈)': '최정훈님처럼 단단한 의지로 사업에 도전하는 모습이 성공을 예고합니다! 부자가 될 운명을 타고나셨습니다!',
+        'Kim Kwang-tae (김광태)': '김광태님처럼 통찰력과 끈기로 성공을 이뤄내는 분이시네요! 부자가 될 가능성이 높습니다!',
+        'Lee Hyung-taek (이형택)': '이형택님처럼 탄탄한 기본기를 바탕으로 성장하는 분입니다. 성공은 이미 보장된 것 같아요!',
+        'Lee Chang-keun (이창근)': '이창근님처럼 강한 의지로 장애를 극복하며 성공을 쌓아가시는 분이세요! 부자가 될 기회가 다가오고 있습니다!',
+        'Park Kyung-woo (박경우)': '박경우님 같은 세심함과 철저함으로 사업에 임하는 타입이세요! 성공이 가까이에 있습니다!',
+        
+        // 가난한 인물들
+        'Park Soo-hong (박수홍)': '사업에 대한 끊임없는 도전! 박수홍님처럼 실패에도 굴하지 않는 모습이 멋져요. 부자는 다음 생에 기대하세요!',
+        'Kim Kook-jin (김국진)': '김국진님 같은 끈질긴 도전정신이 있으시군요! 부자는… 다음 생에서 만나요!',
+        'Yoo Jae-suk (유재석)': '유재석님처럼 항상 긍정적이고 도전을 즐기는 모습이세요! 부자는 아닐지라도 행복을 얻으실 겁니다!',
+        'Shin Dong-yup (신동엽)': '신동엽님 같은 유쾌한 성격으로 도전을 즐기는 타입! 부자는… 다음 생에서 기대해보세요!',
+        'Yoon Jung-soo (윤정수)': '윤정수님처럼 실패를 배우며 나아가는 분이세요. 부자는 다음 기회에 기대하는 게 좋겠어요!',
+        'Hong Seok-cheon (홍석천)': '사업은 접었지만 여전히 빛나는 모습! 부자는 아니더라도 인생의 성공은 이미 있으시네요!',
+        'Lee Kyung-kyu (이경규)': '이경규님처럼 다양한 도전을 즐기며 배움을 얻는 타입! 부자는 아니지만 인생의 즐거움이 가득할 겁니다!',
+        'Kim Hee-chul (김희철)': '김희철님처럼 늘 새로운 도전을 꿈꾸는 분이세요! 부자는 아닐지라도 멋진 삶을 즐기실 겁니다!',
+        'Ha Dong-hoon (하동훈)': '하동훈님 같은 유쾌한 에너지로 도전을 이어가세요! 부자는… 다음 생에 기대해봅시다!',
+        'Kim Tae-gyun (김태균)': '김태균님처럼 열정적으로 도전하며 배움을 얻는 타입이세요! 부자는 다음 기회에 기대하세요!',
+        'Seo Jang-hoon (서장훈)': '서장훈님 같은 끊임없는 도전정신! 부자는 아니지만 인생의 즐거움은 충분할 거예요!',
+        'Jung Hyung-don (정형돈)': '정형돈님처럼 실패해도 굴하지 않고 도전하는 모습이 멋져요. 부자는 아니지만 인생을 즐기세요!',
+        'Park Myung-soo (박명수)': '박명수님 같은 끊임없는 도전과 실패의 반복! 부자는… 다음 생에서 기대해봐요!',
+        'Lee Soo-geun (이수근)': '이수근님처럼 유머와 열정으로 도전하는 모습이 인상적입니다! 부자는 잠시 미뤄두죠!',
+        'Noh Hong-chul (노홍철)': '노홍철님 같은 밝은 에너지로 도전을 이어가세요! 부자는 다음 생에서 기대해보세요!',
+        'Lee Sang-min (이상민)': '이상민님처럼 실패해도 웃으며 도전하는 모습! 부자는 아니지만 인생의 재미는 보장됩니다!',
+        'Jo Se-ho (조세호)': '조세호님처럼 끈질긴 도전정신으로 실패 속에서도 웃음을 잃지 마세요! 부자는 다음 기회에!',
+        'Kim Byung-man (김병만)': '김병만님 같은 무모한 도전정신으로 계속 도전하세요! 부자는 다음 생에 기대해보세요!',
+        'Defconn (데프콘)': '데프콘님처럼 끊임없는 도전과 배움을 추구하는 분입니다. 부자는 다음 기회에 기대해봅시다!',
+        'Jang Do-yeon (장도연)': '장도연님처럼 실패도 웃음으로 승화시키는 당신, 부자는 아닐지라도 행복은 보장될 거예요!'
+		},
+    	female: {
+			'Hong Ra-hee (홍라희)': '홍라희님처럼 세련된 안목과 자산 관리 능력을 가진 성공의 여왕이십니다! 당신은 반드시 부자가 될 수 있어요!',
+			'Lee Boo-jin (이부진)': '이부진님처럼 냉철하고 카리스마 넘치는 리더십으로 성공을 이끄는 모습이 멋져요! 부자가 될 수 있는 자질이 충만합니다!',
+			'Yoo Jung-hyun (유정현)': '유정현님과 같은 전략가의 성향을 가지셨네요. 성공은 이미 보장된 것 같군요! 부자로 가는 길이 열려 있습니다!',
+			'Lee Seo-hyun (이서현)': '이서현님처럼 창의적이며 결단력이 뛰어난 당신은 이미 성공의 길 위에 있습니다. 부자가 될 기회가 다가오고 있어요!',
+			'Lee Su-jin (이수진)': '이수진님 같은 철저함과 책임감으로 사업을 성장시키는 주역이십니다! 부자가 될 운명을 타고났군요!',
+			'Kim Jung-youn (김정윤)': '김정윤님처럼 자신감과 냉철함으로 사업을 이끄는 파워풀한 리더입니다! 부자가 될 가능성이 높습니다!',
+			'Park Young-sook (박영숙)': '박영숙님처럼 대담하면서도 섬세한 감각으로 모든 사업을 이끌 수 있는 자질이 넘칩니다. 성공이 눈앞에 있어요!',
+			'Kim Hye-sun (김혜선)': '김혜선님처럼 목표를 이루기 위해 끈질기게 도전하는 모습이 성공으로 이끌 것입니다. 당신은 반드시 부자가 될 수 있어요!',
+			'Yoon Sun-mi (윤선미)': '윤선미님처럼 도전적이고 주도적인 성격으로 모든 것을 이겨내는 당신, 부자가 될 운명을 타고났습니다!',
+			'Shin Ji-yoon (신지윤)': '신지윤님 같은 뛰어난 리더십과 창의성을 가진 분, 성공은 이미 보장된 것 같군요! 당신은 부자가 될 가능성이 높습니다!',
+
+			// Poor female
+			'Lee Young-ja (이영자)': '이영자님처럼 넘치는 유머 감각으로 힘든 순간을 이겨내시는 분! 부자는... 다음 생에 기대하세요!',
+			'Kim Sook (김숙)': '김숙님과 같은 쾌활한 성격으로 주변을 즐겁게 하는 분이세요. 부자는 다음 생에 기대하는 게 좋겠어요!',
+			'Park Na-rae (박나래)': '박나래님처럼 유머와 개성으로 사랑받는 타입! 성공은 따로 있겠지만, 부자는… 다음 기회에!',
+			'Ahn Young-mi (안영미)': '안영미님처럼 언제나 즐거움을 주는 당신, 부자보다는 행복을 얻을 가능성이 높군요!',
+			'Shin Bong-sun (신봉선)': '신봉선님처럼 밝은 에너지를 가진 분, 성공은 멀지 않았지만, 부자는 다음 생에서 만나요!',
+			'Hong Hyun-hee (홍현희)': '홍현희님 같은 유쾌함으로 모두에게 행복을 주시는 분이시네요. 부자는 잠시 뒤로 미뤄두죠!',
+			'Jessi (제시)': '제시님처럼 강한 개성과 자신감이 넘치는 분! 부자는 아니더라도 멋진 인생은 보장됩니다!',
+			'Song Eun-i (송은이)': '송은이님 같은 따뜻한 매력으로 어려움 속에서도 도전하는 당신을 응원합니다! 부자는 아니더라도 행복한 삶이 기다리고 있어요!',
+			'Kim Shin-young (김신영)': '김신영님처럼 실패 속에서도 웃음을 잃지 않는 긍정적인 에너지를 가진 분! 부자는 다음 생에서 기대하세요!',
+			'Kim Ji-min (김지민)': '김지민님처럼 실패해도 다시 도전하는 밝은 에너지가 돋보이는 스타일이세요!',
+
+			'Park Kyung-rim (박경림)': '박경림님 같은 따뜻하고 꾸준한 도전정신으로 어려움을 헤쳐나가는 분! 부자는… 다음 기회에!',
+			'Jo Hye-ryun (조혜련)': '조혜련님처럼 실패해도 다시 도전하는 밝은 에너지가 넘치는 분이시네요!',
+			'Kim Hyun-sook (김현숙)': '김현숙님 같은 도전 정신으로 실패에도 불구하고 재도전하는 의지가 강한 분! 부자는 다음 생에서 기대하세요!',
+			'Jung Joo-ri (정주리)': '정주리님처럼 어려움을 웃음으로 승화시키며 도전하는 모습이 인상적입니다!',
+			'Lee Gook-joo (이국주)': '이국주님 같은 유머와 긍정적인 마음으로 실패에도 다시 도전하는 타입! 부자는 아니지만 행복한 삶이 기다리고 있어요!',
+			'Jang Do-yeon (장도연)': '장도연님처럼 실패도 웃음으로 승화시키며 재도전을 즐기는 분이세요! 부자는 아니지만 멋진 인생을 즐기세요!',
+			'Kim Mi-hwa (김미화)': '김미화님 같은 강한 의지와 따뜻한 마음으로 실패에도 포기하지 않는 타입! 부자는 아니지만 행복이 곁에 있을 겁니다!',
+			'Yoo Hye-young (유혜영)': '유혜영님처럼 모든 상황에서 웃음을 주는 타입, 부자는 잠시 미뤄두고 행복을 즐기세요!'
+		}
+    };
+
+        // celebrityNames 변수 추가
+        const celebrityNames = {
+            male: ['Jay Y. Lee (이재용)', 'Cho Jung-ho (조정호)', 'Seo Jung-jin (서정진)', 'Mong-Koo Chung (정몽구)', 'Euisun Chung (정의선)', 
+					'Kwon Hyuk-bin (권혁빈)', 'Kim Beom-su (김범수)', 'Park Soon-jae (박순재)', 'Kwak Dong Shin (곽동신)', 'Bang Si-hyuk (방시혁)', 
+					'Koo Kwang-mo (구광모)', 'Kim Jung-min (김정민)', 'Kim Ki-duk (김기덕)', 'Lee Woo-jong (이우종)', 'Kang Dae-soo (강대수)', 
+					'Choi Jung-hoon (최정훈)', 'Kim Kwang-tae (김광태)', 'Lee Hyung-taek (이형택)', 'Lee Chang-keun (이창근)', 'Park Kyung-woo (박경우)',
+					'Park Soo-hong (박수홍)', 'Kim Kook-jin (김국진)', 'Yoo Jae-suk (유재석)', 'Shin Dong-yup (신동엽)', 'Yoon Jung-soo (윤정수)',
+					'Hong Seok-cheon (홍석천)', 'Lee Kyung-kyu (이경규)', 'Kim Hee-chul (김희철)', 'Ha Dong-hoon (하동훈)', 'Kim Tae-gyun (김태균)',
+					'Seo Jang-hoon (서장훈)', 'Jung Hyung-don (정형돈)', 'Park Myung-soo (박명수)', 'Lee Soo-geun (이수근)', 'Noh Hong-chul (노홍철)',
+					'Lee Sang-min (이상민)', 'Jo Se-ho (조세호)', 'Kim Byung-man (김병만)', 'Defconn (데프콘)'
+    		],
+            female: [
+					'Hong Ra-hee (홍라희)', 'Lee Boo-jin (이부진)', 'Yoo Jung-hyun (유정현)', 'Lee Seo-hyun (이서현)', 'Lee Su-jin (이수진)', 
+					'Kim Jung-youn (김정윤)', 'Park Young-sook (박영숙)', 'Kim Hye-sun (김혜선)', 'Yoon Sun-mi (윤선미)', 'Shin Ji-yoon (신지윤)',
+					'Lee Young-ja (이영자)', 'Kim Sook (김숙)', 'Park Na-rae (박나래)', 'Ahn Young-mi (안영미)', 'Shin Bong-sun (신봉선)',
+					'Hong Hyun-hee (홍현희)', 'Jessi (제시)', 'Song Eun-i (송은이)', 'Kim Shin-young (김신영)', 'Kim Ji-min (김지민)',
+					'Park Kyung-rim (박경림)', 'Jo Hye-ryun (조혜련)', 'Kim Hyun-sook (김현숙)', 'Jung Joo-ri (정주리)', 'Lee Gook-joo (이국주)',
+					'Jang Do-yeon (장도연)', 'Kim Mi-hwa (김미화)', 'Yoo Hye-young (유혜영)'
+            ]
+        };
+
+
+        // 모델 로드 함수
+        async function loadGenderModel() {
+            const modelPath = isMaleModel ? modelPaths.male : modelPaths.female;
+            try {
+                model = await tf.loadLayersModel(modelPath);
+                console.log(`${isMaleModel ? "남자" : "여자"} 모델이 로드되었습니다.`);
+            } catch (error) {
+                console.error('Error loading the model:', error);
+            }
+        }
+
+        // 페이지 로드 시 모델 로드 및 성별 전환 이벤트 핸들러 설정
+        window.onload = function() {
+            isMaleModel = document.getElementById('gender').checked;
+            loadGenderModel();
+
+            document.getElementById('gender').addEventListener('change', () => {
+                isMaleModel = document.getElementById('gender').checked;
+                loadGenderModel();
+            });
+        };
+
+        // 이미지 업로드 및 표시 함수
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.querySelector('.image-upload-wrap').style.display = 'none';
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('face-image').src = e.target.result;
+                    document.querySelector('.file-upload-content').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+                setTimeout(() => {
+                    predict();
+                    document.getElementById('loading').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // 이름의 중간 글자를 *로 표시하도록 변환하는 함수
+        function obfuscateName(name) {
+            // 영어 이름 변환
+            name = name.replace(/(\S)\S+(\s*\S+)/, '$1*$2');
+            // 한글 이름 변환 (괄호 안에 있는 한글에 적용)
+            name = name.replace(/(\()[가-힣]{1}(.*)[가-힣]{1}(\))/g, (match, p1, p2, p3) => {
+                return `${p1}${p2[0]}*${p2.slice(1)}${p3}`;
+            });
+            return name;
+        }
+
+
+
+        // 모델 예측 함수 내에서 displayTop5Predictions를 호출하여 상위 5개 표시
+        async function predict() {
+            try {
+                if (!model) throw new Error("모델이 아직 로드되지 않았습니다.");
+
+                const imgElement = document.getElementById('face-image');
+                const img = tf.browser.fromPixels(imgElement)
+                    .resizeNearestNeighbor([224, 224])
+                    .toFloat()
+                    .div(tf.scalar(255))
+                    .expandDims();
+
+                const predictions = await model.predict(img).data();
+                const topPredictions = Array.from(predictions)
+                    .map((p, i) => ({
+                        probability: p,
+                        className: celebrityNames[isMaleModel ? 'male' : 'female'][i]
+                    }))
+                    .sort((a, b) => b.probability - a.probability);
+
+                displayTop5Predictions(topPredictions);
+
+                const topCelebrity = topPredictions[0];
+                const obfuscatedName = obfuscateName(topCelebrity.className);  // 이름을 가린 버전으로 출력
+                document.querySelector(".result-message").innerText =
+                    `${obfuscatedName}와 닮으셨네요! (${Math.round(topCelebrity.probability * 100)}%)`;
+                document.querySelector(".result-description").innerText =
+                    celebrityData[isMaleModel ? 'male' : 'female'][topCelebrity.className] || '설명 없음';
+
+            } catch (error) {
+                console.error('Error during prediction:', error);
+            }
+        }
+
+        // 가장 비슷한 5명의 연예인과 확률을 그래프로 보여주기
+        function displayTop5Predictions(predictions) {
+            const top5 = predictions.slice(0, 5);
+            let labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; // 기존 내용 삭제
+
+            top5.forEach((prediction) => {
+                const obfuscatedName = obfuscateName(prediction.className); // 이름을 가린 버전으로 표시
+                const probability = Math.round(prediction.probability * 100);
+                const barWidth = probability > 10 ? `${probability}%` : '2%';
+
+                const label = `<div class='label d-flex align-items-center'>${obfuscatedName}</div>`;
+                const bar = `
+                    <div class='bar-container position-relative'>
+                        <div class='bar' style='width: ${barWidth};'>
+                            <span class='percent-text'>${probability}%</span>
+                        </div>
+                    </div>
+                `;
+
+                labelContainer.innerHTML += `<div class='result-item'>${label}${bar}</div>`;
+            });
+        }
+
+
+
+    </script>
+
+
+    <!-- 여기는 댓글창 다는거 -->
+    <div id="disqus_thread"></div>
+    <script>
+        /**
+         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+        /*
+        var disqus_config = function () {
+        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        */
+        (function () {
+            // DON'T EDIT BELOW THIS LINE
+            var d = document,
+                s = d.createElement('script');
+            s.src = 'https://seoyoul0510.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript
+        >Please enable JavaScript to view the
+        <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+    >
+    <!-- 여기는 댓글창 다는거 -->
+
+
+</body>
+</html>

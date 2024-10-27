@@ -185,9 +185,11 @@ body {
 }
 
 .footer {
-	background-color: initial;
-	color: initial;
+    background-color: initial;
+    color: initial;
+    text-align: center; /* 콘텐츠를 중앙 정렬 */
 }
+
 
 .bar-container {
 	height: 2.7rem;
