@@ -81,10 +81,18 @@ body {
 	cursor: pointer;
 }
 
-.title, .subtitle {
+.title {
+	line-height: 1.0;
 	text-align: center;
-	color: #35465d;
-	margin-top: 20px;
+	color: #f34312;
+	font-size: 2.5rem;
+}
+
+.subtitle {
+	line-height: 1.53;
+	text-align: center;
+	color: #5815d4;
+	font-size: 2.0rem;
 }
 
 /* Footer */

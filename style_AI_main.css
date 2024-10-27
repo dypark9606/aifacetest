@@ -4,15 +4,6 @@
 	outline: 1px dotted blue;
 }
 
-body {
-	font-family: 'Jua', sans-serif;
-	background-image: url('img/img_back_1.jpg');
-	background-repeat: repeat;
-	color: #35465d;
-	height: 100%;
-}
-
-
 .tabs > ul {
 	font-family: 'Jua', sans-serif;
 	position: relative;
@@ -48,7 +39,7 @@ body {
 	/* padding: 10px; */
 	padding-top: 15px;
 	padding-right: 0px;
-	padding-bottom: 1px;
+	padding-bottom: 5px;
 	padding-left: 0px;
 	text-decoration: none;
 	text-align: center;
@@ -116,19 +107,3 @@ a[href$='section5'] {
 	display: none;
 }
 /* 여기는 tab css 마지막 */
-
-.footer {
-	background-color: initial;
-	font-family: 'Jua', sans-serif;
-	color: initial;
-	font-size: 20;
-	text-align: center;
-
-}
-
-.ad-banner {
-	width: 100%;
-	padding: 1% 6%;
-	margin: 0 auto;
-}
-
