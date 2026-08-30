@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>신년운세</title>
+		<meta name="title" content="신년운세 무료로 보기" />
+		<meta name="subject" content="생년월일로 보는 올해의 총운, 재물운, 애정운, 건강운" />
+		<meta
+			name="keywords"
+			content="신년운세, 올해 운세, 무료 운세, 띠별 운세, 사주 운세, 세운, 재물운, 애정운, 건강운"
+		/>
+		<meta name="author" content="PDY" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="신년운세" />
+		<meta
+			property="og:description"
+			content="생년월일만 넣으면 올해의 기운이 나에게 어떻게 들어오는지 총운·재물운·애정운·건강운으로 풀어 드립니다."
+		/>
+		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="style_Sec6.css" />
+		<link rel="stylesheet" href="style_common.css" />
+		<link rel="shortcut icon" href="./img/favicon.ico" />
+		<script src="js/saju.js"></script>
+		<script src="js/saju_text.js"></script>
+		<script src="js/roast.js"></script>
+	</head>
+
+	<body>
+		<div class="saju-wrap">
+			<h1 class="saju-title">신년운세</h1>
+			<p class="saju-sub" id="fo-sub">올해의 기운이 나에게 어떻게 들어오는지 봅니다</p>
+
+			<div class="saju-form">
+				<div class="saju-row">
+					<label for="fo-y">생년월일</label>
+					<input type="number" id="fo-y" min="1900" max="2100" placeholder="1990" /> 년
+					<input type="number" id="fo-m" min="1" max="12" placeholder="1" /> 월
+					<input type="number" id="fo-d" min="1" max="31" placeholder="1" /> 일
+				</div>
+				<div class="saju-row">
+					<label for="fo-target">볼 연도</label>
+					<select id="fo-target"></select>
+				</div>
+				<button type="button" class="saju-btn" id="fo-go">운세 보기</button>
+				<div class="saju-error" id="fo-err"></div>
+			</div>
+
+			<div class="saju-result" id="fo-res"></div>
+
+			<p class="saju-note">
+				※ 양력 생년월일 기준입니다. 사주에서 해의 경계는 1월 1일이 아니라 입춘이므로,
+				2월 초 이전에 태어난 분은 앞 해의 간지로 계산됩니다.
+				운세는 재미로 보는 콘텐츠이며, 중요한 결정의 근거로 삼지 마세요.
+			</p>
+		</div>
+
+		<script>
+			(function () {
+				var $ = function (id) { return document.getElementById(id); };
+				var thisYear = new Date().getFullYear();
+
+				/* 볼 연도 선택지: 올해와 내년 */
+				(function () {
+					var sel = $('fo-target');
+					[thisYear, thisYear + 1].forEach(function (y, i) {
+						var p = Saju.yearPillar(y);
+						var o = document.createElement('option');
+						o.value = y;
+						o.textContent = y + '년 (' + p.ko + '년 · ' + Saju.ZODIAC[p.jiIdx] + '띠 해)';
+						if (i === 0) o.selected = true;
+						sel.appendChild(o);
+					});
+				})();
+
+				function card(title, body) {
+					return '<div class="saju-card"><h3>' + title + '</h3><p>' + body + '</p></div>';
+				}
+
+				function render(r, targetYear) {
+					var T = SajuText;
+					var yp = Saju.yearPillar(targetYear);
+					var me = r.dayMasterElem;
+					/* 그 해의 천간 오행이 나에게 오는 십성 = 한 해의 큰 흐름 */
+					var god = Saju.tenGod(me, yp.ganElem);
+					var godJi = Saju.tenGod(me, yp.jiElem);
+					var g = T.TEN_GOD_YEAR[god];
+					var g2 = T.TEN_GOD_YEAR[godJi];
+					var seed = r.day.index * 13 + targetYear;
+
+					var head =
+						'<div class="pillars">' +
+							'<div class="pillar is-day"><div class="p-label">나 (일주)</div>' +
+								'<div class="p-hanja">' + r.day.hanja + '</div>' +
+								'<div class="p-ko">' + r.day.ko + '</div>' +
+								'<div class="p-elem">일간 ' + r.dayMasterElem + '</div></div>' +
+							'<div class="pillar"><div class="p-label">' + targetYear + '년 (세운)</div>' +
+								'<div class="p-hanja">' + yp.hanja + '</div>' +
+								'<div class="p-ko">' + yp.ko + '</div>' +
+								'<div class="p-elem">' + yp.ganElem + ' · ' + yp.jiElem + '</div></div>' +
+						'</div>';
+
+					var intro =
+						targetYear + '년은 ' + yp.ko + '년, ' + Saju.ZODIAC[yp.jiIdx] + '띠 해입니다. ' +
+						'당신의 일간은 ' + r.day.ganH + '(' + r.dayMasterElem + ')이고, ' +
+						'올해의 기운 ' + yp.ganH + '(' + yp.ganElem + ')은 당신에게 <b>' + god + '</b>으로 들어옵니다. ' +
+						(god === godJi ? '지지까지 같은 흐름이라 기운이 한쪽으로 뚜렷합니다.'
+									   : '지지 ' + yp.jiH + '(' + yp.jiElem + ')은 <b>' + godJi + '</b>이라, 두 흐름이 섞여 돌아갑니다.');
+
+					return head +
+						card(targetYear + '년 총운 · ' + g.tone, intro + '<br><br>' + g.total +
+							(god === godJi ? '' : '<br><br>여기에 ' + godJi + '의 색이 더해집니다. ' + g2.total)) +
+						card('재물운', g.money + (god === godJi ? '' : ' ' + g2.money)) +
+						card('애정운', g.love + (god === godJi ? '' : ' ' + g2.love)) +
+						card('건강운', g.health + (god === godJi ? '' : ' ' + g2.health)) +
+						card('올해의 조언', g.advice + ' ' +
+							T.pick(T.YEAR_LUCK.조언, seed)) +
+						card(r.zodiac + '띠 한마디', T.ZODIAC[r.zodiac]) +
+						roastHTML('celeb');
+				}
+
+				$('fo-go').addEventListener('click', function () {
+					$('fo-err').textContent = '';
+					var y = parseInt($('fo-y').value, 10),
+						m = parseInt($('fo-m').value, 10),
+						d = parseInt($('fo-d').value, 10);
+					if (!y || !m || !d || y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) {
+						$('fo-err').textContent = '생년월일을 다시 확인해 주세요. (1900 ~ 2100년, 양력)';
+						return;
+					}
+					var chk = new Date(y, m - 1, d);
+					if (chk.getFullYear() !== y || chk.getMonth() !== m - 1 || chk.getDate() !== d) {
+						$('fo-err').textContent = '없는 날짜입니다. 다시 확인해 주세요.';
+						return;
+					}
+					var r = Saju.calc(y, m, d, 12, 0, {unknownTime: true});
+					var target = parseInt($('fo-target').value, 10);
+					var box = $('fo-res');
+					box.innerHTML = render(r, target);
+					box.style.display = 'block';
+					box.scrollIntoView({behavior: 'smooth', block: 'start'});
+				});
+			})();
+		</script>
+	</body>
+</html>

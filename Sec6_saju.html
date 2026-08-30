@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=0.65, shrink-to-fit=no" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>사주팔자</title>
+		<meta name="title" content="사주팔자 무료로 보기" />
+		<meta name="subject" content="생년월일과 태어난 시간으로 사주팔자 네 기둥과 오행을 계산합니다." />
+		<meta
+			name="keywords"
+			content="사주팔자, 사주, 무료 사주, 만세력, 일주, 일간, 오행, 육십갑자, 띠, 사주 계산기"
+		/>
+		<meta name="author" content="PDY" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="사주팔자" />
+		<meta
+			property="og:description"
+			content="생년월일과 태어난 시간만 넣으면 사주팔자 네 기둥(연주·월주·일주·시주)과 오행 분포를 바로 계산해 드립니다."
+		/>
+		<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="style_Sec6.css" />
+		<link rel="stylesheet" href="style_common.css" />
+		<link rel="shortcut icon" href="./img/favicon.ico" />
+		<script src="js/saju.js"></script>
+		<script src="js/saju_text.js"></script>
+		<script src="js/roast.js"></script>
+	</head>
+
+	<body>
+		<div class="saju-wrap">
+			<h1 class="saju-title">사주팔자</h1>
+			<p class="saju-sub">태어난 날짜와 시간으로 네 기둥(연주·월주·일주·시주)을 뽑아 드립니다</p>
+
+			<div class="saju-form">
+				<div class="saju-row">
+					<label for="sj-y">생년월일</label>
+					<input type="number" id="sj-y" min="1900" max="2100" placeholder="1990" /> 년
+					<input type="number" id="sj-m" min="1" max="12" placeholder="1" /> 월
+					<input type="number" id="sj-d" min="1" max="31" placeholder="1" /> 일
+				</div>
+				<div class="saju-row">
+					<label for="sj-h">태어난 시각</label>
+					<input type="number" id="sj-h" min="0" max="23" placeholder="0" /> 시
+					<input type="number" id="sj-mi" min="0" max="59" placeholder="0" /> 분
+				</div>
+				<div class="saju-row">
+					<label></label>
+					<label class="saju-check">
+						<input type="checkbox" id="sj-unknown" /> 태어난 시각을 모릅니다 (시주 제외)
+					</label>
+				</div>
+				<div class="saju-row">
+					<label></label>
+					<label class="saju-check">
+						<input type="checkbox" id="sj-tst" checked /> 진태양시 보정 (한국 경도 기준 약 -32분)
+					</label>
+				</div>
+				<button type="button" class="saju-btn" id="sj-go">사주 뽑기</button>
+				<div class="saju-error" id="sj-err"></div>
+			</div>
+
+			<div class="saju-result" id="sj-res"></div>
+
+			<p class="saju-note">
+				※ 양력 생년월일을 기준으로 계산합니다. 해의 경계는 입춘, 달의 경계는 24절기 중 절(節)을 씁니다.
+				절기 시각은 천문 근사식으로 구하므로 절기가 바뀌는 순간에 아주 가까운 경우 만세력과 다를 수 있습니다.
+				사주 풀이는 재미로 보는 콘텐츠이며, 중요한 결정의 근거로 삼지 마세요.
+			</p>
+		</div>
+
+		<script>
+			(function () {
+				var $ = function (id) { return document.getElementById(id); };
+
+				function elemBars(counts, total) {
+					return '<div class="elem-bars">' + Saju.ELEMS.map(function (e) {
+						var n = counts[e], pct = total ? Math.round((n / total) * 100) : 0;
+						return '<div class="elem-bar">' +
+							'<span class="eb-name">' + e + '</span>' +
+							'<span class="eb-track"><span class="eb-fill" style="width:' +
+								Math.max(pct, 3) + '%;background:' + Saju.ELEM_COLOR[e] + '"></span></span>' +
+							'<span class="eb-num">' + n + '</span></div>';
+					}).join('') + '</div>';
+				}
+
+				function pillarBox(label, p, isDay) {
+					if (!p) {
+						return '<div class="pillar"><div class="p-label">' + label + '</div>' +
+							'<div class="p-hanja">?</div><div class="p-ko">시각 모름</div>' +
+							'<div class="p-elem">&nbsp;</div></div>';
+					}
+					return '<div class="pillar' + (isDay ? ' is-day' : '') + '">' +
+						'<div class="p-label">' + label + '</div>' +
+						'<div class="p-hanja">' + p.hanja + '</div>' +
+						'<div class="p-ko">' + p.ko + '</div>' +
+						'<div class="p-elem">' + p.ganElem + ' · ' + p.jiElem + '</div></div>';
+				}
+
+				function strongest(r) {
+					return Saju.ELEMS.slice().sort(function (a, b) {
+						return r.elements[b] - r.elements[a];
+					})[0];
+				}
+				function weakest(r) {
+					return Saju.ELEMS.slice().sort(function (a, b) {
+						return r.elements[a] - r.elements[b];
+					})[0];
+				}
+
+				function render(r) {
+					var T = SajuText;
+					var dm = T.DAY_MASTER[r.dayMaster];
+					var many = [], none = [];
+					Saju.ELEMS.forEach(function (e) {
+						if (r.elements[e] >= 3) many.push(T.ELEM_MANY[e]);
+						if (r.elements[e] === 0) none.push(T.ELEM_NONE[e]);
+					});
+					var seed = r.day.index * 7 + r.year.index;
+
+					var html =
+						'<div class="pillars">' +
+							pillarBox('시주', r.time, false) +
+							pillarBox('일주', r.day, true) +
+							pillarBox('월주', r.month, false) +
+							pillarBox('연주', r.year, false) +
+						'</div>' +
+
+						'<div class="saju-card"><h3>' + dm.title + '</h3><p>' + dm.body + '</p>' +
+						'<p>사주에서 일간(日干)은 나 자신을 뜻하는 글자입니다. 위 네 기둥 중 빨간 테두리가 일주이고, 그 윗글자 「' +
+						r.day.ganH + '」가 당신입니다.</p></div>' +
+
+						'<div class="saju-card"><h3>오행 분포</h3>' + elemBars(r.elements, r.elementTotal) +
+						(many.length ? '<p>' + many.join(' ') + '</p>' : '') +
+						(none.length ? '<p>' + none.join(' ') + '</p>' : '') +
+						(!many.length && !none.length ? '<p>다섯 기운이 크게 치우치지 않고 고르게 섞여 있습니다. 어느 쪽으로도 무리 없이 굴러가는 편안한 구성입니다.</p>' : '') +
+						'</div>' +
+
+						'<div class="saju-card"><h3>' + r.sajuYear + '년 ' + r.year.ko + '년생 · ' + r.zodiac + '띠</h3>' +
+						'<p>' + T.ZODIAC[r.zodiac] + '</p>' +
+						'<p>태어난 달은 ' + r.term + ' 절기 구간(' + r.month.ko + '월)입니다.' +
+						(r.unknownTime ? ' 태어난 시각을 몰라 시주는 뺐습니다. 시각을 알면 훨씬 자세해집니다.' : '') +
+						'</p></div>' +
+
+						'<div class="saju-card"><h3>한 줄 요약</h3><p>' +
+						'일간 ' + r.day.ganH + '(' + r.day.gan + ') · ' + r.zodiac + '띠 · ' +
+						'가장 강한 기운은 ' + strongest(r) + ', 가장 약한 기운은 ' + weakest(r) + '입니다. ' +
+						T.pick(['타고난 판을 아는 것과 그렇게 사는 건 다른 문제입니다.',
+								'사주는 지도일 뿐이고, 운전은 본인이 합니다.',
+								'좋은 사주보다 꾸준한 사람이 이깁니다. 늘 그랬습니다.'], seed) +
+						'</p></div>' +
+
+						roastHTML('celeb');
+					return html;
+				}
+
+				$('sj-unknown').addEventListener('change', function () {
+					var off = this.checked;
+					$('sj-h').disabled = off; $('sj-mi').disabled = off; $('sj-tst').disabled = off;
+				});
+
+				$('sj-go').addEventListener('click', function () {
+					$('sj-err').textContent = '';
+					var y = parseInt($('sj-y').value, 10),
+						m = parseInt($('sj-m').value, 10),
+						d = parseInt($('sj-d').value, 10);
+					var unknown = $('sj-unknown').checked;
+					var h = unknown ? 12 : parseInt($('sj-h').value || '0', 10);
+					var mi = unknown ? 0 : parseInt($('sj-mi').value || '0', 10);
+
+					if (!y || !m || !d || y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) {
+						$('sj-err').textContent = '생년월일을 다시 확인해 주세요. (1900 ~ 2100년, 양력)';
+						return;
+					}
+					var chk = new Date(y, m - 1, d);
+					if (chk.getFullYear() !== y || chk.getMonth() !== m - 1 || chk.getDate() !== d) {
+						$('sj-err').textContent = '없는 날짜입니다. 다시 확인해 주세요.';
+						return;
+					}
+					if (!unknown && (h < 0 || h > 23 || mi < 0 || mi > 59)) {
+						$('sj-err').textContent = '시각은 0~23시, 0~59분으로 넣어주세요.';
+						return;
+					}
+
+					var r = Saju.calc(y, m, d, h, mi, {
+						unknownTime: unknown,
+						trueSolarTime: $('sj-tst').checked && !unknown
+					});
+					var box = $('sj-res');
+					box.innerHTML = render(r);
+					box.style.display = 'block';
+					box.scrollIntoView({behavior: 'smooth', block: 'start'});
+				});
+			})();
+		</script>
+	</body>
+</html>

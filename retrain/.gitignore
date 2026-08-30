@@ -1,0 +1,5 @@
+# 학습/테스트 중에만 쓰는 임시 Chrome 프로필
+.chrome-profile/
+.selftest-profile/
+# 테스트용으로 복사해 둔 사진
+selftest/fixtures/

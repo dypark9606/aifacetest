@@ -20,6 +20,7 @@
 		/>
 		<meta name="author" content="PDY" />
 		<link rel="stylesheet" href="style_Sec1.css" />
+		<link rel="stylesheet" href="style_common.css" />
 		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
 		<meta property="og:url" content="www.naver.com" />
 		<meta property="og:type" content="website" />
@@ -48,6 +49,7 @@
 			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
 		></script>
 		<!-- 이게 공유 관련된 부분 -->
+		<script src="js/roast.js"></script>
 	</head>
 
 	<body>
@@ -324,7 +326,9 @@
 								resultCeleb +
 								'</div>';
 
-							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
+							var roastKey = /상위 10|상위 20/.test(resultTitle) ? 'appear_top'
+								: /30 ~ 50/.test(resultTitle) ? 'appear_mid' : 'appear_low';
+							$('.result-message').html(title + explain + celeb + roastHTML(roastKey)); // title, 설명, 연예인, 촌평
 
 							// 여기가 아래 그래프 기능이겠지
 							var barWidth;

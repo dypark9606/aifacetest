@@ -29,6 +29,7 @@
 		/>
 		<meta name="author" content="PDY" />
 		<link rel="stylesheet" href="style_Sec5.css" />
+		<link rel="stylesheet" href="style_common.css" />
 		<link rel="canonical" href="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
 		<!-- 대표 홈페이지 주소를 rel="canonical" 로 표시하는거다 -->
 		<meta property="og:url" content="https://test-ddtiy.run.goorm.io/test/Main_AI.html" />
@@ -50,6 +51,7 @@
 			src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60096f9908dbb7d2"
 		></script>
 		<!-- 이게 공유 관련된 부분 -->
+		<script src="js/roast.js"></script>
 	</head>
 
 	<body>
@@ -394,7 +396,7 @@
 								resultCeleb +
 								'</div>';
 
-							$('.result-message').html(title + explain + celeb); // title, 설명, 관련 연예인 표시
+							$('.result-message').html(title + explain + celeb + roastHTML('gangster')); // title, 설명, 연예인, 촌평
 
 
 

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8" /><title>selftest</title></head>
+<body>
+<pre id="out">RUNNING</pre>
+<iframe id="f" style="width:900px;height:700px"></iframe>
+<script>
+/* 앱 전체 회귀 테스트. 결과는 <pre id="out"> 에 쓴다. */
+const CFG = JSON.parse(decodeURIComponent(new URLSearchParams(location.search).get('cfg')));
+const out = document.getElementById('out'), frame = document.getElementById('f');
+const lines = [];
+let failed = 0;
+
+function record(ok, msg) {
+	if (!ok) failed++;
+	lines.push((ok ? 'PASS ' : 'FAIL ') + msg);
+	out.textContent = 'RUNNING\n' + lines.join('\n');
+}
+function loadFrame(src) {
+	return new Promise(r => { frame.onload = () => setTimeout(r, 400); frame.src = src; });
+}
+function loadImg(el, src) {
+	return new Promise((res, rej) => { el.onload = res; el.onerror = rej; el.src = src; });
+}
+
+async function faceCase(page, male, img, label) {
+	await loadFrame('../../' + page);
+	const w = frame.contentWindow, d = frame.contentDocument;
+	d.getElementById('gender').checked = male;
+	await loadImg(d.getElementById('face-image'), '../../' + img);
+	await w.init();
+	await w.predict();
+	await new Promise(r => setTimeout(r, 300));
+	const box = d.querySelector('.result-message');
+	const txt = (box.textContent || '').replace(/\s+/g, ' ').trim();
+	const hasRoast = !!box.querySelector('.roast-line');
+	const bad = !txt || /undefined|NaN|\[object/.test(txt);
+	record(!bad && hasRoast,
+		`${page} ${male ? '남' : '여'} [${label}] ${bad ? '결과 이상' : ''}${hasRoast ? '' : ' 촌평 없음'} -> ${txt.slice(0, 70)}`);
+}
+
+async function sajuCase(y, m, d, h, mi, unknown) {
+	await loadFrame('../../Sec6_saju.html');
+	const D = frame.contentDocument;
+	D.getElementById('sj-y').value = y; D.getElementById('sj-m').value = m; D.getElementById('sj-d').value = d;
+	D.getElementById('sj-h').value = h; D.getElementById('sj-mi').value = mi;
+	D.getElementById('sj-unknown').checked = !!unknown;
+	D.getElementById('sj-go').click();
+	await new Promise(r => setTimeout(r, 250));
+	const err = D.getElementById('sj-err').textContent.trim();
+	const txt = D.getElementById('sj-res').textContent.replace(/\s+/g, ' ');
+	const kos = [...D.querySelectorAll('#sj-res .pillar .p-ko')].map(e => e.textContent).join(' ');
+	const bad = !!err || /undefined|NaN|\[object/.test(txt) || txt.length < 200;
+	record(!bad, `사주 ${y}-${m}-${d} ${unknown ? '(시각모름)' : h + ':' + mi} -> [${kos}] ${err}`);
+}
+
+async function fortuneCase(y, m, d) {
+	await loadFrame('../../Sec7_fortune.html');
+	const D = frame.contentDocument;
+	D.getElementById('fo-y').value = y; D.getElementById('fo-m').value = m; D.getElementById('fo-d').value = d;
+	D.getElementById('fo-go').click();
+	await new Promise(r => setTimeout(r, 250));
+	const err = D.getElementById('fo-err').textContent.trim();
+	const txt = D.getElementById('fo-res').textContent.replace(/\s+/g, ' ');
+	const bad = !!err || /undefined|NaN|\[object/.test(txt) || txt.length < 200;
+	record(!bad, `운세 ${y}-${m}-${d} -> ${txt.slice(0, 60)} ${err}`);
+}
+
+async function labelCoverage() {
+	/* 모델 라벨이 전부 화면 설명과 연결되는지 (undefined 방지) */
+	for (const [mod, page, blockIdx] of CFG.coverage) {
+		const meta = await (await fetch('../../AI_model/' + mod + '/metadata.json')).json();
+		const html = await (await fetch('../../' + page)).text();
+		const blocks = [...html.matchAll(/var obj = \[([\s\S]*?)\n\s*\];/g)];
+		const names = new Set([...blocks[blockIdx][1].matchAll(/"name"\s*:\s*"([^"]*)"/g)].map(m => m[1]));
+		const missing = meta.labels.filter(l => !names.has(l));
+		record(missing.length === 0,
+			`설명 커버리지 ${mod} (라벨 ${meta.labels.length}개)` +
+			(missing.length ? ' 누락: ' + missing.join(', ') : ''));
+	}
+}
+
+(async () => {
+	try {
+		for (const c of CFG.face) await faceCase(c.page, c.male, c.img, c.label);
+		await labelCoverage();
+		for (const c of CFG.saju) await sajuCase(...c);
+		for (const c of CFG.fortune) await fortuneCase(...c);
+		/* 잘못된 입력 거부 */
+		await loadFrame('../../Sec6_saju.html');
+		const D = frame.contentDocument;
+		D.getElementById('sj-y').value = 1990; D.getElementById('sj-m').value = 2; D.getElementById('sj-d').value = 31;
+		D.getElementById('sj-go').click();
+		await new Promise(r => setTimeout(r, 150));
+		record(!!D.getElementById('sj-err').textContent.trim(), '없는 날짜(2월 31일) 입력 거부');
+	} catch (e) {
+		record(false, '예외: ' + (e && (e.stack || e.message)));
+	}
+	const summary = (failed ? 'FAILED(' + failed + ')' : 'ALL PASS') + '\n' + lines.join('\n');
+	out.textContent = summary;
+	/* 브라우저가 언제 끝났는지 파이썬이 알 수 있도록 결과를 보낸다 */
+	try {
+		await fetch('/__result', {
+			method: 'POST', headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({failed: failed, summary: summary})
+		});
+	} catch (e) { /* 서버가 없으면 무시 */ }
+})();
+</script>
+</body></html>

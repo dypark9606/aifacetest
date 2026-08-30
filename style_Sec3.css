@@ -485,3 +485,10 @@ input:checked + label > .knob > i:before {
 	width: 320px;
 	margin: 0 auto;
 }
+.monkey-animal-title {
+	color: #b5651d;
+}
+.monkey-animal-celeb {
+	color: #b5651d;
+	font-size: 1.2rem;
+}

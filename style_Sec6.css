@@ -1,0 +1,85 @@
+/* 사주팔자 / 신년운세 공용 스타일 */
+* { font-family: 'Jua', sans-serif; }
+
+body {
+	background: #fdfaf4;
+	color: #2f2a24;
+	margin: 0;
+	padding-bottom: 60px;
+}
+
+.saju-wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+
+.saju-title { text-align: center; font-size: 2.4rem; color: #8b2f2f; margin: 18px 0 4px; }
+.saju-sub { text-align: center; font-size: 1.15rem; color: #7a6a58; margin-bottom: 26px; }
+
+.saju-form {
+	background: #fff;
+	border: 2px solid #e6dcc8;
+	border-radius: 14px;
+	padding: 20px 18px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.saju-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
+.saju-row > label { width: 110px; font-size: 1.1rem; color: #5c4b38; }
+.saju-form input[type='number'], .saju-form select {
+	font-size: 1.05rem; padding: 7px 9px; border: 1px solid #d8cbb2;
+	border-radius: 8px; background: #fffdf8; width: 92px;
+}
+.saju-form select { width: auto; }
+.saju-check {
+	font-size: 1rem; color: #6b5b47;
+	display: flex; align-items: center; gap: 6px;
+	flex: 1 1 auto; min-width: 240px;
+}
+.saju-check input { flex: 0 0 auto; }
+
+.saju-btn {
+	display: block; width: 100%; margin-top: 8px; padding: 14px;
+	font-size: 1.35rem; color: #fff; background: #8b2f2f;
+	border: none; border-radius: 10px; cursor: pointer;
+}
+.saju-btn:hover { background: #a03a3a; }
+
+.saju-result { margin-top: 28px; display: none; }
+
+.pillars { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.pillar {
+	flex: 1 1 120px; max-width: 160px; background: #fff;
+	border: 2px solid #e6dcc8; border-radius: 12px; padding: 12px 6px; text-align: center;
+}
+.pillar.is-day { border-color: #8b2f2f; box-shadow: 0 0 0 3px rgba(139, 47, 47, 0.12); }
+.pillar .p-label { font-size: 0.95rem; color: #9a8a76; }
+.pillar .p-hanja { font-size: 2.5rem; line-height: 1.15; margin: 4px 0; }
+.pillar .p-ko { font-size: 1.15rem; color: #5c4b38; }
+.pillar .p-elem { font-size: 0.9rem; color: #9a8a76; margin-top: 4px; }
+
+.saju-card {
+	background: #fff; border: 2px solid #e6dcc8; border-radius: 12px;
+	padding: 16px 18px; margin-top: 18px;
+}
+.saju-card h3 { font-size: 1.35rem; color: #8b2f2f; margin: 0 0 10px; }
+.saju-card p { font-size: 1.08rem; line-height: 1.75; margin: 0 0 8px; }
+
+.elem-bars { display: flex; flex-direction: column; gap: 8px; }
+.elem-bar { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+.elem-bar .eb-name { width: 46px; }
+.elem-bar .eb-track {
+	flex: 1; height: 16px; background: #f0e9db;
+	border-radius: 8px; overflow: hidden; display: block;
+}
+.elem-bar .eb-fill {
+	display: block;          /* span 은 인라인이라 display 를 주지 않으면 width 가 먹지 않는다 */
+	height: 100%; border-radius: 8px;
+	transition: width 0.4s ease;
+}
+.elem-bar .eb-num { width: 34px; text-align: right; color: #7a6a58; }
+
+.saju-note { font-size: 0.95rem; color: #9a8a76; line-height: 1.6; margin-top: 18px; }
+.saju-error { color: #b03030; font-size: 1.05rem; margin-top: 10px; }
+
+@media (max-width: 520px) {
+	.saju-title { font-size: 1.9rem; }
+	.pillar .p-hanja { font-size: 2rem; }
+	.saju-row > label { width: 100%; }
+}
