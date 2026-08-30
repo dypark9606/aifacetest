@@ -129,6 +129,8 @@ def main():
             {'page': 'Sec4_GAG.html',     'male': False, 'img': 'retrain/selftest/fixtures/w_gag.jpg', 'label': '개그우먼'},
             {'page': 'Sec5_good_bad.html', 'male': True, 'img': 'retrain/selftest/fixtures/m_star.jpg', 'label': '일진'},
         ],
+        'rich': [[True, 'retrain/selftest/fixtures/m_star.jpg'],
+                 [False, 'retrain/selftest/fixtures/w_star.jpg']],
         'coverage': [
             ['AI_star_m', 'Sec2_man_ent.html', 0],
             ['AI_star_w', 'Sec2_man_ent.html', 1],

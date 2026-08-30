@@ -35,3 +35,18 @@ a.namu-link:hover {
 	color: #8a8a8a;
 	margin-top: 8px;
 }
+
+/* 공유 버튼 (AddThis 대체) */
+.share-box {
+	display: flex; flex-wrap: wrap; gap: 8px;
+	align-items: center; justify-content: center;
+	margin-top: 12px;
+}
+.share-btn {
+	font-family: inherit; font-size: 1rem;
+	padding: 8px 16px; border-radius: 20px;
+	border: 2px solid #bbb; background: #fff; color: #444;
+	cursor: pointer;
+}
+.share-btn:hover { background: #f2f2f2; }
+.share-msg { font-size: 0.95rem; color: #888; }

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dypark9606.github.io/aifacetest/sitemap.xml

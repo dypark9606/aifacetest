@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style_Sec5_couple.css">
+    <link rel="stylesheet" href="style_common.css" />
+    <title>커플 궁합 (매칭도) 분석</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script src="js/roast.js"></script>
+</head>
+<body>
+    <section class="section">
+        <h1 class="title text-center">커플 궁합 (매칭도) 분석</h1>
+        <h2 class="subtitle text-center">우리 커플 과연 잘 어울릴까?</h2>
+    </section>
+
+    <div class="container flex-row">
+        <!-- 남자 업로드 섹션 -->
+        <div class="file-upload" onclick="triggerUpload('male')">
+            <h3 class="text-center">남자 사진 업로드</h3>
+            <div class="image-upload-wrap" id="male-upload-wrap" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event, 'male')">
+                <input class="file-upload-input" id="male-upload" type="file" onchange="readURL(this, 'male');" accept="image/*" style="display: none;">
+                <div class="drag-text">
+                    <h3>남성 얼굴 사진을 클릭해서 촬영하거나 업로드하세요!</h3>
+                </div>
+            </div>
+            <div class="file-upload-content" id="male-file-content" style="display: none;">
+                <img class="file-upload-image" id="male-face-image" src="#" alt="남자 얼굴">
+                <div id="male-loading" class="animated bounce" style="display: none;">
+                    <p>AI가 분석 중입니다...</p>
+                </div>
+                <p id="male-result-message" class="result-message"></p>
+            </div>
+        </div>
+
+        <!-- 여자 업로드 섹션 -->
+        <div class="file-upload" onclick="triggerUpload('female')">
+            <h3 class="text-center">여자 사진 업로드</h3>
+            <div class="image-upload-wrap" id="female-upload-wrap" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event, 'female')">
+                <input class="file-upload-input" id="female-upload" type="file" onchange="readURL(this, 'female');" accept="image/*" style="display: none;">
+                <div class="drag-text">
+                    <h3>여성 얼굴 사진을 클릭해서 촬영하거나 업로드하세요!</h3>
+                </div>
+            </div>
+            <div class="file-upload-content" id="female-file-content" style="display: none;">
+                <img class="file-upload-image" id="female-face-image" src="#" alt="여자 얼굴">
+                <div id="female-loading" class="animated bounce" style="display: none;">
+                    <p>AI가 분석 중입니다...</p>
+                </div>
+                <p id="female-result-message" class="result-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compatibility Result Box -->
+    <div id="compatibility-result" class="compatibility-result-box" style="display: none; text-align: center; margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <!-- 결과가 이곳에 표시됩니다. -->
+    </div>
+
+    <footer class="footer pt-5 container d-flex justify-content-center">
+        <div>
+            <p>    사진은 저장되지 않습니다. </br> &copy;  Industrial AI 2020. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let maleScore = 0;
+        let femaleScore = 0;
+        let isMaleUploaded = false;
+        let isFemaleUploaded = false;
+
+        function triggerUpload(gender) {
+            document.getElementById(gender + "-upload").click();
+        }
+
+        function readURL(input, gender) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgElement = document.getElementById(`${gender}-face-image`);
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = "block";
+                    document.getElementById(`${gender}-upload-wrap`).style.display = "none";
+                    document.getElementById(`${gender}-file-content`).style.display = "block";
+                    
+                    if (gender === 'male') {
+                        isMaleUploaded = true;
+                    } else if (gender === 'female') {
+                        isFemaleUploaded = true;
+                    }
+
+                    setTimeout(() => {
+                        predict(gender);
+                    }, 2000);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function predict(gender) {
+            const img = document.getElementById(`${gender}-face-image`);
+            const model = gender === "male" ? maleModel : femaleModel;
+            
+            if (!model) return;
+            
+            const predictions = await model.predict(img, false);
+            const topPrediction = predictions.sort((a, b) => b.probability - a.probability)[0];
+            const score = Math.round(topPrediction.probability * 100);
+
+            if (gender === 'male') {
+                maleScore = score;
+                document.getElementById("male-result-message").innerText = getAppearanceMessage('male', maleScore);
+            } else if (gender === 'female') {
+                femaleScore = score;
+                document.getElementById("female-result-message").innerText = getAppearanceMessage('female', femaleScore);
+            }
+
+            if (isMaleUploaded && isFemaleUploaded) {
+                calculateCompatibility();
+            }
+        }
+
+        function getAppearanceMessage(gender, score) {
+            let message = "";
+            if (score >= 90) {
+                message = gender === "male" ? "완벽한 매력! 남신 등장! 주변의 시선을 사로잡는 자신감과 카리스마가 돋보입니다." 
+                                            : "세상을 빛내는 미모의 여신! 존재만으로도 주변을 환하게 하는 당신!";
+            } else if (score >= 80) {
+                message = gender === "male" ? "매력적인 훈남! 미소 한 번에 사람을 끌어들이는 매력을 지녔어요." 
+                                            : "눈부신 미모의 소유자! 자연스러운 아름다움과 긍정적인 에너지를 가지고 있네요.";
+            } else if (score >= 70) {
+                message = gender === "male" ? "따뜻한 매력의 남자! 편안한 인상을 주며 신뢰감을 느끼게 합니다." 
+                                            : "감성적이고 사랑스러운 외모! 보는 사람마다 미소를 짓게 만드는 사랑스러운 이미지네요.";
+            } else if (score >= 60) {
+                message = gender === "male" ? "평범한 매력, 하지만 특별한 무언가! 보통의 매력이지만 주위 사람에게는 친근한 느낌을 줍니다." 
+                                            : "편안하고 따뜻한 매력을 지닌 그녀! 함께 있으면 마음이 편해지는 사람입니다.";
+            } else if (score >= 50) {
+                message = gender === "male" ? "친근한 매력의 소유자! 겉보기엔 평범하지만 알면 알수록 매력을 느낄 수 있는 타입이에요." 
+                                            : "친근한 매력을 가진 매력녀! 누구에게나 편안한 인상을 주며 친숙하게 다가갈 수 있는 사람입니다.";
+            } else if (score >= 40) {
+                message = gender === "male" ? "매력은 조금 부족하지만 노력해보자! 조금만 더 자신감을 가지면 매력이 더 빛날 거예요." 
+                                            : "조금 더 노력해서 매력을 키워봐요! 작은 변화가 당신을 더 빛나게 할 수 있습니다.";
+            } else if (score >= 30) {
+                message = gender === "male" ? "매력 지수 업그레이드 필요! 외모보다도 개성이 더 돋보이는 당신!" 
+                                            : "매력을 위한 특별 관리가 필요해요! 매력을 키울 기회가 온 것 같아요.";
+            } else if (score >= 20) {
+                message = gender === "male" ? "매력이 독특해요! 다른 사람들과 다른 자신만의 개성을 뽐내는 당신." 
+                                            : "독특한 매력을 가진 그녀! 평범하지 않은 스타일과 개성을 지닌 멋진 사람입니다.";
+            } else {
+                message = gender === "male" ? "희귀한 매력을 소유한 당신! 당신만의 특별한 개성과 매력을 가진 독특한 존재입니다." 
+                                            : "한 번 보면 잊히지 않는 독특한 매력! 누구와도 다른 특별한 매력을 지녔네요.";
+            }
+            return message;
+        }
+
+        function calculateCompatibility() {
+            const totalScore = maleScore + femaleScore;
+            let message;
+
+            if (totalScore >= 180) {
+                message = "아주 잘 어울리는 커플! 함께 있으면 시너지 효과가 폭발적입니다. 서로를 완벽하게 이해하고 보완하는 최고의 커플! 앞으로의 여정이 더할 나위 없이 행복할 겁니다. 주변 사람들도 부러워할 만큼 이상적인 커플이에요.";
+            } else if (totalScore >= 160) {
+                message = "완벽에 가까운 커플이에요! 서로를 이해하는 깊은 마음과 배려로 오래갈 커플입니다. 함께하는 시간이 지날수록 더욱 깊어질 사랑을 약속할 수 있는 조화로운 관계입니다.";
+            } else if (totalScore >= 140) {
+                message = "매우 잘 어울리는 커플입니다. 서로의 장점이 잘 어우러져서 더 밝은 미래가 기대돼요! 작은 다툼이 있을 수 있지만, 이는 오히려 관계를 단단하게 만드는 요소가 될 수 있습니다.";
+            } else if (totalScore >= 120) {
+                message = "괜찮은 궁합을 가진 커플이에요! 조금의 노력으로 더 큰 행복을 나눌 수 있을 거예요. 함께 성장하며 서로의 장단점을 보완해 나간다면 행복한 관계로 발전할 수 있습니다.";
+            } else if (totalScore >= 100) {
+                message = "보통의 궁합을 가진 커플입니다. 가끔씩 갈등이 있을 수 있지만 서로 이해하려고 노력하면 돼요. 때로는 서로의 차이를 받아들이고 존중하는 것이 관계를 더욱 깊어지게 만들 수 있습니다.";
+            } else if (totalScore >= 80) {
+                message = "서로 조금 다른 성향을 가졌지만 노력하면 좋은 커플이 될 수 있어요! 서로에 대한 관심과 이해가 중요하며, 지속적인 대화와 배려로 관계를 더욱 탄탄하게 만들어보세요.";
+            } else if (totalScore >= 60) {
+                message = "약간의 갈등이 예상되지만, 서로 이해하려는 노력이 필요합니다. 서로의 다른 점을 인정하고 함께 성장하는 마음이 중요합니다. 서로를 알아가려는 마음이 깊다면 충분히 좋은 관계로 발전할 가능성이 있습니다.";
+            } else {
+                message = "궁합 점수가 낮아요. 서로의 차이를 인정하고 배려하는 마음이 필요합니다. 상대방을 이해하고 서로의 성장에 도움이 되는 방법을 찾아보세요. 노력과 시간이 필요한 관계입니다.";
+            }
+
+            document.getElementById("compatibility-result").innerHTML = `<h3>커플 궁합 점수: ${totalScore}</h3><p>${message}</p>`;
+            document.getElementById("compatibility-result").style.display = "block";
+        }
+
+
+        // 모델 초기화
+        const urlMale = "./AI_model/AI_handsome_m_ver2/";
+        const urlFemale = "./AI_model/AI_handsome_w_ver2/";
+        let maleModel, femaleModel;
+
+        async function initModels() {
+            maleModel = await tmImage.load(urlMale + "model.json", urlMale + "metadata.json");
+            femaleModel = await tmImage.load(urlFemale + "model.json", urlFemale + "metadata.json");
+        }
+        window.onload = initModels;
+    </script>
+</body>
+</html>

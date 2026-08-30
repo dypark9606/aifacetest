@@ -20,7 +20,7 @@
 	bottom: 0;
 	left: 0;
 	height: 3px;
-	width: 14.2857%;
+	width: 11.1111%;
 	background: #1e88e5;
 	-webkit-transform: translateZ(0) translateX(0);
 	transform: translateZ(0) translateX(0);
@@ -29,8 +29,8 @@
 }
 .tabs > ul li {
 	display: inline-block;
-	font-size: 1.5rem;
-	width: 14.2857%;
+	font-size: 1.25rem;
+	width: 11.1111%;
 }
 .tabs > ul li a {
 	display: block;
@@ -85,6 +85,16 @@ a[href$='section7'] {
 	background-repeat: repeat;
 	color: black;
 }
+a[href$='section8'] {
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section9'] {
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
 
 .tabs > ul li a:before {
 	content: '';
@@ -119,9 +129,9 @@ a[href$='section7'] {
 /* 여기는 tab css 마지막 */
 
 /* 탭이 7개로 늘어나 좁은 화면에서 글자가 겹치는 것을 막는다 */
-@media (max-width: 560px) {
+@media (max-width: 700px) {
 	.tabs > ul li {
-		font-size: 1.05rem;
+		font-size: 0.85rem;
 	}
 	.tabs > ul li a {
 		padding-top: 10px;

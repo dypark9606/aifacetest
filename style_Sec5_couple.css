@@ -1,0 +1,141 @@
+/* General */
+body {
+	font-family: 'Jua', sans-serif;
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: #35465d;
+	height: 100%;
+}
+
+/* Container */
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 2% 3%;
+}
+
+
+.file-upload {
+	width: 38%; /* 두 섹션이 나란히 정렬되도록 너비를 각각 절반으로 설정 */
+	padding: 5%;
+	border-radius: 10px;
+	border: solid 2px #0f0c29;
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	opacity: 0.8;
+}
+
+/* Image upload wrap */
+.image-upload-wrap {
+    width: 90%;
+    height: auto;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 10px;
+    border: dashed 1.5px #35465d;
+    background-image: url(img/img_back_1.jpg);
+    background-repeat: repeat;
+    padding: 10%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Drag-and-drop or click to upload */
+.image-dropping,
+.image-upload-wrap:hover {
+	border: 4px dashed black;
+	opacity: 1;
+}
+
+/* Inner image container */
+.file-upload-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* 이미지 비율 유지하면서 박스에 맞춤 */
+    border-radius: 10px;
+    margin: 0 auto; /* 이미지 중앙 정렬 */
+}
+
+/* Upload drag text */
+.drag-text {
+	text-align: center;
+	font-size: 1.2rem;
+}
+
+/* Text and Button */
+.result-message {
+	font-size: 1.5rem;
+	color: #283c86;
+}
+
+.try-again-btn {
+	border-radius: 40px;
+	border: solid 1.5px #35465d;
+	background-color: #35465d;
+	margin-top: 10px;
+	padding: 8px 16px;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.title {
+	line-height: 1.0;
+	text-align: center;
+	color: #f34312;
+	font-size: 2.5rem;
+}
+
+.subtitle {
+	line-height: 1.53;
+	text-align: center;
+	color: #5815d4;
+	font-size: 2.0rem;
+}
+
+/* Footer */
+.footer {
+    background-color: initial;
+    color: initial;
+    text-align: center;
+    width: 100%; /* 전체 너비로 설정 */
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 20px 0; /* 위아래 여백 추가 */
+    box-sizing: border-box;
+}
+
+/* compatibility-result 영역 스타일 */
+#compatibility-result {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #0f0c29; /* 테두리 색상 */
+    background: linear-gradient(135deg, #e1e9f1, #f8f9fa); /* 배경 그라데이션 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    max-width: 500px;
+    margin: 20px auto; /* 가운데 정렬 */
+}
+
+/* 커플 궁합 점수 제목 스타일 */
+#compatibility-result h3 {
+    font-size: 1.8rem;
+    color: #0b3df1; /* 텍스트 색상 */
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-family: 'Jua', sans-serif;
+}
+
+/* 궁합 메시지 스타일 */
+#compatibility-result p {
+    font-size: 1.2rem;
+    color: #f10505;
+    line-height: 1.6;
+    font-family: 'Jua', sans-serif;
+    margin: 0;
+}

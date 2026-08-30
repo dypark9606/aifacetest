@@ -80,6 +80,58 @@
 		return '<div class="roast-line pt-3">' + roast(kind) + '</div>';
 	}
 
+	/* ------------------------------------------------------------------
+	 * 공유 버튼
+	 *  AddThis 가 2023년 서비스 종료돼 그 자리를 대신한다.
+	 *  외부 스크립트 없이 브라우저 기본 기능(Web Share / 클립보드)만 쓴다.
+	 * ------------------------------------------------------------------ */
+	function shareTarget() {
+		/* iframe 안에서 열려 있으면 부모(전체 앱) 주소를 공유한다 */
+		try {
+			if (window.top !== window.self && document.referrer) return document.referrer;
+		} catch (e) { /* 접근이 막히면 자기 주소를 쓴다 */ }
+		return location.href;
+	}
+
+	function renderShare(box) {
+		var url = shareTarget();
+		var title = document.title || '인공지능 얼굴상 테스트';
+		box.classList.add('share-box');
+		box.innerHTML =
+			'<button type="button" class="share-btn" data-act="share">공유하기</button>' +
+			'<button type="button" class="share-btn" data-act="copy">링크 복사</button>' +
+			'<span class="share-msg" aria-live="polite"></span>';
+		var msg = box.querySelector('.share-msg');
+		function say(s) { msg.textContent = s; setTimeout(function () { msg.textContent = ''; }, 2000); }
+
+		box.addEventListener('click', function (e) {
+			var b = e.target.closest('.share-btn');
+			if (!b) return;
+			if (b.dataset.act === 'share' && navigator.share) {
+				navigator.share({title: title, url: url}).catch(function () {});
+				return;
+			}
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(url)
+					.then(function () { say('복사했습니다!'); })
+					.catch(function () { say(url); });
+			} else {
+				say(url);
+			}
+		});
+	}
+
+	function initShare() {
+		var boxes = document.querySelectorAll('.addthis_inline_share_toolbox_czma');
+		for (var i = 0; i < boxes.length; i++) renderShare(boxes[i]);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initShare);
+	} else {
+		initShare();
+	}
+
 	global.namuLink = namuLink;
 	global.celebLinks = celebLinks;
 	global.roast = roast;
