@@ -161,15 +161,14 @@ def _worker(path):
     return (buf.getvalue(), '', dhash(pil))
 
 
-def process_person(src, out_dir, dry, keep_existing, jobs=1, pool=None):
-    files = [os.path.join(src, f) for f in sorted(os.listdir(src), key=nfc)
-             if f.lower().endswith(EXT) and not f.startswith('.')]
-    stats = {'입력': len(files), '저장': 0}
-    rej = {}
-    hashes = []
+def list_files(src):
+    return [os.path.join(src, f) for f in sorted(os.listdir(src), key=nfc)
+            if f.lower().endswith(EXT) and not f.startswith('.')]
 
-    # 이미 있는 사진의 해시도 넣어 중복을 막는다
-    start = 1
+
+def existing_state(out_dir, keep_existing):
+    """이어붙이기용: 시작 번호와 기존 사진 해시."""
+    start, hashes = 1, []
     if keep_existing and os.path.isdir(out_dir):
         olds = [f for f in os.listdir(out_dir) if f.lower().endswith(EXT)]
         nums = [int(os.path.splitext(f)[0]) for f in olds if os.path.splitext(f)[0].isdigit()]
@@ -179,17 +178,12 @@ def process_person(src, out_dir, dry, keep_existing, jobs=1, pool=None):
                 hashes.append(dhash(Image.open(os.path.join(out_dir, f)).convert('RGB')))
             except Exception:
                 pass
+    return start, hashes
 
-    kept = []
-    if pool is not None and files:
-        results = list(pool.map(_worker, files, chunksize=1))
-    elif jobs > 1 and len(files) > 3:
-        ctxmp = mp.get_context('spawn')
-        with ProcessPoolExecutor(max_workers=jobs, mp_context=ctxmp) as ex:
-            results = list(ex.map(_worker, files, chunksize=1))
-    else:
-        results = [_worker(p) for p in files]
 
+def collect(results, out_dir, dry, start, hashes):
+    """워커 결과를 받아 중복을 걸러 저장한다."""
+    rej, kept = {}, []
     for jpg, why, h in results:
         if jpg is None:
             rej[why] = rej.get(why, 0) + 1
@@ -199,14 +193,12 @@ def process_person(src, out_dir, dry, keep_existing, jobs=1, pool=None):
             continue
         hashes.append(h)
         kept.append(jpg)
-
-    stats['저장'] = len(kept)
     if not dry and kept:
         os.makedirs(out_dir, exist_ok=True)
         for i, jpg in enumerate(kept):
             with open(os.path.join(out_dir, f'{start + i}.jpg'), 'wb') as fh:
                 fh.write(jpg)
-    return stats, rej
+    return len(kept), rej
 
 
 def main():
@@ -247,27 +239,40 @@ def main():
     print(f'{"인물":<14}{"입력":>6}{"저장":>6}   걸러낸 사유')
     print('-' * 72)
 
-    pool = None
-    if args.jobs > 1 and len(people) > 0:
-        pool = ProcessPoolExecutor(max_workers=args.jobs, mp_context=mp.get_context('spawn'))
+    # 모든 사람의 사진을 한 번에 모아서 한 번만 병렬 처리한다
+    # (사람마다 pool.map 을 반복하면 spawn+PyObjC 조합에서 멎는다 — 2026-09-07 실측)
+    jobs_list, owner = [], []
+    for idx, (name, folder) in enumerate(people):
+        fs = list_files(folder)
+        for f in fs:
+            jobs_list.append(f); owner.append(idx)
+
+    if args.jobs > 1 and len(jobs_list) > 3:
+        with ProcessPoolExecutor(max_workers=args.jobs,
+                                 mp_context=mp.get_context('spawn')) as ex:
+            all_res = list(ex.map(_worker, jobs_list, chunksize=4))
+    else:
+        all_res = [_worker(f) for f in jobs_list]
+
+    per = [[] for _ in people]
+    for r, idx in zip(all_res, owner):
+        per[idx].append(r)
 
     short = []
-    for name, folder in people:
+    for idx, (name, folder) in enumerate(people):
         suf = nfc(args.suffix)
         label = name[:-len(suf)] if name.endswith(suf) else name
         label = label.strip()
         out_dir = os.path.join(ds_dir, label + args.suffix) if ds_dir else ''
-        stats, rej = process_person(folder, out_dir, args.dry_run, args.append, args.jobs, pool)
-        total = stats['저장']
+        start, hashes = existing_state(out_dir, args.append) if out_dir else (1, [])
+        saved, rej = collect(per[idx], out_dir, args.dry_run, start, hashes)
+        total = saved
         if args.append and out_dir and os.path.isdir(out_dir):
             total = len([f for f in os.listdir(out_dir) if f.lower().endswith(EXT)])
         rs = ', '.join(f'{k} {v}' for k, v in sorted(rej.items(), key=lambda x: -x[1])) or '-'
-        print(f'{label:<14}{stats["입력"]:>6}{stats["저장"]:>6}   {rs}')
+        print(f'{label:<14}{len(per[idx]):>6}{saved:>6}   {rs}')
         if total < args.target:
             short.append((label, total))
-
-    if pool is not None:
-        pool.shutdown(wait=True)
 
     print('-' * 72)
     if short:
