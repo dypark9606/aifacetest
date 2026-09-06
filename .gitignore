@@ -3,3 +3,4 @@ AI_model/*.bak_*/
 AI_model/*/metadata.json.bak
 # 개발 중 임시 테스트 폴더
 _selftest/
+*.bak-*
