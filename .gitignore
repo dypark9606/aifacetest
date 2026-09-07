@@ -4,3 +4,7 @@ AI_model/*/metadata.json.bak
 # 개발 중 임시 테스트 폴더
 _selftest/
 *.bak-*
+# 얼굴 변형 기능 개발용 테스트 사진 (연예인 사진이라 절대 배포하지 않는다)
+_test/
+# 재학습용 데이터 합치기 (심볼릭 링크라 올릴 것도 아니다)
+retrain/_merged/
