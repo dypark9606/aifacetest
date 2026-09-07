@@ -17,15 +17,12 @@
 			crossorigin="anonymous"
 		/>
 		<!-- integrity는 rel 파일이 수정되지 않았음을 확인하기 위해 사용되는 해쉬 값 (hash value, crossorigin = 교차 출처 리소스 공유 -->
-		<title>일진(양아치) 지수 측정</title>
-		<meta name="title" content="일진(양아치) 지수 측정" />
-		<meta name="subject" content="얼굴로 살펴보는 나의 일진 지수 또는 양아치 지수는?" />
+		<title>첫인상 매운맛 지수</title>
+		<meta name="title" content="첫인상 매운맛 지수" />
+		<meta name="subject" content="내 첫인상은 순한맛일까 매운맛일까?" />
 		<meta
 			name="keywords"
-			content="양아치 테스트, 일진상 테스트, 일진 테스트, 양아치 테스트, 
-					 인공지능 얼굴상, AI 얼굴상, AI 얼굴 점수, 외모 테스트, 
-					 face AI, face artificial intelligence, 
-					 AI 얼굴 점수, 외모 테스트, 인공지능 외모 평가"
+			content="첫인상 테스트, 매운맛 지수, 순한맛 매운맛, 인상 테스트, 센 인상, 순한 인상, 분위기 테스트, 첫인상 분석, AI 얼굴 분석"
 		/>
 		<meta name="author" content="PDY" />
 		<link rel="stylesheet" href="style_Sec5.css" />
@@ -35,13 +32,13 @@
 		<meta property="og:url" content="https://dypark9606.github.io/aifacetest/Sec5_good_bad.html" />
 		<!-- og = open graph, og:title = 콘텐츠 제목, og:type =  웹페이지 타입 (blog, website 등, og:title = 웹사이트 이름) -->
 		<meta property="og:type" content="website" />
-		<meta property="og:title" content="양아치(일진) 테스트" />
+		<meta property="og:title" content="첫인상 매운맛 지수" />
 		<meta
 			property="og:description"
-			content="얼굴로 알아보는 나의 일진 지수 또는 양아치 지수
-					 다양한 일진 및 양아치 사진을 통해서 분석한 인공지능 학습 모델을 통해서 나의 얼굴이 일진 또는 양아치와 일치율을 평가해 준다!
-					 회원 가입없이 화면에서 바로 확인 가능합니다. 
-					 사진 데이터는 어디에도 사용 및 전송되지 않습니다."
+			content="내 첫인상은 순한맛일까 매운맛일까?
+					 인공지능이 얼굴을 보고 첫인상의 세기를 0단계(백설기)부터 5단계(핵불닭)까지 알려줍니다.
+					 성격이나 사람됨이 아니라 '첫인상이 어떻게 보이는가'만 봅니다.
+					 회원가입 없이 화면에서 바로 확인할 수 있고, 사진은 어디에도 전송되지 않습니다."
 		/>
 
 		<script src="js/roast.js"></script>
@@ -50,8 +47,8 @@
 	<body>
 		<section class="section">
 			<!-- section은 독립적은 구획을 의미한다 -->
-			<h1 class="title">인공지능 양아치 지수 측정</h1>
-			<h2 class="subtitle">넌 양아치 얼굴일까? 아닐까?</h2>
+			<h1 class="title">첫인상 매운맛 지수</h1>
+			<h2 class="subtitle">내 첫인상은 순한맛일까, 매운맛일까</h2>
 			<h2 class="sr-only">나의 외모점수는 얼마일까요?</h2>
 			<!-- class ="sr-only"는 화면에는 안나옴 -->
 			<h3 class="sr-only">
@@ -251,126 +248,70 @@
 
 							// prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability)); // 오름차순 정렬
 
+							/* 결과 — '매운맛 지수' 한 축으로 본다 (2026-09-08 전면 교체).
+							 *
+							 * 예전에는 '모범생 / 양아치(일진)' 으로 갈라 놓고
+							 * "불미스러운 일이 생기면 가장 먼저 의심받을 얼굴" 같은 문구를 썼다.
+							 * 유치한 걸 떠나 **얼굴로 사람을 범죄자 취급하는 말**이라 통째로 걷어냈다.
+							 * 지금은 인상이 순한 쪽인지 센 쪽인지만 말한다. 사람됨은 말하지 않는다.
+							 *
+							 * 모델은 그대로다(순한 인상 32명 / 센 인상 32명으로 학습).
+							 * 센 쪽 확률을 그대로 '매운맛 지수'로 쓴다.
+							 */
 							var resultTitle, resultExplain, resultCeleb;
+							var spice = sum_pred_b;              // 0~1, 클수록 센 인상
+							sum_pp = spice;                      // 게이지에 매운맛 지수를 띄운다
 
-							if (document.getElementById('gender').checked) {
-								if (sum_pred_g > sum_pred_b) {
-									sum_pp = sum_pred_g;
-									if (sum_pred_g >= 0.9){
-										resultTitle = '상위 10 % 모범생 마스크!';
-										resultExplain =	'엄친아 이미지로 잘생긴 얼굴에 비상한 머리까지... 모든걸 갖추었기에 부럽기도 하지만 재수가 없다!';
-										resultCeleb = '엄청난 엄친아 마스크!';
-
-									}else if (sum_pred_g >= 0.8 && sum_pred_g < 0.9){
-										resultTitle = '상위 20 % 모범생 마스크!';
-										resultExplain =	'전교에서 놀 정도는 아니고, 반에서 최상위권정도 속하는 얼굴!';
-										resultCeleb = '쫌 하는 모범생 스타일!';
-
-									}else if (sum_pred_g >= 0.7 && sum_pred_g < 0.8){
-										resultTitle = '상위 30 % 모범생 마스크!';
-										resultExplain =	'반에서 상위권인데, 전교에서는 티도 안나는 중상위권 정도의 애매한 수준의 마스크!';
-										resultCeleb = '티나지 않는 모범생';
-
-									}else if (sum_pred_g >= 0.6 && sum_pred_g < 0.7){
-										resultTitle = '상위 40 % 모범생 마스크!';
-										resultExplain =	'중위권에서 살짝 위에 있는 수준! 가끔식 중상위권으로 올랐다 다시 내려오는.. 조금만 노력하면 상위권을 노려볼만한 머리는 좋은 마스크!';
-										resultCeleb = '모범생까지는 아니고 어중간한... ';
-
-									}else{
-										resultTitle = '상위 50 % 모범생 마스크!';
-										resultExplain =	'애매하다! 애매해!! 조금 실수하면 하위권에 분류된다! 그래도 희망은 있다! 왜냐 중간을 기준으로 위에 있으니까!';
-										resultCeleb = '뛰어난건 아닌데 잘하는건 아닌, 까딱하면 하위권 간다!';
-									}
-
-								} else {
-									sum_pp = sum_pred_b;
-									if (sum_pred_b >= 0.9){
-										resultTitle = '하위 10 % 양아치(일진) 마스크!';
-										resultExplain =	'누가봐도 양아치! 불미스러운 일이 생기면 가장 먼저 의심받을만한 얼굴! 담배를 안펴도 담배 냄새가 날듯한 얼굴';
-										resultCeleb = '완전 개!쌩!양아치 얼굴!';
-
-									}else if (sum_pred_b >= 0.8 && sum_pred_b < 0.9){
-										resultTitle = '하위 20 % 양아치(일진) 마스크!';
-										resultExplain =	'아무리 아닌척 하려고 해도... 날(나리)티가 풍기는 마스크! 골목에 한명씩 있을 듯한 얼굴';
-										resultCeleb = '심각한 양아치(일진) 얼굴!';
-
-									}else if (sum_pred_b >= 0.7 && sum_pred_b < 0.8){
-										resultTitle = '하위 30 % 양아치(일진) 마스크!';
-										resultExplain =	'양아치(일진)가 되고 싶은... 양아치를 동경하여 따라하려는 마스크! 일진 옆에 꼬붕같은 스타일 얼굴!';
-										resultCeleb = '일진 옆에 꼬붕 스타일 마스크!';
-
-									}else if (sum_pred_b >= 0.6 && sum_pred_b < 0.7){
-										resultTitle = '하위 40 % 양아치(일진) 마스크!';
-										resultExplain =	'언듯보면 양아치인데, 머리스타일 조금 바꾸면 평민이 될 수 있는 이도저도 아닌 애매한 마스크! 일진들 없을때 2진급에서 왕노릇하는 마스크!';
-										resultCeleb = '2진급 양아치 얼굴!';
-
-									}else{
-										resultTitle = '하위 50 % 양아치(일진) 마스크!';
-										resultExplain =	'모범생과 양아치 두얼굴을 모두 품고 있는! 이것도 저것도 아닌 애매한 마스크!';
-										resultCeleb = '범생이도 아닌, 아치도 아닌 애매한 얼굴!';
-									}
+							var LEVELS = [
+								{
+									min: 0.78, name: '매운맛 5단계 · 핵불닭',
+									explain: '가만히 있어도 "쎄 보인다"는 말을 듣는 얼굴입니다. ' +
+										'눈매와 턱선이 또렷해서 첫인상이 오래 남습니다. ' +
+										'처음엔 사람들이 조심스럽게 다가오는데, 한번 친해지면 오래 갑니다.',
+									celeb: '첫인상 세기 최상급'
+								},
+								{
+									min: 0.60, name: '매운맛 4단계 · 불닭',
+									explain: '분위기가 먼저 도착하는 얼굴입니다. 조용히 있어도 존재감이 있습니다. ' +
+										'웃을 때 인상이 확 달라지는 쪽이라, 사진보다 실물이 낫다는 말을 자주 듣습니다.',
+									celeb: '분위기로 먹고 들어가는 얼굴'
+								},
+								{
+									min: 0.45, name: '매운맛 3단계 · 신라면',
+									explain: '순한 쪽도 센 쪽도 아닌, 어디에 놓아도 어울리는 얼굴입니다. ' +
+										'튀지 않아서 손해 보는 일이 없습니다. ' +
+										'머리 모양이나 옷 하나로 인상이 크게 달라지는 얼굴이기도 합니다.',
+									celeb: '어디에나 어울리는 중간값'
+								},
+								{
+									min: 0.30, name: '매운맛 2단계 · 짜장라면',
+									explain: '편안한 인상입니다. 처음 본 사람도 말을 걸기 쉬운 얼굴이라 ' +
+										'길에서 길을 자주 물어봅니다. 부탁도 많이 받는 편일 겁니다.',
+									celeb: '말 걸기 쉬운 얼굴'
+								},
+								{
+									min: 0.15, name: '매운맛 1단계 · 우유',
+									explain: '순한 인상입니다. 화를 내도 무섭지 않다는 말을 들어봤을 겁니다. ' +
+										'대신 신뢰를 얻는 데는 이만한 얼굴이 없습니다. 처음 만나는 자리에서 특히 유리합니다.',
+									celeb: '믿음이 가는 얼굴'
+								},
+								{
+									min: 0.00, name: '매운맛 0단계 · 백설기',
+									explain: '이보다 순할 수 없습니다. 처음 보는 사람도 경계를 푸는 얼굴입니다. ' +
+										'다만 가끔 만만하게 보는 사람이 있으니, 목소리에 힘을 조금만 실으면 됩니다.',
+									celeb: '경계심을 녹이는 얼굴'
 								}
+							];
 
-							} else {
-
-								if (sum_pred_g > sum_pred_b) {
-									sum_pp = sum_pred_g;
-									if (sum_pred_g >= 0.9){
-										resultTitle = '상위 10 % 모범생 마스크!';
-										resultExplain =	'엄친아 이미지로 잘생긴 얼굴에 비상한 머리까지... 모든걸 갖추었기에 부럽기도 하지만 재수가 없다!';
-										resultCeleb = '엄청난 엄친아 마스크!';
-
-									}else if (sum_pred_g >= 0.8 && sum_pred_g < 0.9){
-										resultTitle = '상위 20 % 모범생 마스크!';
-										resultExplain =	'전교에서 놀 정도는 아니고, 반에서 최상위권정도 속하는 얼굴!';
-										resultCeleb = '쫌 하는 모범생 스타일!';
-
-									}else if (sum_pred_g >= 0.7 && sum_pred_g < 0.8){
-										resultTitle = '상위 30 % 모범생 마스크!';
-										resultExplain =	'반에서 상위권인데, 전교에서는 티도 안나는 중상위권 정도의 애매한 수준의 마스크!';
-										resultCeleb = '티나지 않는 모범생';
-
-									}else if (sum_pred_g >= 0.6 && sum_pred_g < 0.7){
-										resultTitle = '상위 40 % 모범생 마스크!';
-										resultExplain =	'중위권에서 살짝 위에 있는 수준! 가끔식 중상위권으로 올랐다 다시 내려오는.. 조금만 노력하면 상위권을 노려볼만한 머리는 좋은 마스크!';
-										resultCeleb = '모범생까지는 아니고 어중간한... ';
-
-									}else{
-										resultTitle = '상위 50 % 모범생 마스크!';
-										resultExplain =	'애매하다! 애매해!! 조금 실수하면 하위권에 분류된다! 그래도 희망은 있다! 왜냐 중간을 기준으로 위에 있으니까!';
-										resultCeleb = '뛰어난건 아닌데 잘하는건 아닌, 까딱하면 하위권 간다!';
-									}
-
-								} else {
-									sum_pp = sum_pred_b;
-									if (sum_pred_b >= 0.9){
-										resultTitle = '하위 10 % 양아치(일진) 마스크!';
-										resultExplain =	'누가봐도 양아치! 불미스러운 일이 생기면 가장 먼저 의심받을만한 얼굴! 담배를 안펴도 담배 냄새가 날듯한 얼굴';
-										resultCeleb = '완전 개!쌩!양아치 얼굴!';
-
-									}else if (sum_pred_b >= 0.8 && sum_pred_b < 0.9){
-										resultTitle = '하위 20 % 양아치(일진) 마스크!';
-										resultExplain =	'아무리 아닌척 하려고 해도... 날(나리)티가 풍기는 마스크! 골목에 한명씩 있을 듯한 얼굴';
-										resultCeleb = '심각한 양아치(일진) 얼굴!';
-
-									}else if (sum_pred_b >= 0.7 && sum_pred_b < 0.8){
-										resultTitle = '하위 30 % 양아치(일진) 마스크!';
-										resultExplain =	'양아치(일진)가 되고 싶은... 양아치를 동경하여 따라하려는 마스크! 일진 옆에 꼬붕같은 스타일 얼굴!';
-										resultCeleb = '일진 옆에 꼬붕 스타일 마스크!';
-
-									}else if (sum_pred_b >= 0.6 && sum_pred_b < 0.7){
-										resultTitle = '하위 40 % 양아치(일진) 마스크!';
-										resultExplain =	'언듯보면 양아치인데, 머리스타일 조금 바꾸면 평민이 될 수 있는 이도저도 아닌 애매한 마스크! 일진들 없을때 2진급에서 왕노릇하는 마스크!';
-										resultCeleb = '2진급 양아치 얼굴!';
-
-									}else{
-										resultTitle = '하위 50 % 양아치(일진) 마스크!';
-										resultExplain =	'모범생과 양아치 두얼굴을 모두 품고 있는! 이것도 저것도 아닌 애매한 마스크!';
-										resultCeleb = '범생이도 아닌, 아치도 아닌 애매한 얼굴!';
-									}
+							for (var li = 0; li < LEVELS.length; li++) {
+								if (spice >= LEVELS[li].min) {
+									resultTitle = LEVELS[li].name;
+									resultExplain = LEVELS[li].explain;
+									resultCeleb = resultCeleb = LEVELS[li].celeb;
+									break;
 								}
 							}
-
+							resultTitle += ' — 매운맛 지수 ' + Math.round(spice * 100) + '%';
 
 							// 여기는 위에서 result title 받아온다 즉 title = resultTitle
 							var title =
@@ -389,7 +330,7 @@
 								resultCeleb +
 								'</div>';
 
-							$('.result-message').html(title + explain + celeb + roastHTML('gangster')); // title, 설명, 연예인, 촌평
+							$('.result-message').html(title + explain + celeb + roastHTML('spice')); // title, 설명, 연예인, 촌평
 
 
 
