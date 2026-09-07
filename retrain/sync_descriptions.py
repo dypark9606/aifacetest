@@ -18,9 +18,10 @@ from urllib.parse import quote
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
+# 2026-09-08: 개그맨/개그우먼을 닮은꼴 연예인에 합쳤다. Sec4_GAG.html 은 이제
+# 옛 주소로 들어온 사람을 보내는 안내 페이지라 여기서 건드리면 안 된다.
 SECTIONS = [
     ('Sec2_man_ent.html', ['AI_star_m', 'AI_star_w']),
-    ('Sec4_GAG.html',     ['AI_GAG_M', 'AI_GAG_w']),
 ]
 
 # 동명이인이 많아 문서를 특정하기 어려운 경우는 나무위키 검색으로 보낸다

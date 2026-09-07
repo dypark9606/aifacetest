@@ -6,3 +6,5 @@ _selftest/
 *.bak-*
 # 재학습용 데이터 합치기 (심볼릭 링크라 올릴 것도 아니다)
 retrain/_merged/
+# 통합 전후 비교용으로만 만든 임시 모델
+AI_model/_baseline_*/
