@@ -191,7 +191,7 @@
 		});
 
 		var btns = el('div', 'rd-btns');
-		var again = el('button', 'rd-btn', '다시 하기');
+		var again = el('button', 'rd-btn', '처음부터 다시 하기');
 		var copy = el('button', 'rd-btn', '결과 복사');
 		var share = el('button', 'rd-btn', '공유하기');
 		again.type = copy.type = share.type = 'button';

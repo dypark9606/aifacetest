@@ -60,10 +60,27 @@
 		root.appendChild(res);
 
 		var cur = { cv: null, pts: null };
+		var misses = 0;          /* 연달아 얼굴을 못 찾은 횟수 */
 
 		function status(msg, busy) {
 			st.textContent = msg;
 			st.className = 'rd-status' + (busy ? ' busy' : '');
+		}
+
+		/* 얼굴 인식은 기기의 그래픽 엔진(WebGL)을 탄다. 드물게 그 엔진이 결과를
+		   제대로 못 내놓는 기기가 있고, 그러면 어떤 사진을 넣어도 "얼굴을 못 찾았습니다"
+		   만 반복된다. 사용자는 자기 사진 탓인 줄 알고 몇 번이고 다시 시도한다.
+		   두 번 연속 실패하면 사정을 솔직히 알려 주고 빠져나갈 길을 준다. */
+		function noteDeviceIssue() {
+			if (document.querySelector('.rd-devnote')) return;
+			var box = el('p', 'rd-devnote');
+			box.appendChild(document.createTextNode(
+				'사진을 여러 장 바꿔도 얼굴을 못 찾는다면 이 기기에서 얼굴 인식이 지원되지 않는 것일 수 있습니다. '));
+			var a = document.createElement('a');
+			a.href = 'https://dypark9606.github.io/aifacetest/';
+			a.textContent = '웹에서 열어 보기';
+			box.appendChild(a);
+			st.parentNode.insertBefore(box, st.nextSibling);
 		}
 
 		input.addEventListener('change', function () {
@@ -81,8 +98,10 @@
 				if (!pts) {
 					box.classList.add('rd-bad');
 					status('얼굴을 못 찾았습니다. 정면으로 크게 나온 사진으로 바꿔 보세요.');
+					if (++misses >= 2) noteDeviceIssue();
 					return;
 				}
+				misses = 0;
 				var bad = FM.check(pts, cur.cv);
 				box.classList.toggle('rd-bad', !!bad);
 				status(bad || '준비됐습니다. 아래 버튼을 누르세요.');
@@ -105,6 +124,22 @@
 				}
 			}, 30);
 		});
+
+		/* 처음 상태로 되돌린다. 사진·판정·결과를 모두 지우고 고르기 화면으로 올린다. */
+		function reset() {
+			cur.cv = null;
+			cur.pts = null;
+			last = null;
+			try { input.value = ''; } catch (e) { }
+			res.style.display = 'none';
+			res.innerHTML = '';
+			ph.textContent = '＋';
+			ph.style.backgroundImage = '';
+			box.classList.remove('rd-bad');
+			go.disabled = true;
+			status('사진을 올려 주세요.');
+			box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
 
 		var last = null;
 		function render(r) {
@@ -141,8 +176,12 @@
 			var btns = el('div', 'rd-btns');
 			var bCopy = el('button', 'rd-btn', '결과 복사');
 			var bShare = el('button', 'rd-btn', '공유하기');
-			bCopy.type = bShare.type = 'button';
-			btns.appendChild(bCopy); btns.appendChild(bShare);
+			/* 결과를 본 뒤 다른 사진으로 바로 다시 할 수 있어야 한다.
+			   화면을 새로 읽지 않고 그 자리에서 되돌린다 — 앱에서는 새로고침이
+			   MediaPipe 를 다시 올리느라 몇 초씩 걸린다. */
+			var bAgain = el('button', 'rd-btn rd-again', '다른 사진으로 다시 하기');
+			bCopy.type = bShare.type = bAgain.type = 'button';
+			btns.appendChild(bCopy); btns.appendChild(bShare); btns.appendChild(bAgain);
 			res.appendChild(btns);
 			res.appendChild(el('p', 'rd-disc',
 				'재미로 보는 결과입니다. 얼굴로 사람의 성격이나 운명이 정해지지는 않습니다.'));
@@ -152,6 +191,7 @@
 				if (navigator.share) navigator.share({ text: text(r) }).catch(function () { });
 				else copy(text(r), bShare);
 			});
+			bAgain.addEventListener('click', reset);
 
 			res.style.display = '';
 			res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

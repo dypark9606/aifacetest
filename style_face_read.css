@@ -284,3 +284,18 @@ body {
 .qz-back:hover {
 	color: #777;
 }
+
+/* 얼굴 인식이 안 되는 기기에 띄우는 안내 (readui.js 의 noteDeviceIssue) */
+.rd-devnote {
+	max-width: 34em;
+	margin: 8px auto 0;
+	padding: 10px 14px;
+	border-radius: 10px;
+	background: #fff6e5;
+	border: 1px solid #f0d9a8;
+	color: #6b4f16;
+	font-size: .92em;
+	line-height: 1.5;
+	text-align: center;
+}
+.rd-devnote a { color: #0b62c4; text-decoration: underline; }
