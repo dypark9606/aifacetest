@@ -17,10 +17,10 @@
 .tabs > ul .indicator {
 	display: block;
 	position: absolute;
-	bottom: 0;
+	top: 0;
 	left: 0;
 	height: 3px;
-	width: 11.1111%;
+	width: 20%;
 	background: #1e88e5;
 	-webkit-transform: translateZ(0) translateX(0);
 	transform: translateZ(0) translateX(0);
@@ -30,7 +30,7 @@
 .tabs > ul li {
 	display: inline-block;
 	font-size: 1.25rem;
-	width: 11.1111%;
+	width: 20%;
 }
 .tabs > ul li a {
 	display: block;
@@ -71,7 +71,7 @@ a[href$='section4'] {
 	color: black;
 }
 a[href$='section5'] {
-	background-image: url('img/img_back_1.jpg');
+	background-image: url('img/img_back_6.jfif');
 	background-repeat: repeat;
 	color: black;
 }
@@ -91,6 +91,16 @@ a[href$='section8'] {
 	color: black;
 }
 a[href$='section9'] {
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section11'] {
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
+}
+a[href$='section12'] {
 	background-image: url('img/img_back_1.jpg');
 	background-repeat: repeat;
 	color: black;
@@ -128,7 +138,7 @@ a[href$='section9'] {
 }
 /* 여기는 tab css 마지막 */
 
-/* 탭이 7개로 늘어나 좁은 화면에서 글자가 겹치는 것을 막는다 */
+/* 탭 10개를 5개씩 2줄로 놓았다. 좁은 화면에서 글자가 겹치는 것을 막는다 */
 @media (max-width: 700px) {
 	.tabs > ul li {
 		font-size: 0.85rem;

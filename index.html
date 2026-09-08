@@ -42,10 +42,6 @@
 					 내 첫인상은 순한맛일까요, 매운맛일까요?"
 		/>
 		<!-- 공유할 때 나오는 이미지-->
-		<!-- <meta
-			property="og:image"
-			content="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fk.kakaocdn.net%2Fdn%2Fc0eq42%2FbtqCQpiFhFn%2F8KPaOP9q8PXpJFRL7if55K%2Fimg.jpg"
-		/> -->
 		<meta
 			property="og:image"
 			content="./img/img_sharing_2.png"
@@ -74,6 +70,7 @@
 	<body scrolling="yes">
 		<!-- -----------------------------------------Tab 관련 code----------------------------->
 		<div class="tabs">
+			<!-- 윗줄 5개: 사진으로 보는 것 / 아랫줄 5개: 사주·성격·부자상 -->
 			<ul>
 				<li>
 					<a href="#section1">인공지능<br />외모점수</a>
@@ -86,9 +83,6 @@
 				</li>
 				<li>
 					<a href="#section5">첫인상<br />매운맛</a>
-				</li>
-				<li>
-					<a href="#section6">부자상<br />테스트</a>
 				</li>
 				<li>
 					<a href="#section7">커플궁합<br />매칭도</a>
@@ -104,6 +98,9 @@
 				</li>
 				<li>
 					<a href="#section12">MBTI<br />테스트</a>
+				</li>
+				<li>
+					<a href="#section6">부자상<br />테스트</a>
 				</li>
 			</ul>
 
@@ -241,6 +238,7 @@
 						this.cacheDom();
 						this.setupAria();
 						this.appendIndicator();
+						this.placeIndicator();
 						this.bindEvents();
 					},
 
@@ -270,6 +268,12 @@
 								this.changeTabKey();
 							}.bind(this)
 						);
+						$(window).on(
+							'resize',
+							function () {
+								this.placeIndicator();
+							}.bind(this)
+						);
 					},
 
 					changeTab: function () {
@@ -281,17 +285,32 @@
 						this.setSelectedTabPanel(self);
 					},
 
-					animateIndicator: function (elem) {
-						var offset = elem.offset().left;
-						var width = elem.width();
-						var $indicator = this.$tabList.find('.indicator');
-
-						console.log(elem.width());
-
-						$indicator.transition({
-							x: offset,
+					// 탭이 2줄이라 가로 위치만으로는 부족하다. 세로 위치도 같이 옮긴다
+					animateIndicator: function (elem, instant) {
+						var $ul = this.$tabList;
+						var ulOffset = $ul.offset();
+						var offset = elem.offset();
+						var $indicator = $ul.find('.indicator');
+						var pos = {
+							x: offset.left - ulOffset.left,
+							y: offset.top - ulOffset.top + elem.outerHeight() - 3,
 							width: elem.width(),
-						});
+						};
+
+						if (instant) {
+							$indicator.css(pos);
+						} else {
+							$indicator.transition(pos);
+						}
+					},
+
+					// 첫 진입 때와 화면 크기가 바뀔 때 선택된 탭 밑으로 붙여 준다
+					placeIndicator: function () {
+						var $selected = this.$tabList.find('a[aria-selected]');
+
+						if ($selected.length) {
+							this.animateIndicator($selected, true);
+						}
 					},
 
 					appendIndicator: function () {

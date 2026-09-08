@@ -47,8 +47,9 @@
 	};
 
 	/* ══════════ 2) 모델 로딩 ══════════ */
-	var MP_VER = '0.4.1633559619';
-	var MP_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@' + MP_VER + '/';
+	// 주소는 통째로 한 문자열이어야 한다 — 모바일 빌드(build_www.py)가 이 문자열을
+	// 'vendor/mediapipe/' 로 갈아끼워 오프라인 동작을 만든다. 쪼개 쓰면 치환이 안 된다.
+	var MP_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/';
 	var _mesh = null, _loading = null;
 
 	function loadScript(src) {
