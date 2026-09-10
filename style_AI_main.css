@@ -138,12 +138,20 @@ a[href$='section12'] {
 }
 /* 여기는 tab css 마지막 */
 
-/* 탭 10개를 5개씩 2줄로 놓았다. 좁은 화면에서 글자가 겹치는 것을 막는다 */
+/* 탭 10개를 5개씩 2줄로 놓았다. 좁은 화면에서 글자가 겹치는 것을 막는다.
+   2026-09-11: 실기기(안드로이드 폰)에서 글자가 너무 작다는 지적을 받았다.
+   ⚠ 이 문서의 root font-size 가 10px 이라 0.85rem 은 실제로 8.5px 였다. 본문(iframe) 은
+   root 16px 이고 '성별을 선택하세요' 가 28px 이다. 그 기준으로 탭을 24px(2.4rem)로 맞췄다.
+   탭 한 칸 폭이 화면의 20% 라 **한 줄에 4글자까지만** 들어간다. 라벨을 더 길게 쓰면 넘친다. */
 @media (max-width: 700px) {
 	.tabs > ul li {
-		font-size: 0.85rem;
+		font-size: 2.4rem;
+		letter-spacing: -0.03em;
 	}
 	.tabs > ul li a {
 		padding-top: 10px;
+		padding-left: 1px;
+		padding-right: 1px;
+		line-height: 1.25;
 	}
 }

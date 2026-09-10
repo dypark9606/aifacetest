@@ -157,28 +157,31 @@
         }
 
         function calculateCompatibility() {
-            const totalScore = maleScore + femaleScore;
+            /* 2026-09-11: 두 사람 점수를 더해 200점 만점으로 보여주던 것을
+               100점 만점으로 바꿨다. 사람들이 점수를 볼 때 기준이 100이라고 생각한다.
+               두 점수의 평균이라 분포는 그대로고 문구 기준만 절반으로 내렸다. */
+            const totalScore = Math.round((maleScore + femaleScore) / 2);
             let message;
 
-            if (totalScore >= 180) {
+            if (totalScore >= 90) {
                 message = "아주 잘 어울리는 커플! 함께 있으면 시너지 효과가 폭발적입니다. 서로를 완벽하게 이해하고 보완하는 최고의 커플! 앞으로의 여정이 더할 나위 없이 행복할 겁니다. 주변 사람들도 부러워할 만큼 이상적인 커플이에요.";
-            } else if (totalScore >= 160) {
-                message = "완벽에 가까운 커플이에요! 서로를 이해하는 깊은 마음과 배려로 오래갈 커플입니다. 함께하는 시간이 지날수록 더욱 깊어질 사랑을 약속할 수 있는 조화로운 관계입니다.";
-            } else if (totalScore >= 140) {
-                message = "매우 잘 어울리는 커플입니다. 서로의 장점이 잘 어우러져서 더 밝은 미래가 기대돼요! 작은 다툼이 있을 수 있지만, 이는 오히려 관계를 단단하게 만드는 요소가 될 수 있습니다.";
-            } else if (totalScore >= 120) {
-                message = "괜찮은 궁합을 가진 커플이에요! 조금의 노력으로 더 큰 행복을 나눌 수 있을 거예요. 함께 성장하며 서로의 장단점을 보완해 나간다면 행복한 관계로 발전할 수 있습니다.";
-            } else if (totalScore >= 100) {
-                message = "보통의 궁합을 가진 커플입니다. 가끔씩 갈등이 있을 수 있지만 서로 이해하려고 노력하면 돼요. 때로는 서로의 차이를 받아들이고 존중하는 것이 관계를 더욱 깊어지게 만들 수 있습니다.";
             } else if (totalScore >= 80) {
-                message = "서로 조금 다른 성향을 가졌지만 노력하면 좋은 커플이 될 수 있어요! 서로에 대한 관심과 이해가 중요하며, 지속적인 대화와 배려로 관계를 더욱 탄탄하게 만들어보세요.";
+                message = "완벽에 가까운 커플이에요! 서로를 이해하는 깊은 마음과 배려로 오래갈 커플입니다. 함께하는 시간이 지날수록 더욱 깊어질 사랑을 약속할 수 있는 조화로운 관계입니다.";
+            } else if (totalScore >= 70) {
+                message = "매우 잘 어울리는 커플입니다. 서로의 장점이 잘 어우러져서 더 밝은 미래가 기대돼요! 작은 다툼이 있을 수 있지만, 이는 오히려 관계를 단단하게 만드는 요소가 될 수 있습니다.";
             } else if (totalScore >= 60) {
+                message = "괜찮은 궁합을 가진 커플이에요! 조금의 노력으로 더 큰 행복을 나눌 수 있을 거예요. 함께 성장하며 서로의 장단점을 보완해 나간다면 행복한 관계로 발전할 수 있습니다.";
+            } else if (totalScore >= 50) {
+                message = "보통의 궁합을 가진 커플입니다. 가끔씩 갈등이 있을 수 있지만 서로 이해하려고 노력하면 돼요. 때로는 서로의 차이를 받아들이고 존중하는 것이 관계를 더욱 깊어지게 만들 수 있습니다.";
+            } else if (totalScore >= 40) {
+                message = "서로 조금 다른 성향을 가졌지만 노력하면 좋은 커플이 될 수 있어요! 서로에 대한 관심과 이해가 중요하며, 지속적인 대화와 배려로 관계를 더욱 탄탄하게 만들어보세요.";
+            } else if (totalScore >= 30) {
                 message = "약간의 갈등이 예상되지만, 서로 이해하려는 노력이 필요합니다. 서로의 다른 점을 인정하고 함께 성장하는 마음이 중요합니다. 서로를 알아가려는 마음이 깊다면 충분히 좋은 관계로 발전할 가능성이 있습니다.";
             } else {
                 message = "궁합 점수가 낮아요. 서로의 차이를 인정하고 배려하는 마음이 필요합니다. 상대방을 이해하고 서로의 성장에 도움이 되는 방법을 찾아보세요. 노력과 시간이 필요한 관계입니다.";
             }
 
-            document.getElementById("compatibility-result").innerHTML = `<h3>커플 궁합 점수: ${totalScore}</h3><p>${message}</p>`;
+            document.getElementById("compatibility-result").innerHTML = `<h3>커플 궁합 점수: ${totalScore} / 100</h3><p>${message}</p>`;
             document.getElementById("compatibility-result").style.display = "block";
         }
 
