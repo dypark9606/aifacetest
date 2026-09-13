@@ -206,7 +206,7 @@
 		var btns = el('div', 'rd-btns');
 		var again = el('button', 'rd-btn', '처음부터 다시 하기');
 		var copy = el('button', 'rd-btn', '결과 복사');
-		var share = el('button', 'rd-btn share-result-btn', '결과 공유');
+		var share = el('button', 'rd-btn share-result-btn', '결과 친구에게 공유');
 		again.type = copy.type = share.type = 'button';
 		btns.appendChild(again); btns.appendChild(copy); btns.appendChild(share);
 		res.appendChild(btns);

@@ -98,7 +98,7 @@
     <div class="actions">
       <button class="btn go" id="again">🔁 한 번 더</button>
       <button class="btn" id="make-challenge">📨 도전장 보내기</button>
-      <button class="btn sub" id="share-result">💬 결과 공유</button>
+      <button class="btn sub" id="share-result">💬 결과 친구에게 공유</button>
       <button class="btn sub" id="insta-card">📸 인스타 카드</button>
     </div>
   </div>
@@ -157,10 +157,16 @@
       b.innerHTML = '<span class="e">' + g.emoji + '</span>' + g.name +
         '<span class="b">최고 ' + (best === null ? '–' : A.scoreText(g.id, best)) + '</span>';
       b.addEventListener('click', function () {
-        if (state.running) return;
+        /* 지겨워지면 바로 다른 게임으로 — 진행 중이어도 즉시 갈아탄다.
+           ⚠ 이전 판의 타이머를 반드시 먼저 끊는다. 안 끊으면 새 게임 중에
+           옛 판의 onEnd 가 터져 엉뚱한 점수가 기록된다. */
+        if (state.running && state.running.stop) state.running.stop();
+        state.running = null; state.last = null;
         state.id = g.id; drawPicker(); drawHud(); clearField();
         $('result-card').classList.add('hidden');
+        $('battle-card').classList.add('hidden');
         $('link-card').classList.add('hidden');
+        start();   /* 누르는 순간 그 게임이 시작된다 */
       });
       box.appendChild(b);
     });

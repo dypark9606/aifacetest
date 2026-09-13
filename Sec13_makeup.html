@@ -6,81 +6,100 @@
 <title>얼굴상 메이크업 배틀</title>
 <link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
 <style>
-  :root{
-    --pink:#ff6b9d; --deep:#c2185b; --soft:#fff0f6; --line:#f3c6da;
-    --ink:#3a2b33; --gold:#f5a623;
-  }
+  :root{--pink:#ff6b9d;--deep:#c2185b;--soft:#fff0f6;--line:#f3c6da;--ink:#3a2b33;--gold:#f5a623}
   *{box-sizing:border-box}
   body{margin:0;padding:0 0 40px;font-family:'Jua',-apple-system,'Malgun Gothic',sans-serif;
        background:linear-gradient(180deg,#fff7fb 0%,#ffeef6 100%);color:var(--ink)}
-  .wrap{max-width:760px;margin:0 auto;padding:16px}
-  h1{font-size:34px;text-align:center;margin:10px 0 4px;color:var(--deep)}
-  .lead{text-align:center;font-size:19px;margin:0 0 14px;opacity:.85}
+  .wrap{max-width:780px;margin:0 auto;padding:14px}
+  h1{font-size:33px;text-align:center;margin:8px 0 2px;color:var(--deep)}
+  .lead{text-align:center;font-size:18px;margin:0 0 12px;opacity:.85}
 
-  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px;margin-bottom:16px;
+  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:15px;margin-bottom:14px;
         box-shadow:0 6px 18px rgba(194,24,91,.08)}
-  .card h2{font-size:24px;margin:0 0 10px;color:var(--deep)}
+  .card h2{font-size:23px;margin:0 0 10px;color:var(--deep)}
 
-  .order{background:var(--soft);border-radius:16px;padding:14px;text-align:center}
-  .order .emoji{font-size:44px;display:block}
-  .order .name{font-size:26px;color:var(--deep)}
-  .order .ask{font-size:19px;margin-top:4px}
-
-  .themes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-  .themes button{font-family:inherit;font-size:18px;padding:10px 14px;border-radius:999px;
+  .order{background:var(--soft);border-radius:16px;padding:13px;text-align:center}
+  .order .emoji{font-size:42px;display:block}
+  .order .name{font-size:25px;color:var(--deep)}
+  .order .ask{font-size:18px;margin-top:4px}
+  .themes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:11px}
+  .themes button{font-family:inherit;font-size:17px;padding:10px 14px;border-radius:999px;
     border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
   .themes button[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
 
-  .stage{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px;align-items:start}
-  @media (max-width:620px){.stage{grid-template-columns:1fr}}
-  .face-box{background:var(--soft);border-radius:20px;padding:10px;text-align:center}
-  svg.face{width:100%;height:auto;max-width:240px}
+  /* 사진 고르기 */
+  .pick{display:block;border:3px dashed var(--line);border-radius:18px;padding:22px;text-align:center;
+        background:var(--soft);cursor:pointer}
+  .pick input{display:none}
+  .pick .plus{font-size:46px;color:var(--pink)}
+  .pick .cap{font-size:18px;margin-top:6px}
+  .privacy{font-size:15px;opacity:.75;text-align:center;margin:8px 0 0}
 
-  .row{margin-bottom:12px}
-  .row h3{font-size:20px;margin:0 0 6px}
-  .opts{display:flex;flex-wrap:wrap;gap:6px}
-  .opts button{font-family:inherit;font-size:17px;padding:8px 12px;border-radius:12px;
-    border:2px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
-  .opts button[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+  .stage{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px;align-items:start}
+  @media (max-width:680px){.stage{grid-template-columns:1fr}}
+  .canvas-box{background:var(--soft);border-radius:18px;padding:10px;text-align:center}
+  #face-canvas{width:100%;max-width:280px;height:auto;border-radius:14px;display:block;margin:0 auto}
+  .live{font-size:18px;margin:8px 0 0}
 
-  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
-  .btn{font-family:inherit;font-size:20px;padding:12px 20px;border-radius:999px;border:none;cursor:pointer;
+  /* 부위별 조절 */
+  .part{border:2px solid var(--line);border-radius:14px;padding:11px;margin-bottom:10px;background:#fffafc}
+  .part h3{font-size:19px;margin:0 0 7px;color:var(--deep)}
+  .swatches{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+  .sw{width:46px;height:38px;border-radius:10px;border:3px solid #e7d2dd;cursor:pointer;
+      font-family:inherit;font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);padding:0}
+  .sw[aria-pressed="true"]{border-color:var(--deep);transform:scale(1.08)}
+  .gauge{display:flex;align-items:center;gap:9px}
+  .gauge label{font-size:16px;width:52px;flex:none;opacity:.8}
+  .gauge input[type=range]{flex:1;accent-color:var(--pink);height:26px}
+  .gauge .val{width:46px;text-align:right;font-size:17px;color:var(--deep);flex:none}
+
+  .actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:9px}
+  .btn{font-family:inherit;font-size:19px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;
        background:var(--pink);color:#fff;box-shadow:0 4px 12px rgba(255,107,157,.4)}
   .btn.sub{background:#fff;color:var(--deep);border:2px solid var(--line);box-shadow:none}
   .btn.insta{background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);box-shadow:0 4px 12px rgba(238,42,123,.35)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
 
-  .score-big{font-size:46px;text-align:center;color:var(--deep);margin:6px 0}
-  .verdict{text-align:center;font-size:22px;margin-bottom:10px}
+  .score-big{font-size:45px;text-align:center;color:var(--deep);margin:6px 0}
+  .verdict{text-align:center;font-size:21px;margin-bottom:10px}
   .bars{margin:0;padding:0;list-style:none}
-  .bars li{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:17px}
-  .bars .t{width:72px;flex:none}
+  .bars li{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:17px}
+  .bars .t{width:62px;flex:none}
   .bars .track{flex:1;height:12px;background:#f6e2ec;border-radius:99px;overflow:hidden}
   .bars .fill{display:block;height:100%;background:var(--pink)}
-  .bars .n{width:44px;text-align:right;flex:none}
+  .bars .n{width:48px;text-align:right;flex:none}
 
-  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center}
-  .vs .who{font-size:19px}.vs .pt{font-size:34px;color:var(--deep)}
-  .vs .mid{font-size:26px;color:var(--gold)}
-  .banner{text-align:center;font-size:26px;margin:10px 0;color:var(--deep)}
-
-  .link-box{width:100%;font-family:inherit;font-size:15px;padding:10px;border-radius:12px;
-            border:2px solid var(--line);word-break:break-all;min-height:70px}
-  .hint{font-size:16px;opacity:.75;text-align:center;margin-top:8px}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center;text-align:center}
+  .vs .who{font-size:18px}.vs .pt{font-size:33px;color:var(--deep)}.vs .mid{font-size:24px;color:var(--gold)}
+  .banner{text-align:center;font-size:25px;margin:9px 0;color:var(--deep)}
+  .link-box{width:100%;font-family:inherit;font-size:14px;padding:9px;border-radius:10px;
+            border:2px solid var(--line);word-break:break-all;min-height:66px}
+  .hint{font-size:15px;opacity:.75;text-align:center;margin-top:8px}
   .hidden{display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>💄 얼굴상 메이크업 배틀</h1>
-  <p class="lead">손님 주문대로 꾸미고, 친구와 점수로 대결하세요!</p>
+  <p class="lead">내 사진에 직접 화장하고, 친구와 점수로 대결해요!</p>
 
-  <div class="card hidden" id="challenge-card" hidden>
+  <div class="card hidden" id="challenge-card">
     <h2>📨 도전장이 도착했어요</h2>
-    <p id="challenge-text" style="font-size:19px;margin:0"></p>
+    <p id="challenge-text" style="font-size:18px;margin:0"></p>
   </div>
 
   <div class="card">
-    <h2>1. 오늘의 주문</h2>
+    <h2>1. 내 사진 올리기</h2>
+    <label class="pick" id="pick">
+      <input type="file" id="photo" accept="image/*" />
+      <span class="plus">＋</span>
+      <span class="cap" id="pick-cap">얼굴 사진을 찍거나 골라 주세요</span>
+    </label>
+    <p class="privacy">사진은 이 화면 안에서만 쓰입니다. 서버로 보내지 않고, 저장하지도 않습니다.</p>
+  </div>
+
+  <div class="card">
+    <h2>2. 오늘의 주문</h2>
     <div class="order">
       <span class="emoji" id="theme-emoji">🐱</span>
       <span class="name" id="theme-name">고양이상 아이돌</span>
@@ -90,51 +109,35 @@
   </div>
 
   <div class="card">
-    <h2>2. 화장하고 꾸미기</h2>
+    <h2>3. 화장하기 — 색을 고르고 진하기를 조절해요</h2>
     <div class="stage">
-      <div class="face-box">
-        <svg class="face" id="face" viewBox="0 0 200 240" role="img" aria-label="꾸미는 캐릭터">
-          <rect id="sv-bg" x="0" y="0" width="200" height="240" rx="18" fill="#ffe3ef"/>
-          <path id="sv-outfit" d="M55 205 Q100 175 145 205 L145 240 L55 240 Z" fill="#ff8fb1"/>
-          <path id="sv-hairback" d="M46 100 Q46 36 100 36 Q154 36 154 100 L154 190 Q100 210 46 190 Z" fill="#2f2a33"/>
-          <ellipse id="sv-skin" cx="100" cy="106" rx="50" ry="58" fill="#ffe0cd"/>
-          <path id="sv-hairfront" d="M50 94 Q58 46 100 46 Q142 46 150 94 Q128 70 100 70 Q72 70 50 94 Z" fill="#2f2a33"/>
-          <ellipse id="sv-blushL" cx="70" cy="122" rx="12" ry="8" fill="#ffb3c6" opacity=".85"/>
-          <ellipse id="sv-blushR" cx="130" cy="122" rx="12" ry="8" fill="#ffb3c6" opacity=".85"/>
-          <ellipse id="sv-eyeL" cx="79" cy="104" rx="11" ry="12" fill="#4a3b45"/>
-          <ellipse id="sv-eyeR" cx="121" cy="104" rx="11" ry="12" fill="#4a3b45"/>
-          <ellipse id="sv-shadowL" cx="79" cy="93" rx="14" ry="6" fill="#ff9ec4"/>
-          <ellipse id="sv-shadowR" cx="121" cy="93" rx="14" ry="6" fill="#ff9ec4"/>
-          <circle cx="83" cy="100" r="3.4" fill="#fff" opacity=".9"/>
-          <circle cx="125" cy="100" r="3.4" fill="#fff" opacity=".9"/>
-          <path id="sv-lip" d="M88 140 Q100 152 112 140 Q100 146 88 140 Z" fill="#c2185b"/>
-          <g id="sv-acc"></g>
-        </svg>
-        <p style="font-size:17px;margin:6px 0 0" id="live-score">예상 점수: –</p>
+      <div class="canvas-box">
+        <canvas id="face-canvas" width="560" height="700"></canvas>
+        <p class="live" id="live-score">사진을 올리면 점수가 보여요</p>
       </div>
       <div id="controls"></div>
     </div>
     <div class="actions">
-      <button class="btn" id="judge">✨ 심사받기</button>
+      <button class="btn" id="judge" disabled>✨ 심사받기</button>
       <button class="btn sub" id="random">🎲 랜덤</button>
       <button class="btn sub" id="reset-all">↩️ 처음부터 다시 하기</button>
     </div>
   </div>
 
   <div class="card hidden" id="result-card">
-    <h2>3. 심사 결과</h2>
+    <h2>4. 심사 결과</h2>
     <p class="score-big" id="score-big">0점</p>
     <p class="verdict" id="verdict"></p>
     <ul class="bars" id="bars"></ul>
     <div class="actions">
       <button class="btn" id="make-challenge">📨 친구에게 도전장 보내기</button>
-      <button class="btn sub" id="share-result">💬 결과 공유</button>
+      <button class="btn sub" id="share-result">💬 결과 친구에게 공유</button>
     </div>
     <div class="actions">
       <button class="btn insta" id="insta-story">📸 인스타 스토리용 저장</button>
       <button class="btn sub" id="insta-feed">🖼️ 인스타 피드용 저장</button>
     </div>
-    <p class="hint" id="insta-hint">이미지를 저장하면 캡션이 자동 복사돼요. 인스타에 올릴 때 붙여넣기 하세요.</p>
+    <p class="hint" id="insta-hint">이미지를 저장하면 캡션이 자동 복사돼요. 설치 QR도 카드에 들어갑니다.</p>
   </div>
 
   <div class="card hidden" id="battle-card">
@@ -142,27 +145,25 @@
     <div class="vs">
       <div><div class="who" id="vs-left-name">친구</div><div class="pt" id="vs-left">0</div></div>
       <div class="mid">VS</div>
-      <div><div class="who" id="vs-right-name">나</div><div class="pt" id="vs-right">0</div></div>
+      <div><div class="who">나</div><div class="pt" id="vs-right">0</div></div>
     </div>
     <p class="banner" id="battle-banner"></p>
     <div class="actions">
       <button class="btn" id="share-battle">💬 대결 결과 공유</button>
       <button class="btn sub" id="rematch">🔁 다시 대결</button>
-    </div>
-    <div class="actions">
       <button class="btn insta" id="insta-battle">📸 대결 카드 인스타로</button>
     </div>
   </div>
 
   <div class="card hidden" id="link-card">
     <h2>📨 도전장 링크</h2>
-    <p style="font-size:18px;margin:0 0 8px">아래 링크를 친구에게 보내세요. 친구가 같은 주제로 꾸미면 점수가 자동으로 비교됩니다.</p>
+    <p style="font-size:17px;margin:0 0 8px">친구에게 보내세요. 친구가 같은 주제로 화장하면 점수가 자동 비교됩니다.</p>
     <textarea class="link-box" id="link-out" readonly></textarea>
     <div class="actions">
       <button class="btn" id="send-challenge">💬 메시지로 보내기</button>
       <button class="btn sub" id="copy-link">📋 링크 복사</button>
     </div>
-    <p class="hint">사진은 전송되지 않습니다. 꾸민 캐릭터 정보만 링크에 담깁니다.</p>
+    <p class="hint">사진은 전송되지 않습니다. 화장 설정만 링크에 담깁니다.</p>
   </div>
 </div>
 
@@ -173,60 +174,49 @@
   'use strict';
   var G = window.MakeupBattle;
   var $ = function (id) { return document.getElementById(id); };
+  var cv = $('face-canvas'), ctx = cv.getContext('2d');
 
-  var LABELS = {
-    eye: ['아이섀도', { pink: '핑크', brown: '브라운', coral: '코랄', pearl: '펄' }],
-    lip: ['립', { berry: '베리', red: '레드', coral: '코랄', rose: '로즈' }],
-    blush: ['블러셔', { rose: '로즈', peach: '피치', none: '없음' }],
-    hair: ['헤어', { black: '블랙', brown: '브라운', pink: '핑크', blonde: '금발' }],
-    accessory: ['액세서리', { cat: '고양이귀', glasses: '안경', earrings: '귀걸이', tiara: '티아라' }],
-    outfit: ['의상', { idol: '아이돌', suit: '정장', dress: '원피스', wedding: '웨딩' }],
-    bg: ['배경', { stage: '무대', office: '오피스', cafe: '카페', garden: '정원' }]
-  };
-  var COLOR = {
-    eye: { pink: '#ff9ec4', brown: '#b07a5a', coral: '#ff9d7a', pearl: '#e7d9f2' },
-    lip: { berry: '#a3184a', red: '#e02020', coral: '#ff7a5c', rose: '#e2687f' },
-    blush: { rose: '#ffb3c6', peach: '#ffcfa8', none: 'transparent' },
-    hair: { black: '#2f2a33', brown: '#6b4331', pink: '#ff86b8', blonde: '#e8c56a' },
-    outfit: { idol: '#ff8fb1', suit: '#3f4a63', dress: '#ffd0e0', wedding: '#fdfdff' },
-    bg: { stage: '#ffe3ef', office: '#dfe7f5', cafe: '#f7e6d2', garden: '#dff2e1' }
-  };
-  var ACC = {
-    cat: '<path d="M60 58 L56 26 L86 44 Z" fill="#2f2a33"/><path d="M140 58 L144 26 L114 44 Z" fill="#2f2a33"/>',
-    glasses: '<g fill="none" stroke="#3a2b33" stroke-width="4"><circle cx="79" cy="104" r="19"/><circle cx="121" cy="104" r="19"/><path d="M98 104 h4"/></g>',
-    earrings: '<circle cx="50" cy="124" r="7" fill="#f5a623"/><circle cx="150" cy="124" r="7" fill="#f5a623"/>',
-    tiara: '<path d="M72 48 L86 28 L100 46 L114 28 L128 48 Z" fill="#f5a623" stroke="#d48806" stroke-width="2"/>'
-  };
-
-  var state = { theme: 'cat-idol', look: Object.assign({}, G.DEFAULT_LOOK), last: null, challenge: null };
+  var state = { theme: 'cat-idol', look: G.defaultLook(), last: null, challenge: null, img: null };
 
   function shareBase() {
-    try {
-      if (window.top !== window.self && document.referrer) return document.referrer.split('#')[0].split('?')[0];
-    } catch (e) {}
-    return location.href.split('#')[0].split('?')[0];
-  }
-  function challengeUrl(token) {
-    return location.href.split('#')[0].split('?')[0] + '?battle=' + token;
+    try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
+    catch (e) {}
+    return location.href.split(/[?#]/)[0];
   }
 
+  /* ---------- 사진 ---------- */
+  $('photo').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function (ev) {
+      var img = new Image();
+      img.onload = function () {
+        state.img = img;
+        $('pick-cap').textContent = '다른 사진으로 바꾸려면 다시 누르세요';
+        $('judge').disabled = false;
+        syncAll();
+      };
+      img.src = ev.target.result;
+    };
+    fr.readAsDataURL(file);
+  });
+
+  /* ---------- 주제 ---------- */
   function drawThemes() {
-    var box = $('themes');
-    box.innerHTML = '';
+    var box = $('themes'); box.innerHTML = '';
     Object.keys(G.THEMES).forEach(function (id) {
       var t = G.THEMES[id];
       var b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = t.emoji + ' ' + t.label;
+      b.type = 'button'; b.textContent = t.emoji + ' ' + t.label;
       b.setAttribute('aria-pressed', String(id === state.theme));
       b.addEventListener('click', function () {
-        if (state.challenge) return;
+        if (state.challenge) return;   /* 도전장은 주제가 고정된다 */
         state.theme = id; drawThemes(); drawOrder(); updateLive();
       });
       box.appendChild(b);
     });
   }
-
   function drawOrder() {
     var t = G.THEMES[state.theme];
     $('theme-emoji').textContent = t.emoji;
@@ -234,47 +224,110 @@
     $('theme-prompt').textContent = t.prompt;
   }
 
+  /* ---------- 색 + 진하기 조절판 ---------- */
   function drawControls() {
-    var box = $('controls');
-    box.innerHTML = '';
+    var box = $('controls'); box.innerHTML = '';
     Object.keys(G.OPTIONS).forEach(function (key) {
-      var row = document.createElement('div'); row.className = 'row';
-      var h = document.createElement('h3'); h.textContent = LABELS[key][0]; row.appendChild(h);
-      var opts = document.createElement('div'); opts.className = 'opts';
+      var part = document.createElement('div'); part.className = 'part';
+      var h = document.createElement('h3');
+      h.textContent = G.LABELS[key][0];
+      part.appendChild(h);
+
+      var sw = document.createElement('div'); sw.className = 'swatches';
       G.OPTIONS[key].forEach(function (value) {
         var b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = LABELS[key][1][value] || value;
-        b.setAttribute('aria-pressed', String(state.look[key] === value));
+        b.type = 'button'; b.className = 'sw';
+        b.style.background = G.COLORS[key][value];
+        b.textContent = G.LABELS[key][1][value] || value;
+        b.setAttribute('aria-pressed', String(state.look[key].value === value));
         b.addEventListener('click', function () {
-          state.look[key] = value;
+          state.look[key].value = value;
           drawControls(); paint(); updateLive();
         });
-        opts.appendChild(b);
+        sw.appendChild(b);
       });
-      row.appendChild(opts); box.appendChild(row);
+      part.appendChild(sw);
+
+      var g = document.createElement('div'); g.className = 'gauge';
+      var lab = document.createElement('label'); lab.textContent = '진하기';
+      var rng = document.createElement('input');
+      rng.type = 'range'; rng.min = 0; rng.max = 100; rng.step = 1;
+      rng.value = state.look[key].level;
+      var val = document.createElement('span'); val.className = 'val';
+      val.textContent = state.look[key].level + '%';
+      rng.addEventListener('input', function () {
+        state.look[key].level = Number(rng.value);
+        val.textContent = rng.value + '%';
+        paint(); updateLive();
+      });
+      g.appendChild(lab); g.appendChild(rng); g.appendChild(val);
+      part.appendChild(g);
+      box.appendChild(part);
     });
   }
 
+  /* ---------- 사진 위에 메이크업 그리기 ---------- */
   function paint() {
-    var l = state.look;
-    $('sv-bg').setAttribute('fill', COLOR.bg[l.bg]);
-    $('sv-outfit').setAttribute('fill', COLOR.outfit[l.outfit]);
-    $('sv-hairback').setAttribute('fill', COLOR.hair[l.hair]);
-    $('sv-hairfront').setAttribute('fill', COLOR.hair[l.hair]);
-    $('sv-shadowL').setAttribute('fill', COLOR.eye[l.eye]);
-    $('sv-shadowR').setAttribute('fill', COLOR.eye[l.eye]);
-    $('sv-lip').setAttribute('fill', COLOR.lip[l.lip]);
-    $('sv-blushL').setAttribute('fill', COLOR.blush[l.blush]);
-    $('sv-blushR').setAttribute('fill', COLOR.blush[l.blush]);
-    $('sv-acc').innerHTML = ACC[l.accessory] || '';
+    var W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+
+    if (!state.img) {
+      ctx.fillStyle = '#ffe3ef'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#c2185b'; ctx.textAlign = 'center';
+      ctx.font = '34px Jua, sans-serif';
+      ctx.fillText('사진을 올려 주세요', W / 2, H / 2);
+      return;
+    }
+
+    /* 사진을 캔버스에 꽉 채운다(가운데 기준 크롭) */
+    var img = state.img;
+    var scale = Math.max(W / img.width, H / img.height);
+    var dw = img.width * scale, dh = img.height * scale;
+    ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+
+    /* 부위별로 부드러운 원형 그라데이션을 얇게 올린다.
+       ⚠ globalAlpha 를 한 번 바꾸면 반드시 되돌린다. 안 하면 다음 레이어가
+       같은 투명도를 물려받아 화장이 점점 흐려진다. */
+    var order = ['shade', 'brow', 'eye', 'blush', 'lip', 'gloss'];
+    order.forEach(function (key) {
+      var st = state.look[key];
+      if (!st || st.level <= 0) return;
+      var zones = G.FACE_ZONES[key] || [];
+      var color = G.COLORS[key][st.value];
+      var alpha = (st.level / 100) * (key === 'shade' ? 0.30 : key === 'gloss' ? 0.38 : 0.62);
+
+      ctx.save();
+      ctx.globalCompositeOperation = (key === 'gloss') ? 'lighter' : 'multiply';
+      if (key === 'brow') ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = alpha;
+      zones.forEach(function (z) {
+        var cx = z[0] * W, cy = z[1] * H, rx = z[2] * W, ry = z[3] * H;
+        var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+        grd.addColorStop(0, color);
+        grd.addColorStop(0.6, color);
+        grd.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    });
   }
 
   function updateLive() {
-    $('live-score').textContent = '예상 점수: ' + G.scoreLook(state.theme, state.look) + '점';
+    $('live-score').textContent = state.img
+      ? '예상 점수: ' + G.scoreLook(state.theme, state.look) + '점'
+      : '사진을 올리면 점수가 보여요';
   }
 
+  /* 상태를 코드로 바꾼 뒤(랜덤·리셋·도전장) 조절판을 다시 그려 맞춘다.
+     안 하면 그림과 점수는 바뀌었는데 버튼·게이지는 옛 값을 보여 준다. */
+  function syncAll() { drawControls(); paint(); updateLive(); }
+
+  /* ---------- 심사 ---------- */
   function judge() {
+    if (!state.img) { alert('먼저 얼굴 사진을 올려 주세요!'); return; }
     var b = G.scoreBreakdown(state.theme, state.look);
     state.last = b;
     $('score-big').textContent = b.score + '점';
@@ -283,7 +336,7 @@
     Object.keys(G.WEIGHTS).forEach(function (key) {
       var got = b.parts[key], max = G.WEIGHTS[key];
       var li = document.createElement('li');
-      li.innerHTML = '<span class="t">' + LABELS[key][0] + '</span>' +
+      li.innerHTML = '<span class="t">' + G.LABELS[key][0] + '</span>' +
         '<span class="track"><span class="fill" style="width:' + Math.round(got / max * 100) + '%"></span></span>' +
         '<span class="n">' + got + '/' + max + '</span>';
       ul.appendChild(li);
@@ -297,43 +350,49 @@
     var mine = state.last.score, theirs = state.challenge.score;
     var r = G.compare(theirs, mine);
     $('vs-left-name').textContent = state.challenge.name;
-    $('vs-right-name').textContent = '나';
-    $('vs-left').textContent = theirs;
-    $('vs-right').textContent = mine;
+    $('vs-left').textContent = theirs + '점';
+    $('vs-right').textContent = mine + '점';
     $('battle-banner').textContent = r.emoji + ' ' + r.label;
     $('battle-card').classList.remove('hidden');
   }
 
+  /* ---------- 공유 ---------- */
+  function resultText() {
+    var t = G.THEMES[state.theme];
+    return t.label + ' 메이크업 ' + state.last.score + '점 — ' + G.verdict(state.last.score);
+  }
   function shareText(text) {
-    /* 받는 친구는 앱이 없다 — 설치 링크를 항상 같이 보낸다. */
     var full = window.ShareCard
       ? window.ShareCard.shareMessage({ title: '💄 얼굴상 메이크업 배틀', body: text, url: shareBase() })
       : text + '\n' + shareBase();
     if (navigator.share) { navigator.share({ title: '얼굴상 메이크업 배틀', text: full }).catch(function () {}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(full).then(function () { alert('결과를 복사했어요. 친구에게 붙여넣기 하세요!'); },
+    if (navigator.clipboard) navigator.clipboard.writeText(full).then(
+      function () { alert('결과를 복사했어요. 친구에게 붙여넣기 하세요!'); },
       function () { prompt('복사해서 보내세요', full); });
     else prompt('복사해서 보내세요', full);
-  }
-
-  function resultText() {
-    var t = G.THEMES[state.theme];
-    return '💄 ' + t.label + ' 메이크업 ' + state.last.score + '점 — ' + G.verdict(state.last.score) + '\n너도 해봐!';
   }
 
   $('judge').addEventListener('click', judge);
   $('random').addEventListener('click', function () {
     Object.keys(G.OPTIONS).forEach(function (k) {
       var arr = G.OPTIONS[k];
-      state.look[k] = arr[Math.floor(Math.random() * arr.length)];
+      state.look[k].value = arr[Math.floor(Math.random() * arr.length)];
+      state.look[k].level = Math.floor(Math.random() * 101);
     });
-    drawControls(); paint(); updateLive();
+    syncAll();
   });
   $('share-result').addEventListener('click', function () { if (state.last) shareText(resultText()); });
+  $('share-battle').addEventListener('click', function () {
+    if (!state.last || !state.challenge) return;
+    var r = G.compare(state.challenge.score, state.last.score);
+    shareText('⚔️ ' + G.THEMES[state.theme].label + ' 메이크업 배틀\n' +
+      state.challenge.name + ' ' + state.challenge.score + '점 VS 나 ' + state.last.score + '점 — ' + r.label);
+  });
   $('make-challenge').addEventListener('click', function () {
     if (!state.last) return;
-    var name = (prompt('도전자 이름을 정해주세요', '나') || '나');
+    var name = prompt('도전자 이름을 정해주세요', '나') || '나';
     var token = G.encodeChallenge(G.createChallenge(name, state.theme, state.look));
-    $('link-out').value = challengeUrl(token);
+    $('link-out').value = location.href.split(/[?#]/)[0] + '?battle=' + token;
     $('link-card').classList.remove('hidden');
     $('link-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
@@ -352,85 +411,68 @@
   });
   $('copy-link').addEventListener('click', function () {
     var url = $('link-out').value;
-    if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { alert('링크를 복사했어요!'); },
-      function () { prompt('복사해서 보내세요', url); });
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(
+      function () { alert('링크를 복사했어요!'); }, function () { prompt('복사해서 보내세요', url); });
     else prompt('복사해서 보내세요', url);
   });
-  $('share-battle').addEventListener('click', function () {
-    if (!state.last || !state.challenge) return;
-    var r = G.compare(state.challenge.score, state.last.score);
-    shareText('⚔️ ' + G.THEMES[state.theme].label + ' 메이크업 배틀\n' +
-      state.challenge.name + ' ' + state.challenge.score + '점 VS 나 ' + state.last.score + '점 — ' + r.label);
-  });
+
+  /* 인스타 카드 — 꾸민 사진을 그대로 카드에 넣는다 */
+  function instaShare(size) {
+    if (!state.last || !window.ShareCard) return;
+    var C = window.ShareCard;
+    var opts = { size: size, photo: cv, heading: '💄 메이크업 배틀',
+                 theme: G.THEMES[state.theme].label,
+                 score: state.last.score, verdict: G.verdict(state.last.score) };
+    if (state.challenge) opts.opponent = { name: state.challenge.name, score: state.challenge.score };
+    $('insta-hint').textContent = '카드를 만드는 중…';
+    C.drawCard(opts).then(function (o) { return C.shareImage(o.blob, C.instaCaption(opts)); })
+      .then(function (how) {
+        $('insta-hint').textContent = how === 'shared'
+          ? '공유 시트에서 Instagram 을 선택하세요.'
+          : '이미지를 저장했어요. 캡션도 복사됐으니 인스타에서 붙여넣기 하세요.';
+      }).catch(function () { $('insta-hint').textContent = '카드 만들기에 실패했어요.'; });
+  }
+  $('insta-story').addEventListener('click', function () { instaShare('story'); });
+  $('insta-feed').addEventListener('click', function () { instaShare('feed'); });
+  $('insta-battle').addEventListener('click', function () { instaShare('story'); });
+
   $('rematch').addEventListener('click', function () {
     $('battle-card').classList.add('hidden');
     $('result-card').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  /* ---------- 인스타그램 공유 ----------
-     인스타는 외부 앱이 글을 직접 올리는 API 를 주지 않는다. 실제로 동작하는 경로는
-     이미지를 만들어 (1) OS 공유 시트로 넘기거나 (2) 기기에 저장하고 캡션을 복사해
-     사용자가 인스타에서 붙여넣는 것뿐이다. 둘 다 지원한다. */
-  function instaShare(size) {
-    if (!state.last) return;
-    var C = window.ShareCard;
-    var opts = {
-      size: size,
-      svg: $('face'),
-      theme: G.THEMES[state.theme].label,
-      score: state.last.score,
-      verdict: G.verdict(state.last.score)
-    };
-    if (state.challenge) opts.opponent = { name: state.challenge.name, score: state.challenge.score };
-    var caption = C.instaCaption(opts);
-    $('insta-hint').textContent = '카드를 만드는 중…';
-    C.drawCard(opts).then(function (out) {
-      return C.shareImage(out.blob, caption);
-    }).then(function (how) {
-      $('insta-hint').textContent = how === 'shared'
-        ? '공유 시트에서 Instagram 을 선택하세요.'
-        : '이미지를 저장했어요. 캡션도 복사됐으니 인스타에서 붙여넣기 하세요.';
-    }).catch(function () {
-      $('insta-hint').textContent = '카드 만들기에 실패했어요. 다시 시도해 주세요.';
-    });
-  }
-  $('insta-story').addEventListener('click', function () { instaShare('story'); });
-  $('insta-feed').addEventListener('click', function () { instaShare('feed'); });
-  $('insta-battle').addEventListener('click', function () { instaShare('story'); });
-
-  /* 처음부터 다시 하기 — 화면을 새로 읽지 않고 상태만 되돌린다.
-     도전장으로 들어온 경우에도 주제는 유지해 대결이 계속 성립하게 한다. */
-  function resetAll() {
-    state.look = Object.assign({}, G.DEFAULT_LOOK);
-    state.last = null;
+  /* 처음부터 다시 하기 — 사진까지 비운다 */
+  $('reset-all').addEventListener('click', function () {
+    state.look = G.defaultLook(); state.last = null; state.img = null;
+    try { $('photo').value = ''; } catch (e) {}
+    $('pick-cap').textContent = '얼굴 사진을 찍거나 골라 주세요';
+    $('judge').disabled = true;
     if (!state.challenge) state.theme = 'cat-idol';
     $('result-card').classList.add('hidden');
     $('battle-card').classList.add('hidden');
     $('link-card').classList.add('hidden');
-    $('insta-hint').textContent = '이미지를 저장하면 캡션이 자동 복사돼요. 인스타에 올릴 때 붙여넣기 하세요.';
-    drawThemes(); drawOrder(); drawControls(); paint(); updateLive();
+    $('insta-hint').textContent = '이미지를 저장하면 캡션이 자동 복사돼요. 설치 QR도 카드에 들어갑니다.';
+    drawThemes(); drawOrder(); syncAll();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  $('reset-all').addEventListener('click', resetAll);
+  });
 
   (function boot() {
     var m = /[?&]battle=([A-Za-z0-9_-]+)/.exec(location.search);
     if (m) {
       var c = G.decodeChallenge(m[1]);
       if (c) {
-        state.challenge = c;
-        state.theme = c.theme;
-        var card = $('challenge-card');
-        card.hidden = false; card.classList.remove('hidden');
+        state.challenge = c; state.theme = c.theme;
+        $('challenge-card').classList.remove('hidden');
         $('challenge-text').textContent = c.name + '님이 ' + G.THEMES[c.theme].label +
-          ' 주제로 ' + c.score + '점을 받았어요. 같은 주제로 꾸며서 이겨보세요!';
+          ' 주제로 ' + c.score + '점을 받았어요. 내 사진으로 화장해서 이겨보세요!';
       }
     }
-    drawThemes(); drawOrder(); drawControls(); paint(); updateLive();
+    drawThemes(); drawOrder(); syncAll();
   })();
 
   window.__shareResultText = function () { return state.last ? resultText() : ''; };
+  window.__makeupState = state;
 })();
 </script>
 </body>

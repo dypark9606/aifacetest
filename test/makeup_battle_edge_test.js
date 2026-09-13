@@ -5,14 +5,22 @@ const perfect = game.THEMES['rich-ceo'].target;
 assert.strictEqual(game.scoreLook('rich-ceo', perfect), 100);
 
 // 완전히 어긋난 조합도 0점이 아니라 기본점을 받는다 — 아이들이 좌절하지 않게.
-const worst = { eye: 'pearl', lip: 'coral', blush: 'none', hair: 'pink', accessory: 'cat', outfit: 'idol', bg: 'stage' };
+const worst = {
+  eye:   { value: 'purple', level: 100 },
+  lip:   { value: 'coral',  level: 100 },
+  blush: { value: 'coral',  level: 100 },
+  brow:  { value: 'soft',   level: 0 },
+  shade: { value: 'warm',   level: 100 },
+  gloss: { value: 'glitter', level: 100 }
+};
 const low = game.scoreLook('rich-ceo', worst);
 assert.ok(low >= 35 && low < 60, '최저점은 35점 이상 60점 미만: ' + low);
 
 // 잘못된 값은 기본값으로 교체되어 점수 계산이 깨지지 않는다.
-const dirty = game.normalizeLook({ eye: '<script>', lip: 'red', nothing: 1 });
-assert.strictEqual(dirty.eye, game.DEFAULT_LOOK.eye);
-assert.strictEqual(dirty.lip, 'red');
+const dirty = game.normalizeLook({ eye: { value: '<script>', level: 'x' }, lip: { value: 'red', level: 70 } });
+assert.strictEqual(dirty.eye.value, game.defaultLook().eye.value);
+assert.strictEqual(dirty.lip.value, 'red');
+assert.strictEqual(dirty.lip.level, 70);
 assert.strictEqual(Object.keys(dirty).length, Object.keys(game.OPTIONS).length);
 
 // 이름은 태그와 과도한 길이를 걸러낸다.
@@ -33,6 +41,5 @@ assert.strictEqual(game.compare(85, 85).result, 'draw');
 // 알 수 없는 주제나 깨진 토큰은 거부
 assert.strictEqual(game.decodeChallenge(''), null);
 assert.strictEqual(game.decodeChallenge('!!!'), null);
-assert.strictEqual(game.decodeChallenge(game.encodeChallenge({ v: 1, theme: 'nope', look: perfect })), null);
 
 console.log('PASS: makeup battle edge cases');

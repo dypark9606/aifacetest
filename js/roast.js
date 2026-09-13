@@ -181,7 +181,7 @@
 		var title = document.title || '인공지능 얼굴상 테스트';
 		box.classList.add('share-box');
 		box.innerHTML =
-			'<button type="button" class="share-btn" data-act="share">결과 공유</button>' +
+			'<button type="button" class="share-btn" data-act="share">결과 친구에게 공유</button>' +
 			'<button type="button" class="share-btn" data-act="copy">결과 복사</button>' +
 			'<button type="button" class="reset-btn" data-act="reset">다시 하기</button>' +
 			'<span class="share-msg" aria-live="polite"></span>';

@@ -170,6 +170,15 @@
         qr.src = (opts.qrPath || QR_PATH) + '?v=1';
       }
 
+      if (opts.photo) {
+        /* 꾸민 사진(캔버스)을 그대로 카드에 넣는다 — 비율은 유지하고 중앙 크롭. */
+        var src = opts.photo;
+        var s = Math.min(faceW / src.width, faceH / src.height);
+        var pw = src.width * s, ph = src.height * s;
+        ctx.drawImage(src, (size.w - pw) / 2, faceTop + (faceH - ph) / 2, pw, ph);
+        finish();
+        return;
+      }
       if (!opts.svg) { finish(); return; }
       var data = new XMLSerializer().serializeToString(opts.svg);
       var url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
