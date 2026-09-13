@@ -166,6 +166,7 @@
   </div>
 </div>
 
+<script src="js/coin-wallet.js"></script>
 <script src="js/makeup-battle.js"></script>
 <script src="js/share-card.js"></script>
 <script>
@@ -175,7 +176,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var cv = $('face-canvas'), ctx = cv.getContext('2d');
 
-  var state = { theme: 'cat-idol', base: 'soft', look: G.defaultLook(), last: null, challenge: null };
+  var state = { theme: 'cat-idol', base: 'soft', look: G.defaultLook(), last: null, challenge: null, coinAwarded: false };
 
   function shareBase() {
     try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
@@ -376,6 +377,15 @@
     state.last = b;
     $('score-big').textContent = b.score + '점';
     $('verdict').textContent = G.THEMES[state.theme].emoji + ' ' + G.verdict(b.score);
+    if (!state.coinAwarded) {
+      try {
+        var w = (window.top && window.top.CoinWallet) || window.CoinWallet;
+        if (w) {
+          var balance = w.rewardAnalysis('makeup'); state.coinAwarded = true;
+          $('verdict').textContent += ' · 🪙 +5 (현재 ' + balance + ')';
+        }
+      } catch (e) { }
+    }
     var ul = $('bars'); ul.innerHTML = '';
     Object.keys(G.WEIGHTS).forEach(function (key) {
       var got = b.parts[key], max = G.WEIGHTS[key];
@@ -488,7 +498,7 @@
 
   /* 처음부터 다시 하기 */
   $('reset-all').addEventListener('click', function () {
-    state.look = G.defaultLook(); state.last = null; state.base = 'soft';
+    state.look = G.defaultLook(); state.last = null; state.base = 'soft'; state.coinAwarded = false;
     if (!state.challenge) state.theme = 'cat-idol';
     $('result-card').classList.add('hidden');
     $('battle-card').classList.add('hidden');
@@ -499,6 +509,7 @@
   });
 
   (function boot() {
+    try { if (window.CoinWallet) window.CoinWallet.ensureDaily(); } catch (e) { }
     var m = /[?&]battle=([A-Za-z0-9_-]+)/.exec(location.search);
     if (m) {
       var c = G.decodeChallenge(m[1]);

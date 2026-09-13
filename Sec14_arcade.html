@@ -13,7 +13,9 @@
   .wrap{max-width:760px;margin:0 auto;padding:14px}
   h1{font-size:34px;text-align:center;margin:8px 0 2px;color:var(--gold)}
   .lead{text-align:center;font-size:18px;margin:0 0 12px;opacity:.85}
-  .coins{text-align:center;font-size:20px;color:var(--gold);margin-bottom:10px}
+  .coins{text-align:center;font-size:20px;color:var(--gold);margin-bottom:5px}
+  .economy{text-align:center;font-size:15px;opacity:.82;margin:0 0 10px}
+  .notice{text-align:center;font-size:19px;color:var(--gold);margin:5px 0 10px}
 
   .card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}
   .card h2{font-size:22px;margin:0 0 10px;color:var(--gold)}
@@ -46,6 +48,7 @@
        background:var(--hot);color:#fff}
   .btn.go{background:var(--go)}
   .btn.sub{background:#2a2456;color:var(--ink);border:2px solid var(--line)}
+  .btn.coin{background:#e3a52c;color:#201900}
 
   .score-big{font-size:44px;text-align:center;color:var(--gold);margin:6px 0}
   .tier{text-align:center;font-size:22px;margin-bottom:6px}
@@ -63,12 +66,24 @@
 <body>
 <div class="wrap">
   <h1>🕹️ 얼굴상 오락실</h1>
-  <p class="lead">한 판 30초! 친구에게 도전장 보내고 기록으로 겨뤄요</p>
+  <p class="lead">한 판 10코인! 잘할수록 코인을 더 받아요</p>
   <p class="coins">🪙 내 코인 <b id="coin-count">0</b></p>
+  <p class="economy">매일 첫 접속 +100 · C급 +2 · B급 +6 · A급 +12 · S급 +20 · 신기록 +5</p>
+  <p class="notice hidden" id="daily-notice"></p>
+  <div class="actions" style="margin:0 0 12px"><button class="btn coin" id="ask-coins">🎁 친구에게 코인 받기</button></div>
 
   <div class="card hidden" id="challenge-card">
     <h2>📨 도전장 도착</h2>
     <p id="challenge-text" style="font-size:18px;margin:0"></p>
+  </div>
+
+  <div class="card hidden" id="coin-card">
+    <h2 id="coin-title">🪙 코인이 부족해요</h2>
+    <p id="coin-text" style="font-size:18px;margin:0 0 8px"></p>
+    <div class="actions">
+      <button class="btn coin hidden" id="send-coins">🎁 30코인 보내기</button>
+      <button class="btn" id="share-coin-request">💬 친구에게 요청 보내기</button>
+    </div>
   </div>
 
   <div class="card">
@@ -131,6 +146,7 @@
   </div>
 </div>
 
+<script src="js/coin-wallet.js"></script>
 <script src="js/arcade-core.js"></script>
 <script src="js/share-card.js"></script>
 <script src="js/arcade-games.js"></script>
@@ -139,12 +155,34 @@
   'use strict';
   var A = window.Arcade, GAMES = window.ArcadeGames;
   var $ = function (id) { return document.getElementById(id); };
-  var state = { id: 'mole', last: null, challenge: null, running: null };
+  var state = { id: 'mole', last: null, challenge: null, running: null, coinRequest: null };
 
   function baseUrl() {
     try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
     catch (e) {}
     return location.href.split(/[?#]/)[0];
+  }
+
+  function arcadeUrl() { return location.href.split(/[?#]/)[0]; }
+  function showCoinCard(title, text, canSend) {
+    $('coin-title').textContent = title;
+    $('coin-text').textContent = text;
+    $('send-coins').classList.toggle('hidden', !canSend);
+    $('share-coin-request').classList.toggle('hidden', !!canSend);
+    $('coin-card').classList.remove('hidden');
+  }
+  function shareCoinMessage(text, url) {
+    var msg = text + '\n' + url + '\n📱 앱 설치: https://play.google.com/store/apps/details?id=com.dypark9606.aifacetest';
+    if (navigator.share) { navigator.share({title:'얼굴상 오락실 코인',text:msg}).catch(function(){}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(msg).then(
+      function(){ alert('코인 메시지를 복사했어요. 친구에게 보내세요!'); },
+      function(){ prompt('복사해서 친구에게 보내세요',msg); });
+    else prompt('복사해서 친구에게 보내세요',msg);
+  }
+  function askCoins() {
+    var name = prompt('친구에게 보일 이름', '나') || '나';
+    var tok = A.createCoinRequest(name);
+    shareCoinMessage('🪙 '+name+'님이 게임 코인이 필요해요. 30코인을 보내주세요!', arcadeUrl()+'?coinRequest='+tok);
   }
 
   function drawPicker() {
@@ -205,7 +243,8 @@
     /* 0점을 "신기록"이라고 축하하면 장난처럼 보인다. 첫 기록이어도 알리지 않는다. */
     var celebrate = isBest && score > 0;
     $('tier').textContent = r.tier + '급 · ' + r.text + (celebrate ? '  🎉 신기록!' : '');
-    $('coin-msg').textContent = '🪙 코인 +' + got + (celebrate ? ' (신기록 보너스 포함)' : '');
+    $('coin-msg').textContent = '🪙 입장 -' + A.GAME_COST + ' · 보상 +' + got +
+      (celebrate ? ' (신기록 +5 포함)' : '') + ' · 현재 ' + A.getCoins() + '코인';
     $('result-card').classList.remove('hidden');
     drawPicker(); drawHud(); drawBoard();
     if (state.challenge && state.challenge.game === state.id) showBattle(score);
@@ -223,6 +262,12 @@
 
   function start() {
     if (state.running) return;
+    if (A.spendGame() === false) {
+      showCoinCard('🪙 코인이 부족해요', '한 판에 '+A.GAME_COST+'코인이 필요합니다. 친구에게 30코인을 요청해 보세요.', false);
+      drawHud(); return false;
+    }
+    $('coin-card').classList.add('hidden');
+    $('coin-count').textContent = A.getCoins();
     $('result-card').classList.add('hidden');
     $('link-card').classList.add('hidden');
     clearField();
@@ -232,6 +277,7 @@
       onTime: function (t) { $('hud-time').textContent = t; },
       onEnd: finish
     });
+    return true;
   }
 
   function resultText() {
@@ -254,6 +300,19 @@
 
   $('start').addEventListener('click', start);
   $('again').addEventListener('click', start);
+  $('ask-coins').addEventListener('click', askCoins);
+  $('share-coin-request').addEventListener('click', askCoins);
+  $('send-coins').addEventListener('click', function () {
+    if (!state.coinRequest) return;
+    var gift = A.createCoinGift(state.coinRequest);
+    if (!gift) {
+      showCoinCard('🪙 보낼 코인이 부족해요', '30코인이 있어야 친구에게 보낼 수 있습니다.', false);
+      drawHud(); return;
+    }
+    drawHud(); $('coin-card').classList.add('hidden');
+    shareCoinMessage('🎁 ' + state.coinRequest.name + '님에게 30코인을 보냈어요! 아래 링크를 열면 받아요.',
+      arcadeUrl() + '?coinGift=' + gift);
+  });
   $('share-result').addEventListener('click', function () { if (state.last !== null) shareText(resultText()); });
   $('share-battle').addEventListener('click', function () {
     if (state.last === null || !state.challenge) return;
@@ -320,6 +379,30 @@
   });
 
   (function boot() {
+    var daily = A.ensureDaily();
+    if (daily.granted) {
+      $('daily-notice').textContent = '🎁 오늘의 코인 +' + daily.granted + ' 지급!';
+      $('daily-notice').classList.remove('hidden');
+    }
+
+    var giftMatch = /[?&]coinGift=([A-Za-z0-9_-]+)/.exec(location.search);
+    if (giftMatch) {
+      var claimed = A.claimCoinGift(giftMatch[1]);
+      $('daily-notice').textContent = claimed.ok
+        ? '🎁 친구에게서 ' + claimed.amount + '코인을 받았어요!'
+        : (claimed.reason === 'claimed' ? '이 코인 선물은 이미 받았습니다.' : '유효하지 않은 코인 선물입니다.');
+      $('daily-notice').classList.remove('hidden');
+    }
+
+    var requestMatch = /[?&]coinRequest=([A-Za-z0-9_-]+)/.exec(location.search);
+    if (requestMatch) {
+      var request = A.decodeCoinToken(requestMatch[1]);
+      if (request && request.kind === 'request') {
+        state.coinRequest = request;
+        showCoinCard('🎁 친구의 코인 요청', request.name + '님에게 30코인을 보내시겠어요? 내 코인에서 30개가 차감됩니다.', true);
+      }
+    }
+
     var m = /[?&]arcade=([A-Za-z0-9_-]+)/.exec(location.search);
     if (m) {
       var c = A.decode(m[1]);

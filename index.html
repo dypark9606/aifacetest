@@ -67,10 +67,12 @@
 		<!-- favicon은 탭에 아이콘 -->
 		<link rel="shortcut icon" href="./img/favicon.ico" />
 		<!-- favicon은 탭에 아이콘 -->
+		<script src="js/coin-wallet.js"></script>
 
 	</head>
 
 	<body scrolling="yes">
+		<div class="global-wallet" id="global-wallet">🪙 코인 <b id="global-coin-count">0</b><span id="global-coin-note"></span></div>
 		<!-- -----------------------------------------Tab 관련 code----------------------------->
 		<div class="tabs">
 			<!-- 윗줄 5개: 사진으로 보는 것 / 아랫줄 5개: 사주·성격·부자상 -->
@@ -434,6 +436,15 @@
 			})(jQuery);
 
 			Tabs.init();
+			(function () {
+				if (!window.CoinWallet) return;
+				var daily = CoinWallet.ensureDaily();
+				function show(n) { document.getElementById('global-coin-count').textContent = n; }
+				show(daily.balance);
+				if (daily.granted) document.getElementById('global-coin-note').textContent = ' · 오늘 +' + daily.granted;
+				window.addEventListener('aiface:coins', function (e) { show(e.detail.balance); });
+				window.addEventListener('storage', function (e) { if (e.key === 'aiface.coins') show(CoinWallet.getCoins()); });
+			})();
 		</script>
 		<!------------------------------ Tab 관련 Javascript------------------------------------------>
 	</body>

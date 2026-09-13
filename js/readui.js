@@ -131,10 +131,12 @@
 		});
 
 		/* 처음 상태로 되돌린다. 사진·판정·결과를 모두 지우고 고르기 화면으로 올린다. */
+		var coinAwarded = false;
 		function reset() {
 			cur.cv = null;
 			cur.pts = null;
 			last = null;
+			coinAwarded = false;
 			try { input.value = ''; } catch (e) { }
 			res.style.display = 'none';
 			res.innerHTML = '';
@@ -151,6 +153,16 @@
 		function render(r) {
 			last = r;
 			res.innerHTML = '';
+			if (!coinAwarded) {
+				try {
+					var w = (window.top && window.top.CoinWallet) || window.CoinWallet;
+					if (w) {
+						w.ensureDaily();
+						var balance = w.rewardAnalysis(spec.title || 'face-saju'); coinAwarded = true;
+						res.appendChild(el('p', 'rd-coin', '🪙 얼굴 분석 보상 +5 · 현재 ' + balance + '코인'));
+					}
+				} catch (e) { }
+			}
 			var card = el('div', 'rd-card');
 			card.appendChild(el('div', 'rd-headline', r.headline));
 			if (r.tagline) card.appendChild(el('div', 'rd-tagline', r.tagline));

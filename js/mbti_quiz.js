@@ -153,6 +153,15 @@
 
 	function show() {
 		quiz.innerHTML = '';
+		res.innerHTML = '';
+		try {
+			var w = (window.top && window.top.CoinWallet) || window.CoinWallet;
+			if (w) {
+				w.ensureDaily();
+				var balance = w.rewardAnalysis('mbti');
+				res.appendChild(el('p', 'rd-coin', '🪙 MBTI 완료 보상 +5 · 현재 ' + balance + '코인'));
+			}
+		} catch (e) { }
 		var cnt = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
 		Q.forEach(function (q, i) {
 			var letter = answers[i] === 'a' ? q.ax[0] : q.ax[1];

@@ -5,6 +5,35 @@
  * ------------------------------------------------------------------ */
 (function (global) {
 	'use strict';
+	var analysisAwarded = false;
+
+	function wallet() {
+		try { return (global.top && global.top.CoinWallet) || global.CoinWallet || null; }
+		catch (e) { return global.CoinWallet || null; }
+	}
+	function rewardAnalysisOnce() {
+		if (analysisAwarded) return;
+		var selectors = ['#label-container','[id$="label-container"]','.result-message','.result-description','#compatibility-result','#sj-res','#fo-res'];
+		var ready = selectors.some(function (s) {
+			var e = document.querySelector(s); if (!e) return false;
+			var text = (e.innerText || e.textContent || '').replace(/\s+/g,'').trim();
+			return text.length >= 4 && e.style.display !== 'none';
+		});
+		var w = wallet(); if (!ready || !w) return;
+		w.ensureDaily();
+		analysisAwarded = true;
+		var balance = w.rewardAnalysis(document.title || 'face');
+		var toast = document.createElement('div'); toast.className = 'coin-reward-toast';
+		toast.textContent = '🪙 얼굴 분석 보상 +5 · 현재 ' + balance + '코인';
+		toast.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;background:#30265f;color:#ffd166;padding:10px 16px;border-radius:999px;font:16px Jua,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.3)';
+		document.body.appendChild(toast); setTimeout(function(){ if(toast.parentNode) toast.parentNode.removeChild(toast); },3000);
+	}
+	function watchAnalysisResult() {
+		if (!global.MutationObserver || !document.body) return;
+		var timer = null;
+		new MutationObserver(function(){ clearTimeout(timer); timer=setTimeout(rewardAnalysisOnce,80); })
+			.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style']});
+	}
 
 	/* 나무위키 링크 (괄호 안 소속/부연은 링크 주소에서 떼고 표시만 유지) */
 	function namuLink(name) {
@@ -127,6 +156,7 @@
 	 *  되돌릴 것을 하나도 못 찾은 경우에만 새로고침으로 물러선다.
 	 * ------------------------------------------------------------------ */
 	function resetPage() {
+		analysisAwarded = false;
 		var did = false;
 		var $j = window.jQuery;
 
@@ -213,9 +243,9 @@
 	}
 
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initShare);
+		document.addEventListener('DOMContentLoaded', function(){ initShare(); watchAnalysisResult(); });
 	} else {
-		initShare();
+		initShare(); watchAnalysisResult();
 	}
 
 	global.namuLink = namuLink;

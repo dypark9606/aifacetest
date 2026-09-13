@@ -10,10 +10,11 @@
  *  - 최소 보상: 못해도 코인을 준다. 초등학생이 첫 판에 0을 받고 나가면 끝이다.
  * ------------------------------------------------------------------ */
 (function (root, factory) {
-  var api = factory();
+  var wallet = typeof module === 'object' && module.exports ? require('./coin-wallet.js') : root.CoinWallet;
+  var api = factory(wallet);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.Arcade = api;
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (Wallet) {
   'use strict';
 
   /* better:'high' 점수가 높을수록 좋음 / 'low' 낮을수록 좋음(반응속도)
@@ -70,7 +71,7 @@
     try { if (typeof localStorage !== 'undefined') { STORE = localStorage; return STORE; } } catch (e) { }
     return null;
   }
-  function _setStore(s) { STORE = s; }
+  function _setStore(s) { STORE = s; if (Wallet && Wallet._setStore) Wallet._setStore(s); }
 
   function key(id) { return 'aiface.best.' + id; }
 
@@ -96,15 +97,11 @@
 
   /* ---------- 코인 ---------- */
   function coins(id, score, isNewBest) {
-    var g = game(id);
-    if (!g) return 1;
-    var base;
-    if (g.better === 'high') base = Math.min(20, Math.round(score / 2));
-    else base = Math.max(0, Math.round((600 - Math.min(score, 600)) / 40));
-    return Math.max(1, base) + (isNewBest ? 10 : 0);
+    return Wallet ? Wallet.gameReward(rank(id, score).tier, isNewBest) : 2;
   }
 
   function addCoins(n) {
+    if (Wallet) return Wallet.addCoins(n, 'game-reward');
     var s = store();
     if (!s) return 0;
     var cur = Number(s.getItem('aiface.coins') || 0);
@@ -114,11 +111,19 @@
     return next;
   }
   function getCoins() {
+    if (Wallet) return Wallet.getCoins();
     var s = store();
     if (!s) return 0;
     var n = Number(s.getItem('aiface.coins') || 0);
     return isFinite(n) ? n : 0;
   }
+
+  function ensureDaily(day) { return Wallet ? Wallet.ensureDaily(day) : { granted:0, balance:getCoins() }; }
+  function spendGame() { return Wallet ? Wallet.spend(Wallet.GAME_COST, 'game-start') : false; }
+  function createCoinRequest(name,id) { return Wallet ? Wallet.createRequest(name,id) : null; }
+  function decodeCoinToken(token) { return Wallet ? Wallet.decodeToken(token) : null; }
+  function createCoinGift(request,id) { return Wallet ? Wallet.createGift(request,id) : null; }
+  function claimCoinGift(token) { return Wallet ? Wallet.claimGift(token) : {ok:false,reason:'invalid',balance:getCoins()}; }
 
   /* ---------- 도전장 ---------- */
   function safeName(name) {
@@ -175,6 +180,11 @@
     game: game, rank: rank, validScore: validScore, scoreText: scoreText,
     getBest: getBest, saveBest: saveBest,
     coins: coins, addCoins: addCoins, getCoins: getCoins,
+    GAME_COST: Wallet ? Wallet.GAME_COST : 10, DAILY_COINS: Wallet ? Wallet.DAILY_COINS : 100,
+    GIFT_AMOUNT: Wallet ? Wallet.GIFT_AMOUNT : 30,
+    ensureDaily: ensureDaily, spendGame: spendGame,
+    createCoinRequest:createCoinRequest, decodeCoinToken:decodeCoinToken,
+    createCoinGift:createCoinGift, claimCoinGift:claimCoinGift,
     challenge: challenge, encode: encode, decode: decode, judge: judge,
     _setStore: _setStore
   };
