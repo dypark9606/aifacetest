@@ -305,9 +305,11 @@
   }
 
   function shareText(text) {
-    var payload = { title: '얼굴상 메이크업 배틀', text: text, url: shareBase() };
-    if (navigator.share) { navigator.share(payload).catch(function () {}); return; }
-    var full = text + '\n' + shareBase();
+    /* 받는 친구는 앱이 없다 — 설치 링크를 항상 같이 보낸다. */
+    var full = window.ShareCard
+      ? window.ShareCard.shareMessage({ title: '💄 얼굴상 메이크업 배틀', body: text, url: shareBase() })
+      : text + '\n' + shareBase();
+    if (navigator.share) { navigator.share({ title: '얼굴상 메이크업 배틀', text: full }).catch(function () {}); return; }
     if (navigator.clipboard) navigator.clipboard.writeText(full).then(function () { alert('결과를 복사했어요. 친구에게 붙여넣기 하세요!'); },
       function () { prompt('복사해서 보내세요', full); });
     else prompt('복사해서 보내세요', full);
@@ -337,11 +339,16 @@
   });
   $('send-challenge').addEventListener('click', function () {
     var url = $('link-out').value;
-    var msg = '💄 ' + G.THEMES[state.theme].label + ' 메이크업 배틀 도전장! 내 점수 ' + state.last.score + '점, 이길 수 있어?';
-    if (navigator.share) { navigator.share({ title: '메이크업 배틀 도전장', text: msg, url: url }).catch(function () {}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(msg + '\n' + url).then(function () { alert('도전장을 복사했어요!'); },
-      function () { prompt('복사해서 보내세요', msg + '\n' + url); });
-    else prompt('복사해서 보내세요', msg + '\n' + url);
+    var msg = window.ShareCard ? window.ShareCard.shareMessage({
+      title: '💄 ' + G.THEMES[state.theme].label + ' 메이크업 배틀 도전장!',
+      body: '내 점수 ' + state.last.score + '점 — 이길 수 있어?',
+      url: url, challenge: true
+    }) : url;
+    if (navigator.share) { navigator.share({ title: '메이크업 배틀 도전장', text: msg }).catch(function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(msg).then(
+      function () { alert('도전장을 복사했어요! 설치 링크도 같이 들어 있어요.'); },
+      function () { prompt('복사해서 보내세요', msg); });
+    else prompt('복사해서 보내세요', msg);
   });
   $('copy-link').addEventListener('click', function () {
     var url = $('link-out').value;

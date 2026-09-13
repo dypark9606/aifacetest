@@ -20,6 +20,29 @@
 
   var TAGS = '#얼굴상테스트 #메이크업배틀 #관상 #꾸미기게임 #AI테스트';
 
+  /* 공유를 받은 친구는 앱이 없다. 그래서 어떤 공유 경로든 **설치로 가는 길**을
+     같이 실어 보낸다: 메시지에는 Play 링크, 이미지 카드에는 QR. */
+  var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.dypark9606.aifacetest';
+  var WEB_URL = 'https://dypark9606.github.io/aifacetest/';
+  var QR_PATH = 'img/install-play-qr.png';
+
+  /* 메시지 한 통에 들어갈 내용을 한 곳에서 만든다.
+     o = {title, body, url?, challenge?} */
+  function shareMessage(o) {
+    o = o || {};
+    var lines = [];
+    if (o.title) lines.push(o.title);
+    if (o.body) lines.push(o.body);
+    lines.push('');
+    if (o.challenge && o.url) {
+      lines.push('👉 도전 받기: ' + o.url);
+    } else {
+      lines.push('👉 해보기: ' + (o.url || WEB_URL));
+    }
+    lines.push('📱 앱 설치: ' + PLAY_URL);
+    return lines.join('\n');
+  }
+
   function instaCaption(o) {
     o = o || {};
     var lines = [];
@@ -31,7 +54,9 @@
       if (o.verdict) lines.push(o.verdict);
     }
     lines.push('');
-    lines.push('너도 해봐! 👉 "인공지능 얼굴상 테스트" 검색');
+    /* 인스타 캡션 안의 URL 은 눌리지 않는다. 그래서 검색어와 스토어 이름을 같이 준다. */
+    lines.push('너도 해봐! 👉 플레이스토어에서 "얼굴상 테스트 끝판왕" 검색');
+    lines.push('또는 프로필 링크에서 설치');
     lines.push('');
     lines.push(TAGS);
     return lines.join('\n').slice(0, 2200);
@@ -68,7 +93,8 @@
     ctx.textAlign = 'center';
     ctx.fillStyle = '#c2185b';
     ctx.font = 'bold 78px Jua, sans-serif';
-    ctx.fillText('💄 메이크업 배틀', size.w / 2, 150);
+    /* 카드 제목은 호출한 화면이 정한다 — 오락실 카드에 '메이크업 배틀'이 찍히면 안 된다. */
+    ctx.fillText(opts.heading || '💄 메이크업 배틀', size.w / 2, 150);
 
     ctx.fillStyle = '#3a2b33';
     ctx.font = '52px Jua, sans-serif';
@@ -88,7 +114,8 @@
         ctx.fillStyle = '#c2185b';
         if (opts.opponent) {
           ctx.font = 'bold 60px Jua, sans-serif';
-          ctx.fillText('나 ' + opts.score + '점  VS  ' + opts.opponent.name + ' ' + opts.opponent.score + '점',
+          ctx.fillText('나 ' + (opts.scoreLabel || opts.score + '점') + '  VS  ' +
+            opts.opponent.name + ' ' + (opts.opponent.label || opts.opponent.score + '점'),
             size.w / 2, boxY + 110);
           ctx.fillStyle = '#3a2b33';
           ctx.font = '54px Jua, sans-serif';
@@ -99,16 +126,45 @@
           ctx.fillText('인공지능 얼굴상 테스트', size.w / 2, boxY + 280);
         } else {
           ctx.font = 'bold 120px Jua, sans-serif';
-          ctx.fillText(opts.score + '점', size.w / 2, boxY + 130);
+          /* 단위도 화면이 정한다: 점 / 마리 / ms / 장 / 대 */
+          ctx.fillText(opts.scoreLabel || (opts.score + '점'), size.w / 2, boxY + 130);
           ctx.fillStyle = '#3a2b33';
           ctx.font = '46px Jua, sans-serif';
           ctx.fillText(opts.verdict || '', size.w / 2, boxY + 200);
         }
+        drawQR();
+      }
 
-        ctx.fillStyle = '#a8748c';
-        ctx.font = '40px Jua, sans-serif';
-        ctx.fillText('인공지능 얼굴상 테스트 · 메이크업 배틀', size.w / 2, size.h - 70);
-        canvas.toBlob(function (blob) { resolve({ blob: blob, canvas: canvas }); }, 'image/png');
+      /* 카드 아래에 설치 QR 을 박는다. 카드를 본 친구가 앱이 없어도
+         바로 깔 수 있어야 확산된다. QR 이 없으면 안내 문구만 남긴다. */
+      function drawQR() {
+        var qrSize = Math.round(size.w * 0.22);
+        var qrX = size.w - qrSize - 70;
+        var qrY = size.h - qrSize - 110;
+
+        function footer(withQR) {
+          ctx.textAlign = withQR ? 'left' : 'center';
+          ctx.fillStyle = '#a8748c';
+          ctx.font = 'bold 42px Jua, sans-serif';
+          ctx.fillText('📱 앱 설치하고 같이 하기',
+            withQR ? 80 : size.w / 2, withQR ? qrY + 60 : size.h - 110);
+          ctx.font = '34px Jua, sans-serif';
+          ctx.fillText(withQR ? 'QR 찍으면 바로 설치' : '플레이스토어 "얼굴상 테스트 끝판왕"',
+            withQR ? 80 : size.w / 2, withQR ? qrY + 112 : size.h - 60);
+          ctx.textAlign = 'center';
+          canvas.toBlob(function (blob) { resolve({ blob: blob, canvas: canvas }); }, 'image/png');
+        }
+
+        var qr = new Image();
+        qr.onload = function () {
+          ctx.fillStyle = '#fff';
+          roundRect(ctx, qrX - 14, qrY - 14, qrSize + 28, qrSize + 28, 18);
+          ctx.fill();
+          ctx.drawImage(qr, qrX, qrY, qrSize, qrSize);
+          footer(true);
+        };
+        qr.onerror = function () { footer(false); };
+        qr.src = (opts.qrPath || QR_PATH) + '?v=1';
       }
 
       if (!opts.svg) { finish(); return; }
@@ -149,6 +205,10 @@
   return {
     CARD: CARD,
     TAGS: TAGS,
+    PLAY_URL: PLAY_URL,
+    WEB_URL: WEB_URL,
+    QR_PATH: QR_PATH,
+    shareMessage: shareMessage,
     instaCaption: instaCaption,
     fileName: fileName,
     drawCard: drawCard,

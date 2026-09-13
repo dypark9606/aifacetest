@@ -111,6 +111,8 @@
 		if (parts.length) out.push(parts.join('\n'));
 		else out.push('내 결과를 확인해 보세요!');
 		out.push('친구도 해보기: ' + shareTarget());
+		/* 결과를 받은 친구는 앱이 없다. 설치로 가는 길을 같이 실어 보낸다. */
+		out.push('📱 앱 설치: https://play.google.com/store/apps/details?id=com.dypark9606.aifacetest');
 		return out.join('\n\n');
 	}
 
