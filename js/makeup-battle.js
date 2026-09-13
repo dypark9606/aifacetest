@@ -1,9 +1,8 @@
 /* ------------------------------------------------------------------
  * makeup-battle.js — 얼굴상 메이크업 배틀
  *
- * 2026-09-13 개편: 캐릭터 그림이 아니라 **사용자가 방금 찍은 얼굴 사진** 위에
- * 메이크업을 올린다. 그리고 색만 고르는 게 아니라 부위마다 **진하기 게이지**를
- * 둔다. 색/진하기를 따로 채점하므로 점수가 촘촘하게 갈린다.
+ * 실사진 업로드 대신 저작권·개인정보 문제가 없는 자체 벡터 베이스 모델을 쓴다.
+ * 색상과 0~100 진하기 게이지는 유지해 점수가 촘촘하게 갈린다.
  *
  * 각 부위 상태: { value: '색 이름', level: 0~100 }
  *  - value 가 틀리면 그 부위는 0점 (진하기는 보지 않는다)
@@ -44,20 +43,40 @@
     gloss: { matte: '#ffffff', dewy: '#ffffff', glitter: '#fff3b0' }
   };
 
+  /* 외부 사진·에셋을 가져오지 않는 자체 제작 베이스 모델. */
+  var BASE_MODELS = {
+    soft: {
+      label: '순한 강아지상', emoji: '🐶', face: 'round', eye: 'puppy', hairStyle: 'bob',
+      skin: '#f4c7aa', skinShadow: '#d99b7d', hair: '#4a2b20', iris: '#5b392c', bg: '#ffe8f1'
+    },
+    chic: {
+      label: '시크 고양이상', emoji: '🐱', face: 'oval', eye: 'cat', hairStyle: 'long',
+      skin: '#efbea0', skinShadow: '#d38f70', hair: '#211918', iris: '#4a3527', bg: '#eadfff'
+    },
+    clear: {
+      label: '청량 사슴상', emoji: '🦌', face: 'heart', eye: 'doe', hairStyle: 'wave',
+      skin: '#f7d2b9', skinShadow: '#dfa98a', hair: '#805037', iris: '#6a4935', bg: '#e4f8ee'
+    },
+    cool: {
+      label: '세련 중성상', emoji: '✨', face: 'long', eye: 'cool', hairStyle: 'short',
+      skin: '#c98f68', skinShadow: '#a96b4e', hair: '#25282d', iris: '#332a25', bg: '#dfecf7'
+    }
+  };
+
   /* 사진 위에서 각 부위를 그릴 위치 — 얼굴 박스(0~1 비율) 기준.
      MediaPipe 없이도 동작해야 하므로 일반적인 정면 얼굴 비율을 쓴다.
      [cx, cy, rx, ry] = 중심 x/y, 반지름 x/y (모두 0~1 비율) */
   var FACE_ZONES = {
-    eye:   [[0.34, 0.42, 0.125, 0.050], [0.66, 0.42, 0.125, 0.050]],
+    eye:   [[0.34, 0.400, 0.125, 0.044], [0.66, 0.400, 0.125, 0.044]],
     brow:  [[0.34, 0.355, 0.130, 0.024], [0.66, 0.355, 0.130, 0.024]],
     blush: [[0.26, 0.565, 0.115, 0.075], [0.74, 0.565, 0.115, 0.075]],
     lip:   [[0.50, 0.735, 0.110, 0.052]],
     shade: [[0.50, 0.520, 0.360, 0.430]],
     /* 마무리(하이라이트)는 이마 한 곳에 덩어리로 찍으면 흰 반점처럼 보인다.
        이마·콧등·광대에 작게 나눠 얹어야 '광'처럼 읽힌다. */
-    gloss: [[0.50, 0.315, 0.115, 0.045],
-            [0.50, 0.560, 0.040, 0.090],
-            [0.28, 0.505, 0.070, 0.040], [0.72, 0.505, 0.070, 0.040]]
+    gloss: [[0.50, 0.325, 0.085, 0.030],
+            [0.50, 0.560, 0.025, 0.075],
+            [0.28, 0.505, 0.050, 0.027], [0.72, 0.505, 0.050, 0.027]]
   };
 
   /* 부위별 배점 — 합 100 */
@@ -179,10 +198,11 @@
     return (v || '나').slice(0, 12);
   }
 
-  function createChallenge(name, themeId, look) {
+  function createChallenge(name, themeId, look, baseId) {
     var theme = THEMES[themeId] ? themeId : 'cat-idol';
     var clean = normalizeLook(look);
-    return { v: 2, name: safeName(name), theme: theme, look: clean,
+    var base = BASE_MODELS[baseId] ? baseId : 'soft';
+    return { v: 2, name: safeName(name), theme: theme, base: base, look: clean,
              score: scoreLook(theme, clean), created: Date.now() };
   }
 
@@ -214,6 +234,7 @@
 
   function encodeChallenge(payload) {
     var slim = { v: 2, n: safeName(payload.name), t: payload.theme,
+                 b: BASE_MODELS[payload.base] ? payload.base : 'soft',
                  l: packLook(payload.look), c: payload.created || Date.now() };
     return b64e(JSON.stringify(slim)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
@@ -227,7 +248,8 @@
       if (!o || o.v !== 2 || !THEMES[o.t] || typeof o.l !== 'object') return null;
       var look = unpackLook(o.l);
       /* 점수는 링크를 믿지 않고 look 으로 다시 계산한다. */
-      return { v: 2, name: safeName(o.n), theme: o.t, look: look,
+      return { v: 2, name: safeName(o.n), theme: o.t,
+               base: BASE_MODELS[o.b] ? o.b : 'soft', look: look,
                score: scoreLook(o.t, look), created: Number(o.c) || 0 };
     } catch (e) { return null; }
   }
@@ -239,7 +261,7 @@
   }
 
   return {
-    OPTIONS: OPTIONS, LABELS: LABELS, COLORS: COLORS,
+    OPTIONS: OPTIONS, LABELS: LABELS, COLORS: COLORS, BASE_MODELS: BASE_MODELS,
     FACE_ZONES: FACE_ZONES, WEIGHTS: WEIGHTS, THEMES: THEMES,
     defaultLook: defaultLook, normalizeLook: normalizeLook,
     scoreBreakdown: scoreBreakdown, scoreLook: scoreLook, verdict: verdict,

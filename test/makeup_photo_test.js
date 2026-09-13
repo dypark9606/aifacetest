@@ -1,9 +1,7 @@
 const assert = require('assert');
 const G = require('../js/makeup-battle.js');
 
-/* 사용자 요청 #4: 내가 찍은 실제 얼굴 사진에 메이크업이 올라가야 하고,
-   버튼만 누르는 방식이 아니라 **진하기 게이지**로 디테일하게 조절돼야 한다.
-   그래야 점수가 촘촘하게 갈린다. */
+/* 실사진 방식은 폐기됐지만 색상 + 진하기 게이지와 촘촘한 점수는 유지한다. */
 
 // 1) 각 부위는 색(choice)과 진하기(0~100)를 함께 가진다
 const look = G.defaultLook();
@@ -53,12 +51,12 @@ const back = G.decodeChallenge(tok);
 assert.strictEqual(back.score, 100, '조작된 점수는 무시하고 재계산');
 assert.strictEqual(back.look.eye.level, perfect.eye.level, '진하기가 링크에 보존');
 
-// 7) 실제 사진 위에 그릴 좌표 규격이 정의돼 있다
+// 7) 베이스 모델 위에 그릴 좌표 규격이 정의돼 있다
 assert.ok(G.FACE_ZONES && G.FACE_ZONES.eye && G.FACE_ZONES.lip,
-  '사진에 메이크업을 올릴 부위 좌표가 필요');
+  '베이스 모델에 메이크업을 올릴 부위 좌표가 필요');
 Object.keys(G.FACE_ZONES).forEach(function (k) {
   const z = G.FACE_ZONES[k];
   assert.ok(Array.isArray(z) || typeof z === 'object', k + ' 좌표 형식');
 });
 
-console.log('PASS: photo makeup with intensity gauges');
+console.log('PASS: base-model makeup with intensity gauges');
