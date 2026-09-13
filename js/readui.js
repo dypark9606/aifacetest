@@ -175,12 +175,13 @@
 
 			var btns = el('div', 'rd-btns');
 			var bCopy = el('button', 'rd-btn', '결과 복사');
-			var bShare = el('button', 'rd-btn', '공유하기');
+			var bShare = el('button', 'rd-btn share-result-btn', '결과 공유');
 			/* 결과를 본 뒤 다른 사진으로 바로 다시 할 수 있어야 한다.
 			   화면을 새로 읽지 않고 그 자리에서 되돌린다 — 앱에서는 새로고침이
 			   MediaPipe 를 다시 올리느라 몇 초씩 걸린다. */
 			var bAgain = el('button', 'rd-btn rd-again', '다른 사진으로 다시 하기');
 			bCopy.type = bShare.type = bAgain.type = 'button';
+			bShare.setAttribute('data-share-text', text(r));
 			btns.appendChild(bCopy); btns.appendChild(bShare); btns.appendChild(bAgain);
 			res.appendChild(btns);
 			res.appendChild(el('p', 'rd-disc',

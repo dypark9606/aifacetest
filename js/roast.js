@@ -95,13 +95,32 @@
 		return location.href;
 	}
 
+	function shareResultText() {
+		var selectors = [
+			'#compatibility-result', '#sj-res', '#fo-res',
+			'.result-message', '.result-description'
+		];
+		var parts = [];
+		for (var i = 0; i < selectors.length; i++) {
+			var el = document.querySelector(selectors[i]);
+			if (!el) continue;
+			var text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+			if (text && parts.indexOf(text) < 0) parts.push(text);
+		}
+		var out = [document.title || '인공지능 얼굴상 테스트'];
+		if (parts.length) out.push(parts.join('\n'));
+		else out.push('내 결과를 확인해 보세요!');
+		out.push('친구도 해보기: ' + shareTarget());
+		return out.join('\n\n');
+	}
+
 	function renderShare(box) {
 		var url = shareTarget();
 		var title = document.title || '인공지능 얼굴상 테스트';
 		box.classList.add('share-box');
 		box.innerHTML =
-			'<button type="button" class="share-btn" data-act="share">공유하기</button>' +
-			'<button type="button" class="share-btn" data-act="copy">링크 복사</button>' +
+			'<button type="button" class="share-btn" data-act="share">결과 공유</button>' +
+			'<button type="button" class="share-btn" data-act="copy">결과 복사</button>' +
 			'<span class="share-msg" aria-live="polite"></span>';
 		var msg = box.querySelector('.share-msg');
 		function say(s) { msg.textContent = s; setTimeout(function () { msg.textContent = ''; }, 2000); }
@@ -109,12 +128,13 @@
 		box.addEventListener('click', function (e) {
 			var b = e.target.closest('.share-btn');
 			if (!b) return;
+			var resultText = shareResultText();
 			if (b.dataset.act === 'share' && navigator.share) {
-				navigator.share({title: title, url: url}).catch(function () {});
+				navigator.share({title: title, text: resultText, url: url}).catch(function () {});
 				return;
 			}
 			if (navigator.clipboard && navigator.clipboard.writeText) {
-				navigator.clipboard.writeText(url)
+				navigator.clipboard.writeText(resultText)
 					.then(function () { say('복사했습니다!'); })
 					.catch(function () { say(url); });
 			} else {
@@ -138,4 +158,5 @@
 	global.celebLinks = celebLinks;
 	global.roast = roast;
 	global.roastHTML = roastHTML;
+	global.__shareResultText = shareResultText;
 })(window);

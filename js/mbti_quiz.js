@@ -193,7 +193,7 @@
 		var btns = el('div', 'rd-btns');
 		var again = el('button', 'rd-btn', '처음부터 다시 하기');
 		var copy = el('button', 'rd-btn', '결과 복사');
-		var share = el('button', 'rd-btn', '공유하기');
+		var share = el('button', 'rd-btn share-result-btn', '결과 공유');
 		again.type = copy.type = share.type = 'button';
 		btns.appendChild(again); btns.appendChild(copy); btns.appendChild(share);
 		res.appendChild(btns);
@@ -202,6 +202,7 @@
 
 		var text = 'MBTI 테스트 결과: ' + code + ' — ' + t[0] + '\n' + t[1] +
 			'\nhttps://dypark9606.github.io/aifacetest/';
+		share.setAttribute('data-share-text', text);
 		again.addEventListener('click', function () {
 			answers = []; at = 0; res.innerHTML = ''; res.style.display = 'none';
 			draw(); window.scrollTo({ top: 0, behavior: 'smooth' });
