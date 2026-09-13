@@ -47,6 +47,7 @@
   .btn{font-family:inherit;font-size:20px;padding:12px 20px;border-radius:999px;border:none;cursor:pointer;
        background:var(--pink);color:#fff;box-shadow:0 4px 12px rgba(255,107,157,.4)}
   .btn.sub{background:#fff;color:var(--deep);border:2px solid var(--line);box-shadow:none}
+  .btn.insta{background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);box-shadow:0 4px 12px rgba(238,42,123,.35)}
 
   .score-big{font-size:46px;text-align:center;color:var(--deep);margin:6px 0}
   .verdict{text-align:center;font-size:22px;margin-bottom:10px}
@@ -128,6 +129,11 @@
       <button class="btn" id="make-challenge">📨 친구에게 도전장 보내기</button>
       <button class="btn sub" id="share-result">💬 결과 공유</button>
     </div>
+    <div class="actions">
+      <button class="btn insta" id="insta-story">📸 인스타 스토리용 저장</button>
+      <button class="btn sub" id="insta-feed">🖼️ 인스타 피드용 저장</button>
+    </div>
+    <p class="hint" id="insta-hint">이미지를 저장하면 캡션이 자동 복사돼요. 인스타에 올릴 때 붙여넣기 하세요.</p>
   </div>
 
   <div class="card hidden" id="battle-card">
@@ -141,6 +147,9 @@
     <div class="actions">
       <button class="btn" id="share-battle">💬 대결 결과 공유</button>
       <button class="btn sub" id="rematch">🔁 다시 대결</button>
+    </div>
+    <div class="actions">
+      <button class="btn insta" id="insta-battle">📸 대결 카드 인스타로</button>
     </div>
   </div>
 
@@ -157,6 +166,7 @@
 </div>
 
 <script src="js/makeup-battle.js"></script>
+<script src="js/share-card.js"></script>
 <script>
 (function () {
   'use strict';
@@ -349,6 +359,37 @@
     $('result-card').classList.add('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
+  /* ---------- 인스타그램 공유 ----------
+     인스타는 외부 앱이 글을 직접 올리는 API 를 주지 않는다. 실제로 동작하는 경로는
+     이미지를 만들어 (1) OS 공유 시트로 넘기거나 (2) 기기에 저장하고 캡션을 복사해
+     사용자가 인스타에서 붙여넣는 것뿐이다. 둘 다 지원한다. */
+  function instaShare(size) {
+    if (!state.last) return;
+    var C = window.ShareCard;
+    var opts = {
+      size: size,
+      svg: $('face'),
+      theme: G.THEMES[state.theme].label,
+      score: state.last.score,
+      verdict: G.verdict(state.last.score)
+    };
+    if (state.challenge) opts.opponent = { name: state.challenge.name, score: state.challenge.score };
+    var caption = C.instaCaption(opts);
+    $('insta-hint').textContent = '카드를 만드는 중…';
+    C.drawCard(opts).then(function (out) {
+      return C.shareImage(out.blob, caption);
+    }).then(function (how) {
+      $('insta-hint').textContent = how === 'shared'
+        ? '공유 시트에서 Instagram 을 선택하세요.'
+        : '이미지를 저장했어요. 캡션도 복사됐으니 인스타에서 붙여넣기 하세요.';
+    }).catch(function () {
+      $('insta-hint').textContent = '카드 만들기에 실패했어요. 다시 시도해 주세요.';
+    });
+  }
+  $('insta-story').addEventListener('click', function () { instaShare('story'); });
+  $('insta-feed').addEventListener('click', function () { instaShare('feed'); });
+  $('insta-battle').addEventListener('click', function () { instaShare('story'); });
 
   (function boot() {
     var m = /[?&]battle=([A-Za-z0-9_-]+)/.exec(location.search);
