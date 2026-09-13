@@ -31,9 +31,8 @@
   .models{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
   .model{font-family:inherit;border:3px solid var(--line);border-radius:16px;background:#fffafc;
          padding:10px 5px;cursor:pointer;color:var(--ink);font-size:15px}
-  .model .avatar{display:block;width:64px;height:64px;margin:0 auto 6px;border-radius:50%;
-                 border:3px solid #fff;box-shadow:0 2px 9px rgba(80,30,55,.18);
-                 font-size:35px;line-height:58px}
+  .model .avatar{display:block;width:74px;height:74px;margin:0 auto 6px;border-radius:14px;
+                 border:3px solid #fff;box-shadow:0 2px 9px rgba(80,30,55,.18);object-fit:cover}
   .model[aria-pressed="true"]{border-color:var(--deep);background:var(--soft);transform:translateY(-2px)}
   .privacy{font-size:15px;opacity:.75;text-align:center;margin:9px 0 0}
   @media(max-width:520px){.models{grid-template-columns:repeat(2,1fr)}}
@@ -167,12 +166,13 @@
 </div>
 
 <script src="js/coin-wallet.js"></script>
+<script src="js/base-face.js"></script>
 <script src="js/makeup-battle.js"></script>
 <script src="js/share-card.js"></script>
 <script>
 (function () {
   'use strict';
-  var G = window.MakeupBattle;
+  var G = window.MakeupBattle, BF = window.BaseFace;
   var $ = function (id) { return document.getElementById(id); };
   var cv = $('face-canvas'), ctx = cv.getContext('2d');
 
@@ -184,7 +184,18 @@
     return location.href.split(/[?#]/)[0];
   }
 
-  /* ---------- 자체 제작 베이스 모델 ---------- */
+  /* ---------- 자체 제작 베이스 모델 ----------
+     이모지 대신 실제 렌더링한 얼굴을 썸네일로 보여 준다. 고를 때 어떤 얼굴인지
+     바로 보이지 않으면 선택 자체가 의미 없다. */
+  function modelThumb(m) {
+    var t = document.createElement('canvas');
+    t.width = 148; t.height = 185;
+    var tc = t.getContext('2d');
+    BF.draw(tc, m, t.width, t.height);
+    BF.drawFeatures(tc, m, t.width, t.height);
+    return t.toDataURL('image/png');
+  }
+
   function drawBaseModels() {
     var box = $('base-models'); box.innerHTML = '';
     Object.keys(G.BASE_MODELS).forEach(function (id) {
@@ -192,7 +203,10 @@
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'model';
       b.setAttribute('aria-pressed', String(id === state.base));
-      b.innerHTML = '<span class="avatar" style="background:' + m.bg + '">' + m.emoji + '</span>' + m.label;
+      var img = document.createElement('img');
+      img.className = 'avatar'; img.alt = m.label; img.src = modelThumb(m);
+      b.appendChild(img);
+      b.appendChild(document.createTextNode(m.label));
       b.addEventListener('click', function () {
         state.base = id; drawBaseModels(); paint();
       });
@@ -266,101 +280,35 @@
     });
   }
 
-  /* ---------- 자체 베이스 얼굴 + 메이크업 ---------- */
-  function facePath(m) {
-    ctx.beginPath();
-    if (m.face === 'round') {
-      ctx.moveTo(280, 125); ctx.bezierCurveTo(120,125,105,275,145,455);
-      ctx.bezierCurveTo(170,565,390,565,415,455); ctx.bezierCurveTo(455,275,440,125,280,125);
-    } else if (m.face === 'heart') {
-      ctx.moveTo(280, 130); ctx.bezierCurveTo(105,120,105,300,145,430);
-      ctx.bezierCurveTo(175,525,240,575,280,600); ctx.bezierCurveTo(320,575,385,525,415,430);
-      ctx.bezierCurveTo(455,300,455,120,280,130);
-    } else if (m.face === 'long') {
-      ctx.moveTo(280,115); ctx.bezierCurveTo(135,115,130,270,155,455);
-      ctx.bezierCurveTo(175,575,235,610,280,620); ctx.bezierCurveTo(325,610,385,575,405,455);
-      ctx.bezierCurveTo(430,270,425,115,280,115);
-    } else {
-      ctx.moveTo(280,115); ctx.bezierCurveTo(125,115,115,275,150,455);
-      ctx.bezierCurveTo(175,565,235,595,280,605); ctx.bezierCurveTo(325,595,385,565,410,455);
-      ctx.bezierCurveTo(445,275,435,115,280,115);
-    }
-    ctx.closePath();
-  }
-
-  function drawBaseFace(m) {
-    var W = cv.width, H = cv.height;
-    var bg = ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,m.bg); bg.addColorStop(1,'#fffafc');
-    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
-    /* 어깨와 목 */
-    ctx.fillStyle = '#d887ad'; ctx.beginPath(); ctx.ellipse(280,700,235,150,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = m.skinShadow; ctx.fillRect(235,500,90,145);
-    ctx.fillStyle = m.skin; ctx.beginPath(); ctx.ellipse(280,590,62,80,0,0,Math.PI*2); ctx.fill();
-    /* 뒷머리 */
-    ctx.fillStyle = m.hair; ctx.beginPath();
-    if (m.hairStyle === 'short') ctx.ellipse(280,255,190,180,0,0,Math.PI*2);
-    else ctx.ellipse(280,335,210,300,0,0,Math.PI*2);
-    ctx.fill();
-    /* 귀와 얼굴 */
-    ctx.fillStyle = m.skinShadow; ctx.beginPath(); ctx.ellipse(135,350,28,56,0,0,Math.PI*2); ctx.ellipse(425,350,28,56,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = m.skin; facePath(m); ctx.fill();
-    /* 부드러운 얼굴 중심광 */
-    var hi = ctx.createRadialGradient(280,300,20,280,340,245);
-    hi.addColorStop(0,'rgba(255,255,255,.22)'); hi.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle=hi; facePath(m); ctx.fill();
-  }
-
-  function drawFeatures(m) {
-    function eye(cx, side) {
-      var y=296, outer=cx+side*58, inner=cx-side*58;
-      ctx.strokeStyle='#392822'; ctx.fillStyle='#fffdfb'; ctx.lineWidth=8; ctx.lineCap='round';
-      ctx.beginPath(); ctx.moveTo(inner,y);
-      if(m.eye==='cat') ctx.quadraticCurveTo(cx,y-34,outer,y-13);
-      else if(m.eye==='doe') ctx.quadraticCurveTo(cx,y-42,outer,y+1);
-      else if(m.eye==='cool') ctx.quadraticCurveTo(cx,y-18,outer,y-8);
-      else ctx.quadraticCurveTo(cx,y-31,outer,y+7);
-      ctx.quadraticCurveTo(cx,y+24,inner,y); ctx.fill(); ctx.stroke();
-      var r=m.eye==='doe'?19:m.eye==='cool'?13:16;
-      ctx.fillStyle=m.iris; ctx.beginPath(); ctx.arc(cx,y+1,r,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#181311'; ctx.beginPath(); ctx.arc(cx,y+2,r*.52,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(cx-5,y-5,4,0,Math.PI*2); ctx.fill();
-    }
-    eye(190,-1); eye(370,1);
-    /* 코 */
-    ctx.strokeStyle=m.skinShadow; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(280,330); ctx.quadraticCurveTo(268,405,280,420); ctx.quadraticCurveTo(294,424,306,416); ctx.stroke();
-    /* 입 윤곽 */
-    ctx.strokeStyle='rgba(105,42,53,.8)'; ctx.lineWidth=4; ctx.beginPath();
-    ctx.moveTo(222,515); ctx.quadraticCurveTo(280,480,338,515); ctx.quadraticCurveTo(280,548,222,515); ctx.stroke();
-    /* 앞머리 */
-    ctx.fillStyle=m.hair; ctx.beginPath();
-    if(m.hairStyle==='short') { ctx.moveTo(125,215); ctx.quadraticCurveTo(190,70,430,170); ctx.quadraticCurveTo(365,110,310,245); ctx.quadraticCurveTo(240,155,125,215); }
-    else if(m.hairStyle==='bob') { ctx.moveTo(115,240); ctx.quadraticCurveTo(120,80,300,80); ctx.quadraticCurveTo(440,85,445,225); ctx.quadraticCurveTo(345,120,280,240); ctx.quadraticCurveTo(205,130,115,240); }
-    else if(m.hairStyle==='wave') { ctx.moveTo(105,250); ctx.quadraticCurveTo(130,65,315,80); ctx.quadraticCurveTo(455,95,450,250); ctx.quadraticCurveTo(380,115,315,220); ctx.quadraticCurveTo(235,135,105,250); }
-    else { ctx.moveTo(105,245); ctx.quadraticCurveTo(120,55,300,70); ctx.quadraticCurveTo(450,80,455,245); ctx.quadraticCurveTo(360,120,305,225); ctx.quadraticCurveTo(220,125,105,245); }
-    ctx.closePath(); ctx.fill();
-  }
-
+  /* ---------- 베이스 얼굴 + 메이크업 ----------
+     얼굴 그리기는 js/base-face.js 가 맡는다. 여기서는 화장만 얹는다.
+     순서: 베이스 피부 → 화장(피부 클리핑) → 이목구비·머리 덮어 그리기.
+     이목구비를 화장보다 나중에 그려야 아이라인·입술선이 색조에 묻히지 않는다. */
   function paint() {
     var W = cv.width, H = cv.height, m = G.BASE_MODELS[state.base] || G.BASE_MODELS.soft;
-    ctx.clearRect(0, 0, W, H); drawBaseFace(m);
+    ctx.clearRect(0, 0, W, H);
+    BF.draw(ctx, m, W, H);
 
     var order = ['shade', 'brow', 'eye', 'blush', 'lip', 'gloss'];
     order.forEach(function (key) {
       var st = state.look[key]; if (!st || st.level <= 0) return;
       var zones = G.FACE_ZONES[key] || [], color = G.COLORS[key][st.value];
-      var alpha = (st.level / 100) * (key === 'shade' ? 0.24 : key === 'gloss' ? 0.16 : 0.55);
-      ctx.save(); facePath(m); ctx.clip();
+      var alpha = (st.level / 100) * (key === 'shade' ? 0.24 : key === 'gloss' ? 0.16 : 0.50);
+      ctx.save();
+      BF.clip(ctx, m, W, H); ctx.clip();
       ctx.globalCompositeOperation = key === 'gloss' ? 'lighter' : (key === 'brow' ? 'source-over' : 'multiply');
       ctx.globalAlpha = alpha;
       zones.forEach(function (z) {
         var cx=z[0]*W, cy=z[1]*H, rx=z[2]*W, ry=z[3]*H;
         var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(rx,ry));
-        grd.addColorStop(0,color); grd.addColorStop(.6,color); grd.addColorStop(1,'rgba(255,255,255,0)');
+        /* 색이 꽉 찬 구간을 좁게 두고 길게 흐려야 '칠한 자국'이 아니라 화장으로 보인다. */
+        grd.addColorStop(0,color); grd.addColorStop(.18,color); grd.addColorStop(1,'rgba(255,255,255,0)');
         ctx.fillStyle=grd; ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill();
       });
       ctx.restore();
     });
-    drawFeatures(m);
+
+    BF.drawFeatures(ctx, m, W, H);
   }
 
   function updateLive() {
