@@ -45,12 +45,15 @@
 
   function instaCaption(o) {
     o = o || {};
+    var label = o.scoreLabel || (o.score + '점');
     var lines = [];
     if (o.opponent) {
-      lines.push('⚔️ ' + o.theme + ' 메이크업 배틀');
-      lines.push('나 ' + o.score + '점 VS ' + o.opponent.name + ' ' + o.opponent.score + '점');
+      lines.push('⚔️ ' + o.theme + ' 대결');
+      lines.push('나 ' + label + ' VS ' + o.opponent.name + ' ' +
+        (o.opponent.label || o.opponent.score + '점'));
     } else {
-      lines.push('💄 ' + o.theme + ' 메이크업 ' + o.score + '점');
+      /* 카테고리 접두사를 고정하면 오락실 결과에 '메이크업'이 붙는다. */
+      lines.push((o.heading ? o.heading + ' · ' : '💄 ') + o.theme + ' ' + label);
       if (o.verdict) lines.push(o.verdict);
     }
     lines.push('');
