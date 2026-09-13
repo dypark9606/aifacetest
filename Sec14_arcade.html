@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>얼굴상 오락실</title>
+<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#12102a;--card:#1d1a3d;--line:#332f63;--hot:#ff4d6d;--go:#25d07a;--gold:#ffd166;--ink:#f3f0ff}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0 0 40px;font-family:'Jua',-apple-system,'Malgun Gothic',sans-serif;
+       background:linear-gradient(180deg,#12102a,#1b1640);color:var(--ink);-webkit-tap-highlight-color:transparent}
+  .wrap{max-width:760px;margin:0 auto;padding:14px}
+  h1{font-size:34px;text-align:center;margin:8px 0 2px;color:var(--gold)}
+  .lead{text-align:center;font-size:18px;margin:0 0 12px;opacity:.85}
+  .coins{text-align:center;font-size:20px;color:var(--gold);margin-bottom:10px}
+
+  .card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}
+  .card h2{font-size:22px;margin:0 0 10px;color:var(--gold)}
+
+  .picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .gbtn{font-family:inherit;font-size:17px;padding:14px 8px;border-radius:16px;cursor:pointer;
+        border:2px solid var(--line);background:#241f4d;color:var(--ink);text-align:center;line-height:1.35}
+  .gbtn[aria-pressed="true"]{background:var(--hot);border-color:var(--hot)}
+  .gbtn .e{display:block;font-size:30px}
+  .gbtn .b{display:block;font-size:14px;opacity:.8}
+
+  .hud{display:flex;justify-content:space-around;font-size:20px;margin-bottom:8px}
+  .hud b{color:var(--gold)}
+  .field{position:relative;width:100%;height:340px;border-radius:16px;overflow:hidden;
+         background:#0d0b20;border:2px solid var(--line);touch-action:manipulation;user-select:none}
+  .field.tap{cursor:pointer}
+  .hole{position:absolute;width:62px;height:62px;border-radius:50%;background:#2b2559;
+        display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer}
+  .hole.up{background:#3b8f5a}
+  .target{position:absolute;font-size:34px;cursor:pointer;will-change:transform}
+  .reflex-pad{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+              font-size:26px;text-align:center;padding:16px}
+  .reflex-pad.wait{background:#8a2036}.reflex-pad.go{background:#1a7a4a}
+  .bar{position:absolute;left:8%;right:8%;bottom:22px;height:26px;border-radius:99px;background:#2b2559;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#25d07a,#ffd166,#ff4d6d)}
+  .boards{position:absolute;left:0;right:0;top:40px;text-align:center;font-size:30px;letter-spacing:4px}
+
+  .actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:10px}
+  .btn{font-family:inherit;font-size:19px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;
+       background:var(--hot);color:#fff}
+  .btn.go{background:var(--go)}
+  .btn.sub{background:#2a2456;color:var(--ink);border:2px solid var(--line)}
+
+  .score-big{font-size:44px;text-align:center;color:var(--gold);margin:6px 0}
+  .tier{text-align:center;font-size:22px;margin-bottom:6px}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center}
+  .vs .pt{font-size:32px;color:var(--gold)}.vs .mid{font-size:24px}
+  .banner{text-align:center;font-size:25px;margin:8px 0;color:var(--gold)}
+  .board{list-style:none;margin:0;padding:0}
+  .board li{display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--line);font-size:18px}
+  .link-box{width:100%;font-family:inherit;font-size:14px;padding:9px;border-radius:10px;border:2px solid var(--line);
+            background:#0d0b20;color:var(--ink);min-height:64px}
+  .hint{font-size:15px;opacity:.75;text-align:center;margin-top:8px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🕹️ 얼굴상 오락실</h1>
+  <p class="lead">한 판 30초! 친구에게 도전장 보내고 기록으로 겨뤄요</p>
+  <p class="coins">🪙 내 코인 <b id="coin-count">0</b></p>
+
+  <div class="card hidden" id="challenge-card">
+    <h2>📨 도전장 도착</h2>
+    <p id="challenge-text" style="font-size:18px;margin:0"></p>
+  </div>
+
+  <div class="card">
+    <h2>게임 고르기</h2>
+    <div class="picker" id="picker"></div>
+    <p class="hint" id="game-desc"></p>
+  </div>
+
+  <div class="card">
+    <div class="hud">
+      <span>점수 <b id="hud-score">0</b></span>
+      <span>남은시간 <b id="hud-time">–</b></span>
+      <span>최고 <b id="hud-best">–</b></span>
+    </div>
+    <div class="field" id="field"></div>
+    <div class="actions">
+      <button class="btn go" id="start">▶ 시작</button>
+      <button class="btn sub" id="reset-all">↩️ 처음부터 다시 하기</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="result-card">
+    <h2>결과</h2>
+    <p class="score-big" id="score-big">0</p>
+    <p class="tier" id="tier"></p>
+    <p class="hint" id="coin-msg"></p>
+    <div class="actions">
+      <button class="btn go" id="again">🔁 한 번 더</button>
+      <button class="btn" id="make-challenge">📨 도전장 보내기</button>
+      <button class="btn sub" id="share-result">💬 결과 공유</button>
+      <button class="btn sub" id="insta-card">📸 인스타 카드</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="battle-card">
+    <h2>⚔️ 대결 결과</h2>
+    <div class="vs">
+      <div><div id="vs-left-name">친구</div><div class="pt" id="vs-left">0</div></div>
+      <div class="mid">VS</div>
+      <div><div>나</div><div class="pt" id="vs-right">0</div></div>
+    </div>
+    <p class="banner" id="battle-banner"></p>
+    <div class="actions">
+      <button class="btn" id="share-battle">💬 대결 결과 공유</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="link-card">
+    <h2>📨 도전장 링크</h2>
+    <textarea class="link-box" id="link-out" readonly></textarea>
+    <div class="actions">
+      <button class="btn" id="send-challenge">💬 메시지로 보내기</button>
+      <button class="btn sub" id="copy-link">📋 복사</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏅 내 최고기록</h2>
+    <ul class="board" id="board"></ul>
+  </div>
+</div>
+
+<script src="js/arcade-core.js"></script>
+<script src="js/share-card.js"></script>
+<script src="js/arcade-games.js"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.Arcade, GAMES = window.ArcadeGames;
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { id: 'mole', last: null, challenge: null, running: null };
+
+  function baseUrl() {
+    try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
+    catch (e) {}
+    return location.href.split(/[?#]/)[0];
+  }
+
+  function drawPicker() {
+    var box = $('picker'); box.innerHTML = '';
+    A.GAMES.forEach(function (g) {
+      var best = A.getBest(g.id);
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'gbtn';
+      b.setAttribute('aria-pressed', String(g.id === state.id));
+      b.innerHTML = '<span class="e">' + g.emoji + '</span>' + g.name +
+        '<span class="b">최고 ' + (best === null ? '–' : A.scoreText(g.id, best)) + '</span>';
+      b.addEventListener('click', function () {
+        if (state.running) return;
+        state.id = g.id; drawPicker(); drawHud(); clearField();
+        $('result-card').classList.add('hidden');
+        $('link-card').classList.add('hidden');
+      });
+      box.appendChild(b);
+    });
+    $('game-desc').textContent = A.game(state.id).desc;
+  }
+
+  function drawHud() {
+    var best = A.getBest(state.id);
+    $('hud-best').textContent = best === null ? '–' : A.scoreText(state.id, best);
+    $('hud-score').textContent = '0';
+    $('hud-time').textContent = '–';
+    $('coin-count').textContent = A.getCoins();
+  }
+
+  function drawBoard() {
+    var ul = $('board'); ul.innerHTML = '';
+    A.GAMES.forEach(function (g) {
+      var best = A.getBest(g.id);
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + g.emoji + ' ' + g.name + '</span><b>' +
+        (best === null ? '기록 없음' : A.scoreText(g.id, best) + ' · ' + A.rank(g.id, best).tier) + '</b>';
+      ul.appendChild(li);
+    });
+  }
+
+  function clearField() { $('field').innerHTML = ''; $('field').className = 'field'; }
+
+  function finish(score) {
+    state.running = null;
+    var isBest = A.saveBest(state.id, score);
+    var got = A.coins(state.id, score, isBest);
+    A.addCoins(got);
+    state.last = score;
+    $('score-big').textContent = A.scoreText(state.id, score);
+    var r = A.rank(state.id, score);
+    /* 0점을 "신기록"이라고 축하하면 장난처럼 보인다. 첫 기록이어도 알리지 않는다. */
+    var celebrate = isBest && score > 0;
+    $('tier').textContent = r.tier + '급 · ' + r.text + (celebrate ? '  🎉 신기록!' : '');
+    $('coin-msg').textContent = '🪙 코인 +' + got + (celebrate ? ' (신기록 보너스 포함)' : '');
+    $('result-card').classList.remove('hidden');
+    drawPicker(); drawHud(); drawBoard();
+    if (state.challenge && state.challenge.game === state.id) showBattle(score);
+    $('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showBattle(mine) {
+    var c = state.challenge, j = A.judge(state.id, mine, c.score);
+    $('vs-left-name').textContent = c.name;
+    $('vs-left').textContent = A.scoreText(c.game, c.score);
+    $('vs-right').textContent = A.scoreText(state.id, mine);
+    $('battle-banner').textContent = j.emoji + ' ' + j.label;
+    $('battle-card').classList.remove('hidden');
+  }
+
+  function start() {
+    if (state.running) return;
+    $('result-card').classList.add('hidden');
+    $('link-card').classList.add('hidden');
+    clearField();
+    state.running = GAMES[state.id]({
+      field: $('field'),
+      onScore: function (s) { $('hud-score').textContent = s; },
+      onTime: function (t) { $('hud-time').textContent = t; },
+      onEnd: finish
+    });
+  }
+
+  function resultText() {
+    var g = A.game(state.id), r = A.rank(state.id, state.last);
+    return g.emoji + ' ' + g.name + ' ' + A.scoreText(state.id, state.last) +
+      ' — ' + r.tier + '급 ' + r.text + '\n너도 해봐!';
+  }
+
+  function shareText(text) {
+    if (navigator.share) { navigator.share({ title: '얼굴상 오락실', text: text, url: baseUrl() }).catch(function () {}); return; }
+    var full = text + '\n' + baseUrl();
+    if (navigator.clipboard) navigator.clipboard.writeText(full).then(
+      function () { alert('복사했어요! 친구에게 붙여넣기 하세요.'); },
+      function () { prompt('복사해서 보내세요', full); });
+    else prompt('복사해서 보내세요', full);
+  }
+
+  $('start').addEventListener('click', start);
+  $('again').addEventListener('click', start);
+  $('share-result').addEventListener('click', function () { if (state.last !== null) shareText(resultText()); });
+  $('share-battle').addEventListener('click', function () {
+    if (state.last === null || !state.challenge) return;
+    var j = A.judge(state.id, state.last, state.challenge.score);
+    shareText('⚔️ ' + A.game(state.id).name + '\n' + state.challenge.name + ' ' +
+      A.scoreText(state.challenge.game, state.challenge.score) + ' VS 나 ' +
+      A.scoreText(state.id, state.last) + ' — ' + j.label);
+  });
+  $('make-challenge').addEventListener('click', function () {
+    if (state.last === null) return;
+    var name = prompt('도전자 이름', '나') || '나';
+    var tok = A.encode(A.challenge(name, state.id, state.last));
+    $('link-out').value = location.href.split(/[?#]/)[0] + '?arcade=' + tok;
+    $('link-card').classList.remove('hidden');
+    $('link-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('send-challenge').addEventListener('click', function () {
+    var url = $('link-out').value;
+    var msg = '🕹️ ' + A.game(state.id).name + ' 도전장! 내 기록 ' +
+      A.scoreText(state.id, state.last) + ', 이길 수 있어?';
+    if (navigator.share) { navigator.share({ title: '오락실 도전장', text: msg, url: url }).catch(function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(msg + '\n' + url).then(
+      function () { alert('도전장을 복사했어요!'); }, function () { prompt('복사해서 보내세요', msg + '\n' + url); });
+    else prompt('복사해서 보내세요', msg + '\n' + url);
+  });
+  $('copy-link').addEventListener('click', function () {
+    var url = $('link-out').value;
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(
+      function () { alert('링크를 복사했어요!'); }, function () { prompt('복사해서 보내세요', url); });
+    else prompt('복사해서 보내세요', url);
+  });
+  $('insta-card').addEventListener('click', function () {
+    if (state.last === null || !window.ShareCard) return;
+    var g = A.game(state.id), r = A.rank(state.id, state.last);
+    var C = window.ShareCard;
+    var opts = { size: 'story', theme: g.emoji + ' ' + g.name,
+                 score: state.last, verdict: r.tier + '급 · ' + r.text };
+    if (state.challenge && state.challenge.game === state.id)
+      opts.opponent = { name: state.challenge.name, score: state.challenge.score };
+    C.drawCard(opts).then(function (o) { return C.shareImage(o.blob, C.instaCaption(opts)); })
+      .then(function (how) {
+        $('coin-msg').textContent = how === 'shared'
+          ? '공유 시트에서 Instagram 을 고르세요.'
+          : '카드를 저장했어요. 캡션도 복사됐습니다.';
+      }).catch(function () {});
+  });
+
+  /* 처음부터 다시 하기 — 진행 중인 판을 멈추고 화면을 초기 상태로 */
+  $('reset-all').addEventListener('click', function () {
+    if (state.running && state.running.stop) state.running.stop();
+    state.running = null; state.last = null;
+    clearField(); drawHud(); drawPicker();
+    $('result-card').classList.add('hidden');
+    $('battle-card').classList.add('hidden');
+    $('link-card').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  (function boot() {
+    var m = /[?&]arcade=([A-Za-z0-9_-]+)/.exec(location.search);
+    if (m) {
+      var c = A.decode(m[1]);
+      if (c) {
+        state.challenge = c; state.id = c.game;
+        $('challenge-card').classList.remove('hidden');
+        $('challenge-text').textContent = c.name + '님이 ' + A.game(c.game).name + '에서 ' +
+          A.scoreText(c.game, c.score) + ' 기록! 이겨보세요.';
+      }
+    }
+    drawPicker(); drawHud(); drawBoard();
+  })();
+
+  window.__shareResultText = function () { return state.last === null ? '' : resultText(); };
+  window.__arcadeState = state;
+})();
+</script>
+</body>
+</html>

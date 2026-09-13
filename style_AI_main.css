@@ -110,6 +110,11 @@ a[href$='section13'] {
 	background-repeat: repeat;
 	color: black;
 }
+a[href$='section14'] {
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
+}
 
 .tabs > ul li a:before {
 	content: '';
