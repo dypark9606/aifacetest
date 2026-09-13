@@ -105,20 +105,17 @@ a[href$='section12'] {
 	background-repeat: repeat;
 	color: black;
 }
-/* 신규 놀이 탭 2개는 기존 테스트 탭과 한눈에 구분되게 배경을 따로 준다.
-   배경 이미지를 쓰지 않고 단색 그라데이션이라 글자 대비도 확실하다. */
+/* 신규 놀이 탭도 기존 체크무늬 순서를 그대로 잇는다.
+   위쪽 탭·옆 탭과 같은 배경이 닿지 않게 1 ↔ 6 을 번갈아 배치한다. */
 a[href$='section13'] {
-	background-image: linear-gradient(160deg, #ffd6e8 0%, #ffb0d0 100%);
-	color: #7a1040;
+	background-image: url('img/img_back_1.jpg');
+	background-repeat: repeat;
+	color: black;
 }
 a[href$='section14'] {
-	background-image: linear-gradient(160deg, #cfe4ff 0%, #9ec4f5 100%);
-	color: #10345e;
-}
-/* 선택됐을 때는 공용 규칙이 파란 배경을 덮으므로 글자색만 맞춘다. */
-a[href$='section13'][aria-selected],
-a[href$='section14'][aria-selected] {
-	color: #fff;
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
 }
 
 .tabs > ul li a:before {
