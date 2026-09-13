@@ -117,6 +117,7 @@
     <div class="actions">
       <button class="btn" id="judge">✨ 심사받기</button>
       <button class="btn sub" id="random">🎲 랜덤</button>
+      <button class="btn sub" id="reset-all">↩️ 처음부터 다시 하기</button>
     </div>
   </div>
 
@@ -390,6 +391,21 @@
   $('insta-story').addEventListener('click', function () { instaShare('story'); });
   $('insta-feed').addEventListener('click', function () { instaShare('feed'); });
   $('insta-battle').addEventListener('click', function () { instaShare('story'); });
+
+  /* 처음부터 다시 하기 — 화면을 새로 읽지 않고 상태만 되돌린다.
+     도전장으로 들어온 경우에도 주제는 유지해 대결이 계속 성립하게 한다. */
+  function resetAll() {
+    state.look = Object.assign({}, G.DEFAULT_LOOK);
+    state.last = null;
+    if (!state.challenge) state.theme = 'cat-idol';
+    $('result-card').classList.add('hidden');
+    $('battle-card').classList.add('hidden');
+    $('link-card').classList.add('hidden');
+    $('insta-hint').textContent = '이미지를 저장하면 캡션이 자동 복사돼요. 인스타에 올릴 때 붙여넣기 하세요.';
+    drawThemes(); drawOrder(); drawControls(); paint(); updateLive();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('reset-all').addEventListener('click', resetAll);
 
   (function boot() {
     var m = /[?&]battle=([A-Za-z0-9_-]+)/.exec(location.search);

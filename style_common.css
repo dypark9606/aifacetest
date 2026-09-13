@@ -50,3 +50,13 @@ a.namu-link:hover {
 }
 .share-btn:hover { background: #f2f2f2; }
 .share-msg { font-size: 0.95rem; color: #888; }
+
+/* 다시 하기(리셋) 버튼 — 결과를 본 뒤 바로 다시 할 수 있게 모든 화면에 둔다.
+   공유 버튼과 구분되도록 눈에 띄는 색을 쓴다. */
+.reset-btn {
+	font-family: inherit; font-size: 1rem;
+	padding: 8px 18px; border-radius: 20px;
+	border: 2px solid #1e88e5; background: #1e88e5; color: #fff;
+	cursor: pointer; font-weight: bold;
+}
+.reset-btn:hover { background: #1565c0; border-color: #1565c0; }

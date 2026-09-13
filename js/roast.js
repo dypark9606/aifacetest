@@ -114,6 +114,66 @@
 		return out.join('\n\n');
 	}
 
+	/* ------------------------------------------------------------------
+	 * 다시 하기(리셋) 버튼
+	 *  2026-09-13: 사용자는 결과를 본 뒤 "사진을 바꿀 수 있다는 걸 모르고
+	 *  다시하기 버튼을 찾는다"고 했다. 그래서 모든 결과 화면에 같은 자리,
+	 *  같은 이름의 버튼을 둔다.
+	 *
+	 *  ⚠ location.reload() 를 먼저 쓰지 않는다. 앱(WebView)에서는 새로고침이
+	 *  모델과 MediaPipe 를 다시 내려받아 몇 초씩 멈춘다. 화면 안에서 되돌리고,
+	 *  되돌릴 것을 하나도 못 찾은 경우에만 새로고침으로 물러선다.
+	 * ------------------------------------------------------------------ */
+	function resetPage() {
+		var did = false;
+		var $j = window.jQuery;
+
+		/* 1) 고른 사진 비우기 — 같은 파일을 다시 골라도 change 가 나게 값까지 지운다 */
+		var files = document.querySelectorAll('input[type="file"]');
+		for (var i = 0; i < files.length; i++) {
+			try { files[i].value = ''; did = true; } catch (e) { }
+		}
+
+		/* 2) 결과 영역 비우기 */
+		var clears = [
+			'#label-container', '.result-message', '.result-description',
+			'#compatibility-result', '#sj-res', '#fo-res', '.roast-line'
+		];
+		for (var c = 0; c < clears.length; c++) {
+			var nodes = document.querySelectorAll(clears[c]);
+			for (var n = 0; n < nodes.length; n++) {
+				if (nodes[n].innerHTML) { nodes[n].innerHTML = ''; did = true; }
+				if (nodes[n].id === 'compatibility-result') nodes[n].style.display = 'none';
+			}
+		}
+
+		/* 3) 사진 올리기 화면으로 되돌리기 */
+		if ($j) {
+			if ($j('.file-upload-content').length) { $j('.file-upload-content').hide(); did = true; }
+			if ($j('.image-upload-wrap').length) { $j('.image-upload-wrap').show(); did = true; }
+			$j('#loading').hide();
+			$j('.file-upload-image').attr('src', '#');
+			$j('.image-title').html('');
+		} else {
+			var content = document.querySelector('.file-upload-content');
+			var wrap = document.querySelector('.image-upload-wrap');
+			if (content) { content.style.display = 'none'; did = true; }
+			if (wrap) { wrap.style.display = ''; did = true; }
+		}
+
+		/* 4) 커플궁합처럼 미리보기 img 를 직접 쓰는 화면 */
+		var previews = document.querySelectorAll('.file-upload-image, #male-face-image, #female-face-image');
+		for (var p = 0; p < previews.length; p++) {
+			if (previews[p].getAttribute('src') && previews[p].getAttribute('src') !== '#') {
+				previews[p].setAttribute('src', '#');
+				did = true;
+			}
+		}
+
+		if (!did) { location.reload(); return; }
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
 	function renderShare(box) {
 		var url = shareTarget();
 		var title = document.title || '인공지능 얼굴상 테스트';
@@ -121,13 +181,15 @@
 		box.innerHTML =
 			'<button type="button" class="share-btn" data-act="share">결과 공유</button>' +
 			'<button type="button" class="share-btn" data-act="copy">결과 복사</button>' +
+			'<button type="button" class="reset-btn" data-act="reset">다시 하기</button>' +
 			'<span class="share-msg" aria-live="polite"></span>';
 		var msg = box.querySelector('.share-msg');
 		function say(s) { msg.textContent = s; setTimeout(function () { msg.textContent = ''; }, 2000); }
 
 		box.addEventListener('click', function (e) {
-			var b = e.target.closest('.share-btn');
+			var b = e.target.closest('.share-btn, .reset-btn');
 			if (!b) return;
+			if (b.dataset.act === 'reset') { resetPage(); return; }
 			var resultText = shareResultText();
 			if (b.dataset.act === 'share' && navigator.share) {
 				navigator.share({title: title, text: resultText, url: url}).catch(function () {});
@@ -159,4 +221,5 @@
 	global.roast = roast;
 	global.roastHTML = roastHTML;
 	global.__shareResultText = shareResultText;
+	global.__resetPage = resetPage;
 })(window);

@@ -107,6 +107,19 @@
 	var answers = [];   // 'a' 또는 'b'
 	var at = 0;
 
+	/* 문항을 푸는 도중에도 언제든 처음으로 돌아갈 수 있어야 한다.
+	   결과 화면에만 다시 하기가 있으면 중간에 잘못 누른 사용자는 빠져나갈 길이 없다. */
+	function restart() {
+		answers = []; at = 0;
+		res.innerHTML = ''; res.style.display = 'none';
+		draw();
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+	var bReset = el('button', 'reset-btn qz-reset', '처음부터 다시 하기');
+	bReset.type = 'button';
+	bReset.addEventListener('click', restart);
+	root.appendChild(bReset);
+
 	function draw() {
 		quiz.innerHTML = '';
 		if (at >= Q.length) return show();

@@ -120,7 +120,7 @@
 					<button
 						type="button p-2"
 						class="try-again-btn"
-						onclick="window.location.reload();"
+						onclick="if(window.__resetPage){window.__resetPage();}else{window.location.reload();}"
 					>
 						<span class="try-again-text">다른 사진으로 재시도</span>
 					</button>

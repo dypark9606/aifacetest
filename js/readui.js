@@ -52,6 +52,11 @@
 		var go = el('button', 'rd-go', spec.button || '결과 보기');
 		go.type = 'button'; go.disabled = true;
 		root.appendChild(go);
+		/* 다시 하기는 결과가 나온 뒤에만 보이면 늦다. 사용자는 사진을 잘못 고른
+		   순간부터 되돌릴 길을 찾는다. 그래서 시작 화면부터 항상 보여 준다. */
+		var bReset = el('button', 'reset-btn rd-reset', '다시 하기');
+		bReset.type = 'button';
+		root.appendChild(bReset);
 		var st = el('p', 'rd-status', '사진을 올려 주세요.');
 		root.appendChild(st);
 
@@ -140,6 +145,7 @@
 			status('사진을 올려 주세요.');
 			box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		}
+		bReset.addEventListener('click', reset);
 
 		var last = null;
 		function render(r) {
