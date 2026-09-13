@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>얼굴상 메이크업 배틀</title>
+<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --pink:#ff6b9d; --deep:#c2185b; --soft:#fff0f6; --line:#f3c6da;
+    --ink:#3a2b33; --gold:#f5a623;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0 0 40px;font-family:'Jua',-apple-system,'Malgun Gothic',sans-serif;
+       background:linear-gradient(180deg,#fff7fb 0%,#ffeef6 100%);color:var(--ink)}
+  .wrap{max-width:760px;margin:0 auto;padding:16px}
+  h1{font-size:34px;text-align:center;margin:10px 0 4px;color:var(--deep)}
+  .lead{text-align:center;font-size:19px;margin:0 0 14px;opacity:.85}
+
+  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px;margin-bottom:16px;
+        box-shadow:0 6px 18px rgba(194,24,91,.08)}
+  .card h2{font-size:24px;margin:0 0 10px;color:var(--deep)}
+
+  .order{background:var(--soft);border-radius:16px;padding:14px;text-align:center}
+  .order .emoji{font-size:44px;display:block}
+  .order .name{font-size:26px;color:var(--deep)}
+  .order .ask{font-size:19px;margin-top:4px}
+
+  .themes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+  .themes button{font-family:inherit;font-size:18px;padding:10px 14px;border-radius:999px;
+    border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  .themes button[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
+
+  .stage{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px;align-items:start}
+  @media (max-width:620px){.stage{grid-template-columns:1fr}}
+  .face-box{background:var(--soft);border-radius:20px;padding:10px;text-align:center}
+  svg.face{width:100%;height:auto;max-width:240px}
+
+  .row{margin-bottom:12px}
+  .row h3{font-size:20px;margin:0 0 6px}
+  .opts{display:flex;flex-wrap:wrap;gap:6px}
+  .opts button{font-family:inherit;font-size:17px;padding:8px 12px;border-radius:12px;
+    border:2px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+  .opts button[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
+  .btn{font-family:inherit;font-size:20px;padding:12px 20px;border-radius:999px;border:none;cursor:pointer;
+       background:var(--pink);color:#fff;box-shadow:0 4px 12px rgba(255,107,157,.4)}
+  .btn.sub{background:#fff;color:var(--deep);border:2px solid var(--line);box-shadow:none}
+
+  .score-big{font-size:46px;text-align:center;color:var(--deep);margin:6px 0}
+  .verdict{text-align:center;font-size:22px;margin-bottom:10px}
+  .bars{margin:0;padding:0;list-style:none}
+  .bars li{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:17px}
+  .bars .t{width:72px;flex:none}
+  .bars .track{flex:1;height:12px;background:#f6e2ec;border-radius:99px;overflow:hidden}
+  .bars .fill{display:block;height:100%;background:var(--pink)}
+  .bars .n{width:44px;text-align:right;flex:none}
+
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center}
+  .vs .who{font-size:19px}.vs .pt{font-size:34px;color:var(--deep)}
+  .vs .mid{font-size:26px;color:var(--gold)}
+  .banner{text-align:center;font-size:26px;margin:10px 0;color:var(--deep)}
+
+  .link-box{width:100%;font-family:inherit;font-size:15px;padding:10px;border-radius:12px;
+            border:2px solid var(--line);word-break:break-all;min-height:70px}
+  .hint{font-size:16px;opacity:.75;text-align:center;margin-top:8px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💄 얼굴상 메이크업 배틀</h1>
+  <p class="lead">손님 주문대로 꾸미고, 친구와 점수로 대결하세요!</p>
+
+  <div class="card hidden" id="challenge-card" hidden>
+    <h2>📨 도전장이 도착했어요</h2>
+    <p id="challenge-text" style="font-size:19px;margin:0"></p>
+  </div>
+
+  <div class="card">
+    <h2>1. 오늘의 주문</h2>
+    <div class="order">
+      <span class="emoji" id="theme-emoji">🐱</span>
+      <span class="name" id="theme-name">고양이상 아이돌</span>
+      <p class="ask" id="theme-prompt"></p>
+    </div>
+    <div class="themes" id="themes"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. 화장하고 꾸미기</h2>
+    <div class="stage">
+      <div class="face-box">
+        <svg class="face" id="face" viewBox="0 0 200 240" role="img" aria-label="꾸미는 캐릭터">
+          <rect id="sv-bg" x="0" y="0" width="200" height="240" rx="18" fill="#ffe3ef"/>
+          <path id="sv-outfit" d="M55 205 Q100 175 145 205 L145 240 L55 240 Z" fill="#ff8fb1"/>
+          <path id="sv-hairback" d="M46 100 Q46 36 100 36 Q154 36 154 100 L154 190 Q100 210 46 190 Z" fill="#2f2a33"/>
+          <ellipse id="sv-skin" cx="100" cy="106" rx="50" ry="58" fill="#ffe0cd"/>
+          <path id="sv-hairfront" d="M50 94 Q58 46 100 46 Q142 46 150 94 Q128 70 100 70 Q72 70 50 94 Z" fill="#2f2a33"/>
+          <ellipse id="sv-blushL" cx="70" cy="122" rx="12" ry="8" fill="#ffb3c6" opacity=".85"/>
+          <ellipse id="sv-blushR" cx="130" cy="122" rx="12" ry="8" fill="#ffb3c6" opacity=".85"/>
+          <ellipse id="sv-eyeL" cx="79" cy="104" rx="11" ry="12" fill="#4a3b45"/>
+          <ellipse id="sv-eyeR" cx="121" cy="104" rx="11" ry="12" fill="#4a3b45"/>
+          <ellipse id="sv-shadowL" cx="79" cy="93" rx="14" ry="6" fill="#ff9ec4"/>
+          <ellipse id="sv-shadowR" cx="121" cy="93" rx="14" ry="6" fill="#ff9ec4"/>
+          <circle cx="83" cy="100" r="3.4" fill="#fff" opacity=".9"/>
+          <circle cx="125" cy="100" r="3.4" fill="#fff" opacity=".9"/>
+          <path id="sv-lip" d="M88 140 Q100 152 112 140 Q100 146 88 140 Z" fill="#c2185b"/>
+          <g id="sv-acc"></g>
+        </svg>
+        <p style="font-size:17px;margin:6px 0 0" id="live-score">예상 점수: –</p>
+      </div>
+      <div id="controls"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="judge">✨ 심사받기</button>
+      <button class="btn sub" id="random">🎲 랜덤</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="result-card">
+    <h2>3. 심사 결과</h2>
+    <p class="score-big" id="score-big">0점</p>
+    <p class="verdict" id="verdict"></p>
+    <ul class="bars" id="bars"></ul>
+    <div class="actions">
+      <button class="btn" id="make-challenge">📨 친구에게 도전장 보내기</button>
+      <button class="btn sub" id="share-result">💬 결과 공유</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="battle-card">
+    <h2>⚔️ 대결 결과</h2>
+    <div class="vs">
+      <div><div class="who" id="vs-left-name">친구</div><div class="pt" id="vs-left">0</div></div>
+      <div class="mid">VS</div>
+      <div><div class="who" id="vs-right-name">나</div><div class="pt" id="vs-right">0</div></div>
+    </div>
+    <p class="banner" id="battle-banner"></p>
+    <div class="actions">
+      <button class="btn" id="share-battle">💬 대결 결과 공유</button>
+      <button class="btn sub" id="rematch">🔁 다시 대결</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="link-card">
+    <h2>📨 도전장 링크</h2>
+    <p style="font-size:18px;margin:0 0 8px">아래 링크를 친구에게 보내세요. 친구가 같은 주제로 꾸미면 점수가 자동으로 비교됩니다.</p>
+    <textarea class="link-box" id="link-out" readonly></textarea>
+    <div class="actions">
+      <button class="btn" id="send-challenge">💬 메시지로 보내기</button>
+      <button class="btn sub" id="copy-link">📋 링크 복사</button>
+    </div>
+    <p class="hint">사진은 전송되지 않습니다. 꾸민 캐릭터 정보만 링크에 담깁니다.</p>
+  </div>
+</div>
+
+<script src="js/makeup-battle.js"></script>
+<script>
+(function () {
+  'use strict';
+  var G = window.MakeupBattle;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var LABELS = {
+    eye: ['아이섀도', { pink: '핑크', brown: '브라운', coral: '코랄', pearl: '펄' }],
+    lip: ['립', { berry: '베리', red: '레드', coral: '코랄', rose: '로즈' }],
+    blush: ['블러셔', { rose: '로즈', peach: '피치', none: '없음' }],
+    hair: ['헤어', { black: '블랙', brown: '브라운', pink: '핑크', blonde: '금발' }],
+    accessory: ['액세서리', { cat: '고양이귀', glasses: '안경', earrings: '귀걸이', tiara: '티아라' }],
+    outfit: ['의상', { idol: '아이돌', suit: '정장', dress: '원피스', wedding: '웨딩' }],
+    bg: ['배경', { stage: '무대', office: '오피스', cafe: '카페', garden: '정원' }]
+  };
+  var COLOR = {
+    eye: { pink: '#ff9ec4', brown: '#b07a5a', coral: '#ff9d7a', pearl: '#e7d9f2' },
+    lip: { berry: '#a3184a', red: '#e02020', coral: '#ff7a5c', rose: '#e2687f' },
+    blush: { rose: '#ffb3c6', peach: '#ffcfa8', none: 'transparent' },
+    hair: { black: '#2f2a33', brown: '#6b4331', pink: '#ff86b8', blonde: '#e8c56a' },
+    outfit: { idol: '#ff8fb1', suit: '#3f4a63', dress: '#ffd0e0', wedding: '#fdfdff' },
+    bg: { stage: '#ffe3ef', office: '#dfe7f5', cafe: '#f7e6d2', garden: '#dff2e1' }
+  };
+  var ACC = {
+    cat: '<path d="M60 58 L56 26 L86 44 Z" fill="#2f2a33"/><path d="M140 58 L144 26 L114 44 Z" fill="#2f2a33"/>',
+    glasses: '<g fill="none" stroke="#3a2b33" stroke-width="4"><circle cx="79" cy="104" r="19"/><circle cx="121" cy="104" r="19"/><path d="M98 104 h4"/></g>',
+    earrings: '<circle cx="50" cy="124" r="7" fill="#f5a623"/><circle cx="150" cy="124" r="7" fill="#f5a623"/>',
+    tiara: '<path d="M72 48 L86 28 L100 46 L114 28 L128 48 Z" fill="#f5a623" stroke="#d48806" stroke-width="2"/>'
+  };
+
+  var state = { theme: 'cat-idol', look: Object.assign({}, G.DEFAULT_LOOK), last: null, challenge: null };
+
+  function shareBase() {
+    try {
+      if (window.top !== window.self && document.referrer) return document.referrer.split('#')[0].split('?')[0];
+    } catch (e) {}
+    return location.href.split('#')[0].split('?')[0];
+  }
+  function challengeUrl(token) {
+    return location.href.split('#')[0].split('?')[0] + '?battle=' + token;
+  }
+
+  function drawThemes() {
+    var box = $('themes');
+    box.innerHTML = '';
+    Object.keys(G.THEMES).forEach(function (id) {
+      var t = G.THEMES[id];
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = t.emoji + ' ' + t.label;
+      b.setAttribute('aria-pressed', String(id === state.theme));
+      b.addEventListener('click', function () {
+        if (state.challenge) return;
+        state.theme = id; drawThemes(); drawOrder(); updateLive();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function drawOrder() {
+    var t = G.THEMES[state.theme];
+    $('theme-emoji').textContent = t.emoji;
+    $('theme-name').textContent = t.label;
+    $('theme-prompt').textContent = t.prompt;
+  }
+
+  function drawControls() {
+    var box = $('controls');
+    box.innerHTML = '';
+    Object.keys(G.OPTIONS).forEach(function (key) {
+      var row = document.createElement('div'); row.className = 'row';
+      var h = document.createElement('h3'); h.textContent = LABELS[key][0]; row.appendChild(h);
+      var opts = document.createElement('div'); opts.className = 'opts';
+      G.OPTIONS[key].forEach(function (value) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = LABELS[key][1][value] || value;
+        b.setAttribute('aria-pressed', String(state.look[key] === value));
+        b.addEventListener('click', function () {
+          state.look[key] = value;
+          drawControls(); paint(); updateLive();
+        });
+        opts.appendChild(b);
+      });
+      row.appendChild(opts); box.appendChild(row);
+    });
+  }
+
+  function paint() {
+    var l = state.look;
+    $('sv-bg').setAttribute('fill', COLOR.bg[l.bg]);
+    $('sv-outfit').setAttribute('fill', COLOR.outfit[l.outfit]);
+    $('sv-hairback').setAttribute('fill', COLOR.hair[l.hair]);
+    $('sv-hairfront').setAttribute('fill', COLOR.hair[l.hair]);
+    $('sv-shadowL').setAttribute('fill', COLOR.eye[l.eye]);
+    $('sv-shadowR').setAttribute('fill', COLOR.eye[l.eye]);
+    $('sv-lip').setAttribute('fill', COLOR.lip[l.lip]);
+    $('sv-blushL').setAttribute('fill', COLOR.blush[l.blush]);
+    $('sv-blushR').setAttribute('fill', COLOR.blush[l.blush]);
+    $('sv-acc').innerHTML = ACC[l.accessory] || '';
+  }
+
+  function updateLive() {
+    $('live-score').textContent = '예상 점수: ' + G.scoreLook(state.theme, state.look) + '점';
+  }
+
+  function judge() {
+    var b = G.scoreBreakdown(state.theme, state.look);
+    state.last = b;
+    $('score-big').textContent = b.score + '점';
+    $('verdict').textContent = G.THEMES[state.theme].emoji + ' ' + G.verdict(b.score);
+    var ul = $('bars'); ul.innerHTML = '';
+    Object.keys(G.WEIGHTS).forEach(function (key) {
+      var got = b.parts[key], max = G.WEIGHTS[key];
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="t">' + LABELS[key][0] + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + Math.round(got / max * 100) + '%"></span></span>' +
+        '<span class="n">' + got + '/' + max + '</span>';
+      ul.appendChild(li);
+    });
+    $('result-card').classList.remove('hidden');
+    if (state.challenge) showBattle();
+    $('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showBattle() {
+    var mine = state.last.score, theirs = state.challenge.score;
+    var r = G.compare(theirs, mine);
+    $('vs-left-name').textContent = state.challenge.name;
+    $('vs-right-name').textContent = '나';
+    $('vs-left').textContent = theirs;
+    $('vs-right').textContent = mine;
+    $('battle-banner').textContent = r.emoji + ' ' + r.label;
+    $('battle-card').classList.remove('hidden');
+  }
+
+  function shareText(text) {
+    var payload = { title: '얼굴상 메이크업 배틀', text: text, url: shareBase() };
+    if (navigator.share) { navigator.share(payload).catch(function () {}); return; }
+    var full = text + '\n' + shareBase();
+    if (navigator.clipboard) navigator.clipboard.writeText(full).then(function () { alert('결과를 복사했어요. 친구에게 붙여넣기 하세요!'); },
+      function () { prompt('복사해서 보내세요', full); });
+    else prompt('복사해서 보내세요', full);
+  }
+
+  function resultText() {
+    var t = G.THEMES[state.theme];
+    return '💄 ' + t.label + ' 메이크업 ' + state.last.score + '점 — ' + G.verdict(state.last.score) + '\n너도 해봐!';
+  }
+
+  $('judge').addEventListener('click', judge);
+  $('random').addEventListener('click', function () {
+    Object.keys(G.OPTIONS).forEach(function (k) {
+      var arr = G.OPTIONS[k];
+      state.look[k] = arr[Math.floor(Math.random() * arr.length)];
+    });
+    drawControls(); paint(); updateLive();
+  });
+  $('share-result').addEventListener('click', function () { if (state.last) shareText(resultText()); });
+  $('make-challenge').addEventListener('click', function () {
+    if (!state.last) return;
+    var name = (prompt('도전자 이름을 정해주세요', '나') || '나');
+    var token = G.encodeChallenge(G.createChallenge(name, state.theme, state.look));
+    $('link-out').value = challengeUrl(token);
+    $('link-card').classList.remove('hidden');
+    $('link-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('send-challenge').addEventListener('click', function () {
+    var url = $('link-out').value;
+    var msg = '💄 ' + G.THEMES[state.theme].label + ' 메이크업 배틀 도전장! 내 점수 ' + state.last.score + '점, 이길 수 있어?';
+    if (navigator.share) { navigator.share({ title: '메이크업 배틀 도전장', text: msg, url: url }).catch(function () {}); return; }
+    if (navigator.clipboard) navigator.clipboard.writeText(msg + '\n' + url).then(function () { alert('도전장을 복사했어요!'); },
+      function () { prompt('복사해서 보내세요', msg + '\n' + url); });
+    else prompt('복사해서 보내세요', msg + '\n' + url);
+  });
+  $('copy-link').addEventListener('click', function () {
+    var url = $('link-out').value;
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { alert('링크를 복사했어요!'); },
+      function () { prompt('복사해서 보내세요', url); });
+    else prompt('복사해서 보내세요', url);
+  });
+  $('share-battle').addEventListener('click', function () {
+    if (!state.last || !state.challenge) return;
+    var r = G.compare(state.challenge.score, state.last.score);
+    shareText('⚔️ ' + G.THEMES[state.theme].label + ' 메이크업 배틀\n' +
+      state.challenge.name + ' ' + state.challenge.score + '점 VS 나 ' + state.last.score + '점 — ' + r.label);
+  });
+  $('rematch').addEventListener('click', function () {
+    $('battle-card').classList.add('hidden');
+    $('result-card').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  (function boot() {
+    var m = /[?&]battle=([A-Za-z0-9_-]+)/.exec(location.search);
+    if (m) {
+      var c = G.decodeChallenge(m[1]);
+      if (c) {
+        state.challenge = c;
+        state.theme = c.theme;
+        var card = $('challenge-card');
+        card.hidden = false; card.classList.remove('hidden');
+        $('challenge-text').textContent = c.name + '님이 ' + G.THEMES[c.theme].label +
+          ' 주제로 ' + c.score + '점을 받았어요. 같은 주제로 꾸며서 이겨보세요!';
+      }
+    }
+    drawThemes(); drawOrder(); drawControls(); paint(); updateLive();
+  })();
+
+  window.__shareResultText = function () { return state.last ? resultText() : ''; };
+})();
+</script>
+</body>
+</html>
