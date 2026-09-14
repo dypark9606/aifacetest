@@ -32,10 +32,39 @@
   .field{position:relative;width:100%;height:340px;border-radius:16px;overflow:hidden;
          background:#0d0b20;border:2px solid var(--line);touch-action:manipulation;user-select:none}
   .field.tap{cursor:pointer}
-  .hole{position:absolute;width:62px;height:62px;border-radius:50%;background:#2b2559;
-        display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer}
+  .hole{position:absolute;width:72px;height:72px;border-radius:50%;background:#2b2559;
+        display:flex;align-items:center;justify-content:center;font-size:38px;cursor:pointer;
+        touch-action:none;-webkit-user-select:none;user-select:none}
   .hole.up{background:#3b8f5a}
-  .target{position:absolute;font-size:34px;cursor:pointer;will-change:transform}
+  /* ⚠ 히트 영역. 이모지 글리프만으로는 30px 도 안 돼서 폰에서 거의 안 잡혔다.
+     손가락 터치 목표는 최소 56~64px 다. flex 로 가운데 정렬해 글자는 그대로 두고
+     **누를 수 있는 판만** 키운다. touch-action:none 은 탭이 스크롤로 먹히는 걸 막는다. */
+  .target{position:absolute;font-size:34px;cursor:pointer;will-change:transform;
+          min-width:64px;min-height:64px;display:flex;align-items:center;justify-content:center;
+          touch-action:none;-webkit-user-select:none;user-select:none;
+          margin-left:-32px;margin-top:-32px}
+  /* 맞은 까마귀: 회전하며 떨어진다 */
+  .target.dead{animation:crowfall .52s ease-in forwards;pointer-events:none}
+  @keyframes crowfall{
+    0%{transform:scale(1.35) rotate(0deg);opacity:1}
+    100%{transform:translateY(90px) scale(.7) rotate(160deg);opacity:0}
+  }
+  /* 맞았을 때 뜨는 "+1" / "꽥!" */
+  .hit-pop{position:absolute;font-size:23px;font-weight:bold;color:#ffd166;
+           pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,.6);
+           animation:pop .62s ease-out forwards;z-index:5}
+  @keyframes pop{
+    0%{transform:translateY(0) scale(.7);opacity:0}
+    25%{transform:translateY(-14px) scale(1.25);opacity:1}
+    100%{transform:translateY(-52px) scale(1);opacity:0}
+  }
+  /* 잡힌 두꺼비: 납작해진다 */
+  .hole.squish{background:#b8532a;animation:squish .38s ease-out}
+  @keyframes squish{
+    0%{transform:scale(1)}
+    40%{transform:scale(1.2,.7)}
+    100%{transform:scale(1)}
+  }
   .reflex-pad{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
               font-size:26px;text-align:center;padding:16px}
   .reflex-pad.wait{background:#8a2036}.reflex-pad.go{background:#1a7a4a}
@@ -96,6 +125,7 @@
     <div class="hud">
       <span>점수 <b id="hud-score">0</b></span>
       <span>남은시간 <b id="hud-time">–</b></span>
+      <span id="hud-level-wrap" class="hidden">단계 <b id="hud-level">1단계</b></span>
       <span>최고 <b id="hud-best">–</b></span>
     </div>
     <div class="field" id="field"></div>
@@ -216,6 +246,9 @@
     $('hud-best').textContent = best === null ? '–' : A.scoreText(state.id, best);
     $('hud-score').textContent = '0';
     $('hud-time').textContent = '–';
+    /* 게임을 바꾸면 단계 표시는 숨긴다 (두꺼비 전용) */
+    $('hud-level-wrap').classList.add('hidden');
+    $('hud-level').textContent = '1단계';
     $('coin-count').textContent = A.getCoins();
   }
 
@@ -275,6 +308,11 @@
       field: $('field'),
       onScore: function (s) { $('hud-score').textContent = s; },
       onTime: function (t) { $('hud-time').textContent = t; },
+      /* 두꺼비만 단계가 오른다. 다른 게임에선 이 칸을 숨긴다. */
+      onLevel: function (label) {
+        $('hud-level').textContent = label;
+        $('hud-level-wrap').classList.remove('hidden');
+      },
       onEnd: finish
     });
     return true;

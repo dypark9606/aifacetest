@@ -29,10 +29,46 @@
     return function () { clearInterval(t); };
   }
 
-  /* ---------- 1) 두꺼비 잡기 ---------- */
+  /* ---------- 두꺼비 잡기 ----------
+     ⚠ 딸 피드백: "너무 빠르다, 레벨이 있어야 한다".
+     기존엔 등장 520ms / 노출 800ms 고정이라 처음부터 최고 난이도였다.
+     이제 느리게 시작해 10초마다 빨라진다. 잡으면 진동 + "꽥" 이 뜬다. */
+  var MOLE_LEVELS = [
+    { at: 0,  spawn: 950, up: 1500, label: '1단계' },   /* 여유롭게 시작 */
+    { at: 8,  spawn: 780, up: 1200, label: '2단계' },
+    { at: 16, spawn: 620, up: 950,  label: '3단계' },
+    { at: 23, spawn: 500, up: 780,  label: '4단계' }    /* 마지막에만 기존 난이도 */
+  ];
+  var MOLE_CRIES = ['꽥!', '으악!', '꾸엑!', '깨굴!', '아야!'];
+
+  /* 경과 초 -> 단계 인덱스. 순수 함수라 테스트에서 직접 검증한다.
+     ⚠ 예전엔 역순 루프로 훑어서 9초에 4단계가 걸리는 버그가 있었다. */
+  function moleLevelAt(sec) {
+    var want = 0;
+    for (var k = 0; k < MOLE_LEVELS.length; k++) {
+      if (sec >= MOLE_LEVELS[k].at) want = k;
+    }
+    return want;
+  }
+
   function mole(o) {
     var f = make(o.field), score = 0, dead = false;
     var holes = [], timers = [];
+    var elapsed = 0, level = 0;
+
+    function buzz(ms) {
+      try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
+    }
+    function cry(hole) {
+      var c = document.createElement('div');
+      c.className = 'hit-pop';
+      c.textContent = MOLE_CRIES[Math.floor(Math.random() * MOLE_CRIES.length)];
+      c.style.left = hole.style.left;
+      c.style.top = hole.style.top;
+      f.appendChild(c);
+      setTimeout(function () { if (c.parentNode) c.parentNode.removeChild(c); }, 620);
+    }
+
     for (var i = 0; i < 9; i++) {
       var h = document.createElement('div');
       h.className = 'hole';
@@ -40,27 +76,59 @@
       h.style.top = (10 + Math.floor(i / 3) * 30) + '%';
       h.dataset.up = '0';
       (function (el) {
-        el.addEventListener('click', function () {
+        /* click 이 아니라 pointerdown — 두꺼비는 800ms 만에 숨는다. */
+        el.addEventListener('pointerdown', function (ev) {
           if (dead || el.dataset.up !== '1') return;
-          el.dataset.up = '0'; el.className = 'hole'; el.textContent = '';
+          ev.preventDefault();
+          el.dataset.up = '0';
+          el.className = 'hole squish';        /* 납작해지는 연출 */
+          el.textContent = '😖';               /* 잡힌 얼굴 */
+          buzz(30);
+          cry(el);
           score++; o.onScore(score);
+          setTimeout(function () {
+            if (el.dataset.up !== '1') { el.className = 'hole'; el.textContent = ''; }
+          }, 380);
         });
       })(h);
       f.appendChild(h); holes.push(h);
     }
-    var pop = setInterval(function () {
+
+    var pop = null;
+    function schedule() {
+      if (pop) clearInterval(pop);
+      pop = setInterval(function () {
+        if (dead) return;
+        var h = holes[Math.floor(Math.random() * holes.length)];
+        if (h.dataset.up === '1' || h.className.indexOf('squish') >= 0) return;
+        h.dataset.up = '1'; h.className = 'hole up'; h.textContent = '🐸';
+        var t = setTimeout(function () {
+          if (h.dataset.up === '1') { h.dataset.up = '0'; h.className = 'hole'; h.textContent = ''; }
+        }, MOLE_LEVELS[level].up);
+        timers.push(t);
+      }, MOLE_LEVELS[level].spawn);
+    }
+    schedule();
+
+    /* 시간이 지나면 단계가 올라간다.
+       ⚠ 역순 루프 + `elapsed >= at` 은 처음부터 최고 단계가 걸린다
+         (9초에 4단계로 점프하는 버그였다). 조건을 만족하는 **가장 높은**
+         단계를 고르되, 현재 단계보다 높을 때만 올린다. */
+    var lvlTimer = setInterval(function () {
       if (dead) return;
-      var h = holes[Math.floor(Math.random() * holes.length)];
-      if (h.dataset.up === '1') return;
-      h.dataset.up = '1'; h.className = 'hole up'; h.textContent = '🐸';
-      var t = setTimeout(function () {
-        if (h.dataset.up === '1') { h.dataset.up = '0'; h.className = 'hole'; h.textContent = ''; }
-      }, 800);
-      timers.push(t);
-    }, 520);
+      elapsed++;
+      var want = moleLevelAt(elapsed);
+      if (want !== level) {
+        level = want;
+        schedule();
+        if (o.onLevel) o.onLevel(MOLE_LEVELS[level].label);
+      }
+    }, 1000);
 
     function cleanup() {
-      dead = true; clearInterval(pop);
+      dead = true;
+      if (pop) clearInterval(pop);
+      clearInterval(lvlTimer);
       timers.forEach(clearTimeout); timers = [];
       /* 판이 끝났는데 두꺼비가 남아 있으면 아직 잡을 수 있는 것처럼 보인다. */
       holes.forEach(function (h) { h.dataset.up = '0'; h.className = 'hole'; h.textContent = ''; });
@@ -184,9 +252,30 @@
              _shoot: function (ms) { startAt = Date.now() - ms; holding = true; up(); } };
   }
 
-  /* ---------- 공용: 날아가는 표적 맞히기 (비행기 / 까마귀) ---------- */
+  /* ---------- 까마귀 사냥 ----------
+     ⚠ 딸이 폰으로 해보니 "잡히지도 않고 잡혔는지도 모르겠다"고 했다. 원인 3가지:
+       1) click 을 썼다. click 은 손을 **뗄 때** 발생하는데 표적은 33ms 마다
+          움직이므로, 탭하는 사이 표적이 손가락 밑에서 빠져나가 click 이 안 꽂힌다.
+          → pointerdown 으로 바꾼다 (손이 닿는 즉시).
+       2) .target 에 크기가 없어 이모지 글리프(30px 미만)가 곧 히트 영역이었다.
+          손가락 터치는 최소 56~64px 가 필요하다. → CSS 에서 min-width/height 확보.
+       3) 맞아도 💥 를 160ms 만 보여주고 지워 인지가 안 됐다.
+          → 진동 + 죽는 연출 + 점수 팝업을 준다. */
   function flyer(o, emoji, seconds, speedBase) {
     var f = make(o.field), score = 0, dead = false, items = [];
+
+    function buzz(ms) {
+      try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
+    }
+    function popScore(x, y) {
+      var p = document.createElement('div');
+      p.className = 'hit-pop';
+      p.textContent = '+1';
+      p.style.left = x + 'px'; p.style.top = y + 'px';
+      f.appendChild(p);
+      setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, 620);
+    }
+
     var spawn = setInterval(function () {
       if (dead) return;
       var el = document.createElement('div');
@@ -198,15 +287,24 @@
       var speed = speedBase + Math.random() * speedBase;
       el.style.top = y + 'px'; el.style.left = x + 'px';
       if (dir < 0) el.style.transform = 'scaleX(-1)';
-      el.addEventListener('click', function () {
-        if (dead || el.dataset.hit === '1') return;
-        el.dataset.hit = '1';
+
+      var item = { el: el, x: x, dir: dir, speed: speed, hit: false };
+
+      /* pointerdown = 손이 닿는 즉시. click 이면 폰에서 거의 안 맞는다. */
+      el.addEventListener('pointerdown', function (ev) {
+        if (dead || item.hit) return;
+        ev.preventDefault();
+        item.hit = true;
+        item.speed = 0;                    /* 맞으면 그 자리에서 떨어진다 */
         el.textContent = '💥';
+        el.classList.add('dead');          /* 회전하며 추락 + 페이드 */
+        buzz(35);
+        popScore(item.x, parseFloat(el.style.top));
         score++; o.onScore(score);
-        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 160);
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 520);
       });
+
       f.appendChild(el);
-      var item = { el: el, x: x, dir: dir, speed: speed };
       items.push(item);
     }, 620);
 
@@ -216,6 +314,7 @@
       var now = Date.now(), dt = (now - last) / 1000; last = now;
       for (var i = items.length - 1; i >= 0; i--) {
         var it = items[i];
+        if (it.hit) continue;              /* 맞은 놈은 CSS 애니메이션에 맡긴다 */
         it.x += it.dir * it.speed * dt;
         it.el.style.left = it.x + 'px';
         if (it.x < -80 || it.x > f.clientWidth + 80) {
@@ -235,8 +334,8 @@
     return { stop: function () { cleanup(); stopTime(); } };
   }
 
-  function plane(o) { return flyer(o, '✈️', 30, 130); }
-  function crow(o) { return flyer(o, '🐦', 30, 170); }
+  function crow(o) { return flyer(o, '🐦', 30, 150); }
 
-  root.ArcadeGames = { mole: mole, reflex: reflex, arrow: arrow, plane: plane, crow: crow };
+  root.ArcadeGames = { mole: mole, reflex: reflex, arrow: arrow, crow: crow,
+                       _moleLevelAt: moleLevelAt, _MOLE_LEVELS: MOLE_LEVELS };
 })(typeof self !== 'undefined' ? self : this);

@@ -4,7 +4,9 @@ const A = require('../js/arcade-core.js');
 /* 아케이드 공용 엔진: 점수 등급, 최고기록, 도전장 링크, 코인 보상 */
 
 // 1) 게임 목록 — 5종이 등록돼 있어야 한다
-assert.ok(Array.isArray(A.GAMES) && A.GAMES.length >= 5, '미니게임 5종 이상: ' + A.GAMES.length);
+/* 비행기 격추는 까마귀 사냥과 flyer() 를 공유하는 완전 중복이라 삭제했다.
+   숫자를 늘리려고 같은 게임을 이모지만 바꿔 넣지 않는다. */
+assert.ok(Array.isArray(A.GAMES) && A.GAMES.length >= 4, '미니게임 4종 이상: ' + A.GAMES.length);
 A.GAMES.forEach(function (g) {
   assert.ok(g.id && g.name && g.emoji, '게임 메타 누락: ' + JSON.stringify(g));
   assert.ok(typeof g.unit === 'string', '점수 단위 표기 필요: ' + g.id);

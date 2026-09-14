@@ -1,0 +1,83 @@
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.join(__dirname, '..');
+const games = fs.readFileSync(path.join(ROOT, 'js/arcade-games.js'), 'utf8');
+const core = fs.readFileSync(path.join(ROOT, 'js/arcade-core.js'), 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'Sec14_arcade.html'), 'utf8');
+
+/* 딸이 실제 폰으로 해보고 알려준 문제들. 전부 원인이 확인된 것만 단언한다. */
+
+/* --- 1. 비행기와 까마귀가 같은 게임이었다 --- */
+// flyer() 에 이모지만 바꿔 넣은 복제였다. 하나를 지운다.
+assert.ok(!/id: *'plane'/.test(core), '비행기 게임이 아직 목록에 남아 있다 (까마귀와 중복)');
+assert.ok(!/\bplane *:/.test(games), '비행기 게임 함수가 아직 export 되어 있다');
+assert.ok(/id: *'crow'/.test(core), '까마귀 게임은 남아 있어야 한다');
+
+/* --- 2. 까마귀가 실제로 안 잡히던 원인: click 이벤트 --- */
+// 표적은 33ms 마다 움직인다. click 은 손을 뗄 때(touchend) 발생하므로
+// 탭하는 동안 표적이 손가락 밑에서 빠져나가 클릭이 표적에 꽂히지 않는다.
+// pointerdown 은 손이 닿는 즉시 발생하므로 반드시 이걸 써야 한다.
+const flyerBody = /function flyer\(([\s\S]*?)\n  \}/.exec(games);
+assert.ok(flyerBody, 'flyer 함수를 찾을 수 없다');
+assert.ok(/pointerdown/.test(flyerBody[1]),
+  '움직이는 표적에 pointerdown 을 쓰지 않는다 — 폰에서 탭해도 안 잡힌다');
+
+/* --- 3. 잡히는 반경이 너무 좁았다 --- */
+// .target 에 width/height 가 없어서 이모지 글리프 크기(실측 30px 미만)가 곧 히트 영역이었다.
+const targetCss = /\.target\{([^}]*)\}/.exec(html);
+assert.ok(targetCss, '.target CSS 를 찾을 수 없다');
+const tw = /min-width: *(\d+)px/.exec(targetCss[1]);
+const th = /min-height: *(\d+)px/.exec(targetCss[1]);
+assert.ok(tw && Number(tw[1]) >= 56,
+  '까마귀 히트 영역 가로가 너무 좁다 (손가락 터치는 최소 56px 필요): ' + (tw ? tw[1] : '없음'));
+assert.ok(th && Number(th[1]) >= 56,
+  '까마귀 히트 영역 세로가 너무 좁다: ' + (th ? th[1] : '없음'));
+
+/* --- 4. 잡혔는지 알 수 없었다 --- */
+// 💥 를 160ms 만 보여주고 지웠다. 진동 + 죽는 모습 + 점수 표시가 있어야 한다.
+assert.ok(/navigator\.vibrate/.test(games), '맞았을 때 진동이 없다');
+assert.ok(/hit-pop|\.dead|popScore/.test(games), '맞았을 때 시각 피드백(죽는 연출)이 없다');
+assert.ok(/@keyframes/.test(html), '피격 애니메이션 CSS 가 없다');
+
+/* --- 5. 두꺼비가 너무 빠르고 레벨이 없었다 --- */
+// spawn 520ms / 노출 800ms 고정이었다. 쉬운 속도에서 시작해 점점 빨라져야 한다.
+assert.ok(/LEVELS|level/.test(games), '두꺼비에 레벨 개념이 없다');
+const moleBody = /function mole\(([\s\S]*?)\n  \}/.exec(games);
+assert.ok(moleBody, 'mole 함수를 찾을 수 없다');
+const firstSpawn = /spawn: *(\d+)/.exec(games);
+assert.ok(firstSpawn && Number(firstSpawn[1]) >= 800,
+  '1레벨 두꺼비 등장 간격이 너무 빠르다 (처음엔 800ms 이상이어야 한다): ' + (firstSpawn ? firstSpawn[1] : '없음'));
+const firstUp = /up: *(\d+)/.exec(games);
+assert.ok(firstUp && Number(firstUp[1]) >= 1100,
+  '1레벨 두꺼비가 너무 빨리 숨는다 (처음엔 1100ms 이상 떠 있어야 한다): ' + (firstUp ? firstUp[1] : '없음'));
+
+/* --- 6. 두꺼비 웃음 포인트 --- */
+assert.ok(/꽥/.test(games), '두꺼비를 잡아도 "꽥" 같은 웃음 포인트가 없다');
+
+/* --- 6b. 레벨이 순서대로 올라가야 한다 --- */
+/* 실제로 돌려보니 9초에 4단계로 점프했다. 역순 루프가 원인이었다. */
+/* arcade-games.js 는 IIFE 로 전역(root)에 붙는다. require 로는 안 잡히므로
+   전역 객체를 root 로 넘겨 실행한다. */
+const AG = {};
+new Function('self', games)(AG);
+const lv = AG.ArcadeGames._moleLevelAt, LV = AG.ArcadeGames._MOLE_LEVELS;
+assert.ok(typeof lv === 'function', '레벨 계산 함수가 노출되지 않았다');
+assert.strictEqual(lv(0), 0, '시작은 1단계여야 한다');
+assert.strictEqual(lv(5), 0, '5초에도 아직 1단계여야 한다');
+assert.strictEqual(lv(9), 1, '9초에는 2단계여야 한다 (4단계로 점프하면 버그)');
+assert.strictEqual(lv(17), 2, '17초에는 3단계');
+assert.strictEqual(lv(25), 3, '25초에는 4단계');
+// 단계가 올라갈수록 실제로 빨라져야 한다
+for (let i = 1; i < LV.length; i++) {
+  assert.ok(LV[i].spawn < LV[i - 1].spawn, `${i + 1}단계가 더 빨라지지 않는다`);
+  assert.ok(LV[i].up < LV[i - 1].up, `${i + 1}단계 노출시간이 더 짧아지지 않는다`);
+}
+
+/* --- 7. 게임 수가 줄었으니 목록도 맞아야 한다 --- */
+const ids = [...core.matchAll(/id: *'([a-z]+)'/g)].map(m => m[1]);
+assert.strictEqual(ids.length, 4, '게임은 4종이어야 한다 (비행기 삭제): ' + ids.join(','));
+assert.ok(!ids.includes('plane'), '비행기가 남아 있다');
+
+console.log('PASS: 게임 4종, 까마귀 pointerdown+넓은 히트영역, 두꺼비 레벨/피드백');
