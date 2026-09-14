@@ -46,6 +46,71 @@
 
   var EYE_Y = 330, BROW_Y = 282, NOSE_Y = 430, MOUTH_Y = 492;
 
+  /* ------------------------------------------------------------------
+   * 꾸미기 선택지 — 머리 스타일 / 머리 색 / 옷 / 얼굴형
+   * 화면(Sec13_makeup.html)은 이 목록만 보고 버튼을 만든다.
+   * ------------------------------------------------------------------ */
+  var FACE_SHAPES = [
+    { id: 'round', label: '동그란형' },
+    { id: 'oval',  label: '갸름한형' },
+    { id: 'heart', label: '하트형' },
+    { id: 'long',  label: '긴형' }
+  ];
+
+  var HAIR_STYLES = [
+    { id: 'bob',      label: '단발' },
+    { id: 'long',     label: '긴생머리' },
+    { id: 'wave',     label: '웨이브' },
+    { id: 'short',    label: '숏컷' },
+    { id: 'ponytail', label: '포니테일' },
+    { id: 'twintail', label: '양갈래' },
+    { id: 'bun',      label: '올림머리' },
+    { id: 'curly',    label: '곱슬' }
+  ];
+
+  var HAIR_COLORS = [
+    { id: 'black',  label: '흑발',   hex: '#241b19' },
+    { id: 'brown',  label: '갈색',   hex: '#6b4229' },
+    { id: 'blonde', label: '금발',   hex: '#d6a75a' },
+    { id: 'red',    label: '빨강',   hex: '#a8382c' },
+    { id: 'pink',   label: '분홍',   hex: '#e089ac' },
+    { id: 'blue',   label: '파랑',   hex: '#4a6fa8' },
+    { id: 'purple', label: '보라',   hex: '#7a5798' },
+    { id: 'silver', label: '은발',   hex: '#b9bcc4' }
+  ];
+
+  /* 옷: main = 기본 천, trim = 장식·소매, kind = 실루엣 */
+  var OUTFITS = [
+    { id: 'tee',     label: '티셔츠',   kind: 'tee',    main: '#f2a7c3', trim: '#ffffff' },
+    { id: 'dress',   label: '원피스',   kind: 'dress',  main: '#8f7ad6', trim: '#f6e7ff' },
+    { id: 'hoodie',  label: '후드티',   kind: 'hoodie', main: '#5f7f9e', trim: '#dfe9f3' },
+    { id: 'hanbok',  label: '한복',     kind: 'hanbok', main: '#d94f5c', trim: '#f3e3b8' },
+    { id: 'uniform', label: '교복',     kind: 'uniform',main: '#33405e', trim: '#f0f2f7' },
+    { id: 'idol',    label: '무대의상', kind: 'idol',   main: '#1f1b33', trim: '#ffd166' },
+    { id: 'sporty',  label: '운동복',   kind: 'sporty', main: '#2f9e6e', trim: '#ffffff' },
+    { id: 'coat',    label: '코트',     kind: 'coat',   main: '#b3805a', trim: '#e8d7c4' }
+  ];
+
+  var MODES = ['portrait', 'full'];
+
+  var BY = {};
+  [['face', FACE_SHAPES], ['hairStyle', HAIR_STYLES], ['hairColor', HAIR_COLORS], ['outfit', OUTFITS]]
+    .forEach(function (p) { BY[p[0]] = {}; p[1].forEach(function (x) { BY[p[0]][x.id] = x; }); });
+
+  function option(kind, id) { return (BY[kind] || {})[id] || null; }
+
+  /* 전신 모드에서 머리가 차지하는 영역.
+     화장은 얼굴 좌표계로 그려지므로, 전신일 때 어디에 축소해 넣을지 알아야 한다. */
+  /* 머리를 조금 키우고 아래로 내려 목 길이를 줄인다(실측 74px → 약 40px). */
+  var FULL_HEAD = { x: 0.214, y: 0.012, w: 0.572, h: 0.424 };
+
+  function headRect(m, W, H) {
+    W = W || BW; H = H || BH;
+    if (!m || m.mode !== 'full') return { x: 0, y: 0, w: W, h: H };
+    return { x: FULL_HEAD.x * W, y: FULL_HEAD.y * H,
+             w: FULL_HEAD.w * W, h: FULL_HEAD.h * H };
+  }
+
   function shape(m) { return SHAPE[m.face] || SHAPE.round; }
 
   function facePath(ctx, m) {
@@ -129,9 +194,44 @@
     };
   }
 
-  /* ---------- 뒷머리 ---------- */
+  /* ---------- 뒷머리 ----------
+     ⚠ 묶은 머리(포니테일·양갈래·올림머리)는 **뒷머리 실루엣 자체가 달라야** 한다.
+     앞머리만 바꾸고 뒤를 그대로 두면 어떤 스타일을 골라도 똑같아 보인다. */
   function drawHairBack(ctx, m) {
-    ctx.fillStyle = hairGradient(ctx)(m);
+    var fill = hairGradient(ctx)(m);
+    ctx.fillStyle = fill;
+
+    /* 묶은 머리는 머리 덩어리를 먼저 그린다(머리통 뒤로 깔린다) */
+    if (m.hairStyle === 'ponytail') {
+      ctx.beginPath();                                   /* 뒤로 넘긴 꼬리 */
+      ctx.moveTo(408, 250);
+      ctx.bezierCurveTo(486, 268, 508, 380, 486, 486);
+      ctx.bezierCurveTo(474, 552, 452, 590, 430, 612);
+      ctx.quadraticCurveTo(414, 566, 420, 512);
+      ctx.bezierCurveTo(428, 430, 430, 330, 396, 288);
+      ctx.closePath(); ctx.fill();
+    } else if (m.hairStyle === 'twintail') {
+      [[126, -1], [434, 1]].forEach(function (p) {       /* 양쪽 갈래 */
+        var x = p[0], d = p[1];
+        ctx.beginPath();
+        ctx.moveTo(x, 246);
+        ctx.bezierCurveTo(x + d * 62, 268, x + d * 74, 380, x + d * 54, 474);
+        ctx.bezierCurveTo(x + d * 44, 524, x + d * 24, 552, x, 566);
+        ctx.bezierCurveTo(x - d * 18, 520, x - d * 10, 400, x - d * 22, 300);
+        ctx.closePath(); ctx.fill();
+      });
+    } else if (m.hairStyle === 'curly') {
+      for (var c = 0; c < 16; c++) {                     /* 곱슬 뭉치 */
+        var ang = Math.PI * (0.06 + 0.92 * (c / 15));
+        var cx = 280 - Math.cos(ang) * 196, cy = 330 - Math.sin(ang) * 250;
+        ctx.beginPath(); ctx.arc(cx, cy, 56 + (c % 3) * 9, 0, Math.PI * 2); ctx.fill();
+      }
+      for (var c2 = 0; c2 < 8; c2++) {
+        ctx.beginPath();
+        ctx.arc(150 + c2 * 37, 470 + ((c2 % 3) - 1) * 26, 50, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
     ctx.beginPath();
     if (m.hairStyle === 'short') {
       ctx.moveTo(280, 74);
@@ -160,6 +260,28 @@
       ctx.quadraticCurveTo(410, 610, 456, 640);
       ctx.bezierCurveTo(478, 528, 458, 446, 464, 348);
       ctx.bezierCurveTo(474, 210, 432, 66, 280, 66);
+    } else if (m.hairStyle === 'ponytail' || m.hairStyle === 'bun') {
+      /* 묶은 머리는 옆으로 흐르는 머리가 없어 머리통에 붙는다 */
+      ctx.moveTo(280, 72);
+      ctx.bezierCurveTo(158, 72, 116, 194, 122, 306);
+      ctx.bezierCurveTo(126, 368, 146, 402, 162, 424);
+      ctx.lineTo(398, 424);
+      ctx.bezierCurveTo(414, 402, 434, 368, 438, 306);
+      ctx.bezierCurveTo(444, 194, 402, 72, 280, 72);
+    } else if (m.hairStyle === 'twintail') {
+      ctx.moveTo(280, 70);
+      ctx.bezierCurveTo(150, 70, 110, 196, 118, 316);
+      ctx.bezierCurveTo(122, 378, 142, 416, 158, 442);
+      ctx.lineTo(402, 442);
+      ctx.bezierCurveTo(418, 416, 438, 378, 442, 316);
+      ctx.bezierCurveTo(450, 196, 410, 70, 280, 70);
+    } else if (m.hairStyle === 'curly') {
+      ctx.moveTo(280, 78);
+      ctx.bezierCurveTo(152, 78, 112, 200, 120, 320);
+      ctx.bezierCurveTo(126, 396, 148, 440, 166, 468);
+      ctx.lineTo(394, 468);
+      ctx.bezierCurveTo(412, 440, 434, 396, 440, 320);
+      ctx.bezierCurveTo(448, 200, 408, 78, 280, 78);
     } else {
       ctx.moveTo(280, 66);
       ctx.bezierCurveTo(126, 66, 88, 206, 98, 344);
@@ -171,6 +293,28 @@
       ctx.bezierCurveTo(472, 206, 434, 66, 280, 66);
     }
     ctx.closePath(); ctx.fill();
+
+    /* 올림머리 덩어리와 묶음 머리끈은 머리통 위에 얹는다 */
+    if (m.hairStyle === 'bun') {
+      ctx.beginPath(); ctx.ellipse(280, 68, 78, 58, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.globalAlpha = 0.28; ctx.strokeStyle = mix(m.hair, '#ffffff', 0.5);
+      ctx.lineWidth = 3;
+      for (var b = 0; b < 5; b++) {
+        ctx.beginPath(); ctx.ellipse(280, 68, 22 + b * 13, 16 + b * 10, 0, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (m.hairStyle === 'ponytail') {
+      ctx.fillStyle = mix(m.hair, '#000000', 0.35);
+      ctx.beginPath(); ctx.ellipse(404, 262, 20, 15, -0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    if (m.hairStyle === 'twintail') {
+      ctx.fillStyle = mix(m.hair, '#000000', 0.35);
+      ctx.beginPath();
+      ctx.ellipse(140, 258, 17, 13, 0.4, 0, Math.PI * 2);
+      ctx.ellipse(420, 258, 17, 13, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   /* ---------- 귀 ---------- */
@@ -408,6 +552,32 @@
       ctx.quadraticCurveTo(332, 226, 262, 190);
       ctx.quadraticCurveTo(178, 200, 132, 272);
       ctx.quadraticCurveTo(112, 292, 96, 310);
+    } else if (m.hairStyle === 'ponytail' || m.hairStyle === 'bun') {
+      /* 이마를 드러내고 옆으로 빗어 넘긴 앞머리 */
+      ctx.moveTo(122, 300);
+      ctx.bezierCurveTo(124, 152, 190, 72, 280, 72);
+      ctx.bezierCurveTo(376, 72, 440, 156, 438, 300);
+      ctx.quadraticCurveTo(424, 206, 372, 168);
+      ctx.quadraticCurveTo(300, 130, 206, 176);
+      ctx.quadraticCurveTo(152, 212, 122, 300);
+    } else if (m.hairStyle === 'twintail') {
+      ctx.moveTo(118, 306);
+      ctx.bezierCurveTo(120, 150, 190, 70, 280, 70);
+      ctx.bezierCurveTo(378, 70, 442, 154, 442, 306);
+      ctx.quadraticCurveTo(420, 198, 356, 166);
+      ctx.quadraticCurveTo(306, 226, 248, 190);
+      ctx.quadraticCurveTo(174, 200, 138, 268);
+      ctx.quadraticCurveTo(126, 288, 118, 306);
+    } else if (m.hairStyle === 'curly') {
+      /* 곱슬은 직선 대신 둥근 뭉치가 이어지는 실루엣 */
+      ctx.moveTo(120, 312);
+      ctx.bezierCurveTo(122, 156, 192, 78, 280, 78);
+      ctx.bezierCurveTo(374, 78, 440, 158, 440, 312);
+      ctx.quadraticCurveTo(414, 232, 380, 214);
+      ctx.quadraticCurveTo(350, 254, 316, 220);
+      ctx.quadraticCurveTo(286, 258, 250, 216);
+      ctx.quadraticCurveTo(214, 254, 184, 216);
+      ctx.quadraticCurveTo(146, 240, 120, 312);
     } else {
       ctx.moveTo(98, 306);
       ctx.bezierCurveTo(102, 148, 180, 66, 280, 66);
@@ -446,8 +616,376 @@
     ctx.restore();
   }
 
+  /* ------------------------------------------------------------------
+   * 전신 모드 (560 x 980)
+   * 얼굴 좌표계(560x700)와 별개다. 머리는 headRect() 자리에 축소해 끼워 넣고,
+   * 몸·팔·다리·옷은 전신 좌표계로 그린다.
+   * ------------------------------------------------------------------ */
+  var FULL_W = 560, FULL_H = 980;
+
+  var BODY = {
+    /* ⚠ 이 값들은 서로 맞물린다. 목 아래끝(neckBot)이 어깨선(shoulderY)보다
+       위에 있으면 머리가 공중에 떠 보인다. 반드시 어깨가 목을 덮어야 한다.
+       또 팔 중심(armX)은 어깨 반폭(shoulderHalf)보다 안쪽이어야 몸에 붙는다. */
+    neckTop: 352, neckBot: 418,
+    shoulderY: 420, shoulderHalf: 122,
+    chestY: 486, chestHalf: 104,
+    waistY: 578, waistHalf: 82,
+    hipY: 648, hipHalf: 100,
+    kneeY: 796, ankleY: 932, footY: 966,
+    /* ⚠ 팔 바깥끝(armX+armHalf)이 가슴 반폭(chestHalf)을 크게 넘으면
+       팔이 몸통 밖에 붕 뜬 것처럼 보인다. 8px 이내로 유지한다. */
+    armX: 88, armHalf: 23, handY: 652
+  };
+
+  function skinFill(ctx, m, y0, y1) {
+    var g = ctx.createLinearGradient(0, y0, 0, y1);
+    g.addColorStop(0, mix(m.skin, '#ffffff', 0.10));
+    g.addColorStop(0.5, m.skin);
+    g.addColorStop(1, mix(m.skin, m.skinShadow, 0.5));
+    return g;
+  }
+
+  function drawFullBackdrop(ctx, m) {
+    var g = ctx.createLinearGradient(0, 0, 0, FULL_H);
+    g.addColorStop(0, mix(m.bg, '#ffffff', 0.55));
+    g.addColorStop(1, m.bg);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, FULL_W, FULL_H);
+    soft(ctx, 280, 956, 158, 24, 'rgba(96,62,84,.32)', 0.55);   /* 바닥 그림자 */
+  }
+
+  function drawLegs(ctx, m) {
+    ctx.fillStyle = skinFill(ctx, m, BODY.hipY, BODY.footY);
+    [-1, 1].forEach(function (d) {
+      var hx = 280 + d * 44;
+      ctx.beginPath();
+      ctx.moveTo(hx - 42, BODY.hipY - 10);
+      ctx.bezierCurveTo(hx - 46, BODY.kneeY - 70, hx - 32, BODY.kneeY, hx - 27, BODY.kneeY + 14);
+      ctx.bezierCurveTo(hx - 24, BODY.ankleY - 60, hx - 20, BODY.ankleY - 10, hx - 19, BODY.ankleY);
+      ctx.lineTo(hx + 17, BODY.ankleY);
+      ctx.bezierCurveTo(hx + 18, BODY.ankleY - 10, hx + 22, BODY.ankleY - 60, hx + 25, BODY.kneeY + 14);
+      ctx.bezierCurveTo(hx + 30, BODY.kneeY, hx + 40, BODY.kneeY - 70, hx + 38, BODY.hipY - 10);
+      ctx.closePath(); ctx.fill();
+      soft(ctx, hx + d * 8, BODY.kneeY + 6, 26, 40, m.skinShadow, 0.16);
+      soft(ctx, hx - d * 16, BODY.kneeY - 60, 14, 90, m.skinShadow, 0.12);
+    });
+  }
+
+  function drawShoes(ctx, m) {
+    var c = m.outfitTrim || '#ffffff';
+    [-1, 1].forEach(function (d) {
+      var x = 280 + d * 44;
+      ctx.fillStyle = mix(c, '#000000', 0.3);
+      ctx.beginPath();
+      ctx.moveTo(x - 21, BODY.ankleY - 10);
+      ctx.lineTo(x + 19, BODY.ankleY - 10);
+      ctx.quadraticCurveTo(x + 29, BODY.footY - 8, x + 22, BODY.footY);
+      ctx.lineTo(x - 26, BODY.footY);
+      ctx.quadraticCurveTo(x - 32, BODY.footY - 12, x - 21, BODY.ankleY - 10);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = mix(c, '#ffffff', 0.35);
+      ctx.fillRect(x - 25, BODY.footY - 9, 48, 9);
+    });
+  }
+
+  function drawTorso(ctx, m, shoulderY) {
+    ctx.fillStyle = skinFill(ctx, m, shoulderY, BODY.hipY);
+    ctx.beginPath();
+    ctx.moveTo(280 - BODY.shoulderHalf, shoulderY);
+    ctx.quadraticCurveTo(280 - BODY.chestHalf, BODY.chestY, 280 - BODY.waistHalf, BODY.waistY);
+    ctx.quadraticCurveTo(280 - BODY.hipHalf, BODY.hipY - 24, 280 - BODY.hipHalf + 8, BODY.hipY + 18);
+    ctx.lineTo(280 + BODY.hipHalf - 8, BODY.hipY + 18);
+    ctx.quadraticCurveTo(280 + BODY.hipHalf, BODY.hipY - 24, 280 + BODY.waistHalf, BODY.waistY);
+    ctx.quadraticCurveTo(280 + BODY.chestHalf, BODY.chestY, 280 + BODY.shoulderHalf, shoulderY);
+    ctx.quadraticCurveTo(280, shoulderY - 24, 280 - BODY.shoulderHalf, shoulderY);
+    ctx.closePath(); ctx.fill();
+    soft(ctx, 280, BODY.chestY + 10, 60, 46, '#ffffff', 0.10);
+  }
+
+  function drawArms(ctx, m, shoulderY) {
+    ctx.fillStyle = skinFill(ctx, m, shoulderY, BODY.handY);
+    [-1, 1].forEach(function (d) {
+      var ax = 280 + d * BODY.armX, w = BODY.armHalf;
+      ctx.beginPath();
+      ctx.moveTo(ax - w, shoulderY);
+      ctx.bezierCurveTo(ax - w - 3, BODY.chestY, ax - w + 2, BODY.handY - 60, ax - w + 5, BODY.handY);
+      ctx.quadraticCurveTo(ax, BODY.handY + 22, ax + w - 4, BODY.handY);
+      ctx.bezierCurveTo(ax + w - 1, BODY.handY - 60, ax + w + 4, BODY.chestY, ax + w, shoulderY);
+      ctx.closePath(); ctx.fill();
+      soft(ctx, ax + d * 12, BODY.chestY + 60, 10, 110, m.skinShadow, 0.16);
+    });
+  }
+
+  /* 목은 **실제 턱 위치에서** 시작해야 한다.
+     ⚠ neckTop 을 상수로 두면 얼굴형(chin 이 556~602 로 다름)이나 headRect 를
+     건드릴 때마다 머리와 목 사이에 틈이 생긴다. 측정값에서 계산한다. */
+  function chinInFull(m, W, H) {
+    var r = headRect(m, W || FULL_W, H || FULL_H);
+    var s = shape(m);
+    var scaleY = (H || FULL_H) / FULL_H;
+    return (r.y + (s.chin / BH) * r.h) / scaleY;
+  }
+
+  /* 어깨 높이는 얼굴형에 따라 움직여야 한다.
+     ⚠ 상수로 고정하면 턱이 짧은 하트형에서 목이 78px까지 늘어나 기린이 된다.
+     턱에서 일정 거리 아래를 어깨로 잡는다. */
+  var NECK_LEN = 46;
+  function shoulderFor(m, W, H) {
+    return chinInFull(m, W, H) + NECK_LEN;
+  }
+
+  function drawFullNeck(ctx, m, W, H) {
+    var top = chinInFull(m, W, H) - 30;      /* 턱 살짝 위에서 시작해 겹친다 */
+    var shoulderY = shoulderFor(m, W, H);
+    ctx.fillStyle = mix(m.skin, m.skinShadow, 0.36);
+    ctx.beginPath();
+    ctx.moveTo(256, top);
+    ctx.bezierCurveTo(254, top + 28, 250, shoulderY - 12, 246, shoulderY + 18);
+    ctx.quadraticCurveTo(280, shoulderY + 34, 314, shoulderY + 18);
+    ctx.bezierCurveTo(310, shoulderY - 12, 306, top + 28, 304, top);
+    ctx.closePath(); ctx.fill();
+    soft(ctx, 280, top + 20, 44, 22, mix(m.skinShadow, '#6b3f2f', 0.35), 0.45);
+  }
+
+  /* ---------- 옷 ---------- */
+  function bodicePath(ctx, hemY, halfHem, neckDrop, shoulderY) {
+    ctx.beginPath();
+    ctx.moveTo(280 - BODY.shoulderHalf - 6, shoulderY - 2);
+    ctx.quadraticCurveTo(280 - BODY.chestHalf - 7, BODY.chestY, 280 - BODY.waistHalf - 7, BODY.waistY);
+    ctx.quadraticCurveTo(280 - halfHem, hemY - 36, 280 - halfHem, hemY);
+    ctx.quadraticCurveTo(280, hemY + 16, 280 + halfHem, hemY);
+    ctx.quadraticCurveTo(280 + halfHem, hemY - 36, 280 + BODY.waistHalf + 7, BODY.waistY);
+    ctx.quadraticCurveTo(280 + BODY.chestHalf + 7, BODY.chestY, 280 + BODY.shoulderHalf + 6, shoulderY - 2);
+    ctx.quadraticCurveTo(280, shoulderY + (neckDrop || 18), 280 - BODY.shoulderHalf - 6, shoulderY - 2);
+    ctx.closePath();
+  }
+
+  /* 소매 — ⚠ 소매를 팔 위치에만 그리면 몸통 옷과 사이에 살색 틈이 남고,
+     어깨선보다 위에서 시작하면 뿔처럼 솟아 보인다.
+     어깨선에서 시작해 몸통 안쪽까지 한 덩어리로 이어 그린다. */
+  function drawSleeves(ctx, toY, halfW, shoulderY) {
+    [-1, 1].forEach(function (d) {
+      var ax = 280 + d * BODY.armX;
+      var outer = ax + d * halfW;
+      var inner = 280 + d * (BODY.chestHalf - 20);   /* 몸통 안쪽까지 파고든다 */
+      ctx.beginPath();
+      ctx.moveTo(inner, shoulderY - 2);
+      ctx.quadraticCurveTo(ax, shoulderY - 6, outer, shoulderY + 12);
+      ctx.quadraticCurveTo(outer + d * 5, toY - 14, outer - d * 3, toY);
+      ctx.lineTo(ax - d * halfW + d * 3, toY);
+      ctx.quadraticCurveTo(inner - d * 8, toY - 20, inner, shoulderY - 2);
+      ctx.closePath(); ctx.fill();
+    });
+  }
+
+  function skirtPath(ctx, topY, hemY, halfHem) {
+    ctx.beginPath();
+    ctx.moveTo(280 - BODY.hipHalf + 2, topY);
+    ctx.quadraticCurveTo(280 - halfHem + 12, hemY - 46, 280 - halfHem, hemY);
+    ctx.quadraticCurveTo(280, hemY + 26, 280 + halfHem, hemY);
+    ctx.quadraticCurveTo(280 + halfHem - 12, hemY - 46, 280 + BODY.hipHalf - 2, topY);
+    ctx.closePath();
+  }
+
+  function drawPants(ctx, hemY, halfW) {
+    [-1, 1].forEach(function (d) {
+      var hx = 280 + d * 44;
+      ctx.beginPath();
+      ctx.moveTo(hx - 50, BODY.hipY - 18);
+      ctx.lineTo(hx + 46, BODY.hipY - 18);
+      ctx.bezierCurveTo(hx + 42, BODY.kneeY, hx + halfW + 6, hemY - 50, hx + halfW, hemY);
+      ctx.lineTo(hx - halfW + 8, hemY);
+      ctx.bezierCurveTo(hx - halfW - 4, hemY - 50, hx - 46, BODY.kneeY, hx - 50, BODY.hipY - 18);
+      ctx.closePath(); ctx.fill();
+    });
+  }
+
+  function drawOutfit(ctx, m, shoulderY) {
+    var kind = m.outfitKind || 'tee';
+    var main = m.outfitMain || '#f2a7c3';
+    var trim = m.outfitTrim || '#ffffff';
+
+    var g = ctx.createLinearGradient(0, shoulderY - 20, 0, BODY.hipY + 180);
+    g.addColorStop(0, mix(main, '#ffffff', 0.22));
+    g.addColorStop(0.5, main);
+    g.addColorStop(1, mix(main, '#000000', 0.24));
+
+    if (kind === 'dress') {
+      ctx.fillStyle = g;
+      skirtPath(ctx, BODY.waistY, BODY.kneeY + 20, 150); ctx.fill();
+      bodicePath(ctx, BODY.waistY + 8, BODY.waistHalf + 10, 22, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY - 26, 27, shoulderY);
+      ctx.fillStyle = trim;                                    /* 허리 리본 */
+      ctx.fillRect(280 - BODY.waistHalf - 8, BODY.waistY - 12, (BODY.waistHalf + 8) * 2, 20);
+      ctx.beginPath(); ctx.ellipse(280, BODY.waistY - 2, 22, 15, 0, 0, Math.PI * 2); ctx.fill();
+
+    } else if (kind === 'hanbok') {
+      ctx.fillStyle = g;                                       /* 치마: 가슴부터 길게 */
+      skirtPath(ctx, BODY.chestY + 6, BODY.ankleY - 30, 172); ctx.fill();
+      ctx.fillStyle = mix(trim, '#ffffff', 0.25);               /* 저고리 */
+      bodicePath(ctx, BODY.chestY + 12, BODY.chestHalf + 4, 24, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY + 10, 32, shoulderY);
+      ctx.strokeStyle = mix(main, '#000000', 0.2); ctx.lineWidth = 7;  /* 고름 */
+      ctx.beginPath();
+      ctx.moveTo(268, shoulderY + 20); ctx.lineTo(292, BODY.chestY + 4);
+      ctx.lineTo(276, BODY.chestY + 74); ctx.stroke();
+
+    } else if (kind === 'hoodie') {
+      ctx.fillStyle = mix(main, '#000000', 0.12);               /* 바지 */
+      drawPants(ctx, BODY.ankleY - 6, 34);
+      ctx.fillStyle = g;
+      bodicePath(ctx, BODY.hipY + 12, BODY.hipHalf + 4, 16, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.handY - 6, 30, shoulderY);
+      ctx.fillStyle = mix(main, '#000000', 0.2);                /* 후드 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 76, shoulderY + 4);
+      ctx.quadraticCurveTo(280, BODY.neckBot - 30, 280 + 76, shoulderY + 4);
+      ctx.quadraticCurveTo(280, shoulderY + 44, 280 - 76, shoulderY + 4);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = trim; ctx.lineWidth = 6; ctx.lineCap = 'round';  /* 끈 */
+      ctx.beginPath();
+      ctx.moveTo(266, shoulderY + 36); ctx.lineTo(262, BODY.chestY + 30);
+      ctx.moveTo(294, shoulderY + 36); ctx.lineTo(298, BODY.chestY + 30);
+      ctx.stroke();
+
+    } else if (kind === 'uniform') {
+      ctx.fillStyle = mix(main, '#000000', 0.1);                /* 주름치마 */
+      skirtPath(ctx, BODY.waistY + 4, BODY.kneeY - 26, 126); ctx.fill();
+      ctx.save(); skirtPath(ctx, BODY.waistY + 4, BODY.kneeY - 26, 126); ctx.clip();
+      ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 3;
+      for (var i = -5; i <= 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(280 + i * 22, BODY.waistY);
+        ctx.lineTo(280 + i * 27, BODY.kneeY - 20); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = mix(trim, '#ffffff', 0.4);                /* 블라우스 */
+      bodicePath(ctx, BODY.waistY + 10, BODY.waistHalf + 8, 20, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY - 16, 28, shoulderY);
+      ctx.fillStyle = mix(main, '#ffffff', 0.1);                /* 세일러 카라 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 70, shoulderY + 2);
+      ctx.lineTo(280 + 70, shoulderY + 2);
+      ctx.lineTo(280 + 52, BODY.chestY + 4);
+      ctx.lineTo(280, BODY.chestY + 22);
+      ctx.lineTo(280 - 52, BODY.chestY + 4);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#d94f5c';                                /* 리본 타이 */
+      ctx.beginPath(); ctx.ellipse(280, BODY.chestY + 18, 20, 13, 0, 0, Math.PI * 2); ctx.fill();
+
+    } else if (kind === 'idol') {
+      ctx.fillStyle = g;
+      skirtPath(ctx, BODY.waistY + 2, BODY.hipY + 96, 128); ctx.fill();
+      bodicePath(ctx, BODY.waistY + 6, BODY.waistHalf + 8, 26, shoulderY); ctx.fill();
+      drawSleeves(ctx, shoulderY + 44, 28, shoulderY);
+      ctx.fillStyle = trim;                                     /* 금색 장식 */
+      ctx.fillRect(280 - BODY.waistHalf - 8, BODY.waistY - 10, (BODY.waistHalf + 8) * 2, 14);
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      for (var s = 0; s < 14; s++) {
+        var sx = 200 + ((s * 53) % 160), sy = BODY.chestY - 20 + ((s * 37) % 120);
+        ctx.beginPath(); ctx.arc(sx, sy, 3 + (s % 3), 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+
+    } else if (kind === 'sporty') {
+      ctx.fillStyle = mix(main, '#000000', 0.16);
+      drawPants(ctx, BODY.ankleY - 4, 34);
+      ctx.fillStyle = g;
+      bodicePath(ctx, BODY.hipY + 4, BODY.hipHalf, 16, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.handY - 10, 29, shoulderY);
+      ctx.strokeStyle = trim; ctx.lineWidth = 7;                /* 옆라인 */
+      [-1, 1].forEach(function (d) {
+        ctx.beginPath();
+        ctx.moveTo(280 + d * BODY.armX + d * 22, shoulderY + 10);
+        ctx.lineTo(280 + d * BODY.armX + d * 19, BODY.handY - 16); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(280 + d * 84, BODY.hipY + 6);
+        ctx.lineTo(280 + d * 76, BODY.ankleY - 14); ctx.stroke();
+      });
+
+    } else if (kind === 'coat') {
+      ctx.fillStyle = mix(main, '#000000', 0.3);
+      drawPants(ctx, BODY.ankleY - 6, 32);
+      ctx.fillStyle = g;                                        /* 긴 코트 */
+      bodicePath(ctx, BODY.kneeY - 30, 118, 16, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.handY - 4, 31, shoulderY);
+      ctx.strokeStyle = mix(main, '#000000', 0.35); ctx.lineWidth = 4;
+      ctx.beginPath();                                          /* 여밈선 */
+      ctx.moveTo(280, shoulderY + 16); ctx.lineTo(280, BODY.kneeY - 34); ctx.stroke();
+      ctx.fillStyle = trim;                                     /* 라펠 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 56, shoulderY + 4); ctx.lineTo(280, BODY.chestY + 30);
+      ctx.lineTo(280 + 56, shoulderY + 4);
+      ctx.lineTo(280 + 30, shoulderY + 2); ctx.lineTo(280, BODY.chestY - 4);
+      ctx.lineTo(280 - 30, shoulderY + 2); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = mix(trim, '#000000', 0.35);               /* 단추 */
+      [0, 1, 2].forEach(function (i) {
+        ctx.beginPath(); ctx.arc(280, BODY.chestY + 60 + i * 58, 7, 0, Math.PI * 2); ctx.fill();
+      });
+
+    } else {                                                    /* tee */
+      ctx.fillStyle = mix(main, '#000000', 0.22);               /* 반바지 */
+      drawPants(ctx, BODY.kneeY - 40, 40);
+      ctx.fillStyle = g;
+      bodicePath(ctx, BODY.hipY + 6, BODY.hipHalf, 18, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY - 18, 29, shoulderY);
+      ctx.fillStyle = trim;                                     /* 목단 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 40, shoulderY + 2);
+      ctx.quadraticCurveTo(280, shoulderY + 34, 280 + 40, shoulderY + 2);
+      ctx.quadraticCurveTo(280, shoulderY + 18, 280 - 40, shoulderY + 2);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  /* 머리를 전신 캔버스의 제자리에 축소해 그린다 */
+  function drawHeadInto(ctx, m, W, H, features) {
+    var r = headRect(m, W, H);
+    ctx.save();
+    ctx.translate(r.x, r.y);
+    ctx.scale(r.w / BW, r.h / BH);
+    if (features) {
+      var s = shape(m);
+      drawNose(ctx, m);
+      drawEye(ctx, m, 280 - s.eyeGap, -1);
+      drawEye(ctx, m, 280 + s.eyeGap, 1);
+      drawBrow(ctx, m, 280 - s.eyeGap, -1);
+      drawBrow(ctx, m, 280 + s.eyeGap, 1);
+      drawLips(ctx, m);
+      hairFrontPath(ctx, m);
+    } else {
+      drawHairBack(ctx, m);
+      drawEars(ctx, m);
+      drawSkin(ctx, m);
+    }
+    ctx.restore();
+  }
+
+  function drawFull(ctx, m, W, H) {
+    ctx.save();
+    ctx.scale((W || FULL_W) / FULL_W, (H || FULL_H) / FULL_H);
+    var shoulderY = shoulderFor(m, W || FULL_W, H || FULL_H);
+    drawFullBackdrop(ctx, m);
+    drawLegs(ctx, m);
+    drawShoes(ctx, m);
+    /* ⚠ 목 → 몸통 순서. 반대로 그리면 목이 몸통 위에 얹혀 턱과 어깨 사이가
+       끊어져 보인다. 몸통이 목 밑동을 덮어야 이어진 것처럼 읽힌다. */
+    drawFullNeck(ctx, m, W || FULL_W, H || FULL_H);
+    drawTorso(ctx, m, shoulderY);
+    drawArms(ctx, m, shoulderY);
+    drawOutfit(ctx, m, shoulderY);
+    ctx.restore();
+    drawHeadInto(ctx, m, W || FULL_W, H || FULL_H, false);
+  }
+
+  function drawFullFeatures(ctx, m, W, H) {
+    drawHeadInto(ctx, m, W || FULL_W, H || FULL_H, true);
+  }
+
   /* ---------- 전체 ---------- */
   function draw(ctx, m, W, H) {
+    if (m && m.mode === 'full') { drawFull(ctx, m, W, H); return; }
     ctx.save();
     ctx.scale((W || BW) / BW, (H || BH) / BH);
     drawBackdrop(ctx, m);
@@ -460,6 +998,7 @@
 
   /* 메이크업을 올린 뒤 그리는 이목구비 — 색조 위에 선이 살아야 한다 */
   function drawFeatures(ctx, m, W, H) {
+    if (m && m.mode === 'full') { drawFullFeatures(ctx, m, W, H); return; }
     ctx.save();
     ctx.scale((W || BW) / BW, (H || BH) / BH);
     var s = shape(m);
@@ -474,12 +1013,25 @@
   }
 
   function clip(ctx, m, W, H) {
+    if (m && m.mode === 'full') {
+      var r = headRect(m, W, H);
+      ctx.translate(r.x, r.y);
+      ctx.scale(r.w / BW, r.h / BH);
+      facePath(ctx, m);
+      ctx.scale(BW / r.w, BH / r.h);
+      ctx.translate(-r.x, -r.y);
+      return;
+    }
     ctx.scale((W || BW) / BW, (H || BH) / BH);
     facePath(ctx, m);
     ctx.scale(BW / (W || BW), BH / (H || BH));
   }
 
   return { draw: draw, drawFeatures: drawFeatures, clip: clip,
-           BASE_W: BW, BASE_H: BH, SHAPE: SHAPE,
+           headRect: headRect, option: option,
+           FACE_SHAPES: FACE_SHAPES, HAIR_STYLES: HAIR_STYLES,
+           HAIR_COLORS: HAIR_COLORS, OUTFITS: OUTFITS, MODES: MODES,
+           BASE_W: BW, BASE_H: BH, FULL_W: FULL_W, FULL_H: FULL_H, BODY: BODY,
+           NECK_LEN: NECK_LEN, SHAPE: SHAPE,
            EYE_Y: EYE_Y, BROW_Y: BROW_Y, NOSE_Y: NOSE_Y, MOUTH_Y: MOUTH_Y };
 });

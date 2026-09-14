@@ -9,11 +9,59 @@
  *  - value 가 맞으면 목표 진하기와의 차이만큼 감점
  * ------------------------------------------------------------------ */
 (function (root, factory) {
-  var api = factory();
+  var bf = typeof module === 'object' && module.exports ? require('./base-face.js') : root.BaseFace;
+  var api = factory(bf);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.MakeupBattle = api;
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (BF) {
   'use strict';
+
+  /* ---------- 꾸미기(얼굴형·머리·옷) ----------
+     화장과 달리 점수에는 들어가지 않는다. 아이가 원하는 모습을 만드는 부분이다. */
+  var STYLE_DEFAULT = { face: 'round', hairStyle: 'bob', hairColor: 'brown', outfit: 'tee' };
+
+  function styleOptions() {
+    return BF ? { face: BF.FACE_SHAPES, hairStyle: BF.HAIR_STYLES,
+                  hairColor: BF.HAIR_COLORS, outfit: BF.OUTFITS } : null;
+  }
+  function validStyle(kind, id) {
+    var o = styleOptions();
+    if (!o || !o[kind]) return false;
+    for (var i = 0; i < o[kind].length; i++) if (o[kind][i].id === id) return true;
+    return false;
+  }
+  function defaultStyle() {
+    return { face: STYLE_DEFAULT.face, hairStyle: STYLE_DEFAULT.hairStyle,
+             hairColor: STYLE_DEFAULT.hairColor, outfit: STYLE_DEFAULT.outfit };
+  }
+  function normalizeStyle(style) {
+    var src = style || {}, out = defaultStyle();
+    Object.keys(out).forEach(function (k) {
+      if (validStyle(k, src[k])) out[k] = src[k];
+    });
+    return out;
+  }
+
+  /* 베이스 모델 + 사용자가 고른 스타일 => 렌더러가 쓰는 최종 모델 */
+  function resolveModel(baseId, style, mode) {
+    var base = BASE_MODELS[baseId] || BASE_MODELS.soft;
+    var s = normalizeStyle(style);
+    var hairColor = BF && BF.option('hairColor', s.hairColor);
+    var outfit = BF && BF.option('outfit', s.outfit);
+    var m = {};
+    Object.keys(base).forEach(function (k) { m[k] = base[k]; });
+    m.face = s.face;
+    m.hairStyle = s.hairStyle;
+    m.hair = hairColor ? hairColor.hex : base.hair;
+    m.hairColorId = s.hairColor;
+    m.outfitId = s.outfit;
+    m.outfitKind = outfit ? outfit.kind : 'tee';
+    m.outfitMain = outfit ? outfit.main : base.outfit;
+    m.outfitTrim = outfit ? outfit.trim : '#ffffff';
+    m.outfit = m.outfitMain;
+    m.mode = mode === 'full' ? 'full' : 'portrait';
+    return m;
+  }
 
   var OPTIONS = {
     eye:    ['pink', 'brown', 'coral', 'purple'],
@@ -208,11 +256,12 @@
     return (v || '나').slice(0, 12);
   }
 
-  function createChallenge(name, themeId, look, baseId) {
+  function createChallenge(name, themeId, look, baseId, style) {
     var theme = THEMES[themeId] ? themeId : 'cat-idol';
     var clean = normalizeLook(look);
     var base = BASE_MODELS[baseId] ? baseId : 'soft';
-    return { v: 2, name: safeName(name), theme: theme, base: base, look: clean,
+    return { v: 2, name: safeName(name), theme: theme, base: base,
+             style: normalizeStyle(style), look: clean,
              score: scoreLook(theme, clean), created: Date.now() };
   }
 
@@ -245,6 +294,7 @@
   function encodeChallenge(payload) {
     var slim = { v: 2, n: safeName(payload.name), t: payload.theme,
                  b: BASE_MODELS[payload.base] ? payload.base : 'soft',
+                 s: normalizeStyle(payload.style),
                  l: packLook(payload.look), c: payload.created || Date.now() };
     return b64e(JSON.stringify(slim)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
@@ -259,7 +309,8 @@
       var look = unpackLook(o.l);
       /* 점수는 링크를 믿지 않고 look 으로 다시 계산한다. */
       return { v: 2, name: safeName(o.n), theme: o.t,
-               base: BASE_MODELS[o.b] ? o.b : 'soft', look: look,
+               base: BASE_MODELS[o.b] ? o.b : 'soft',
+               style: normalizeStyle(o.s), look: look,
                score: scoreLook(o.t, look), created: Number(o.c) || 0 };
     } catch (e) { return null; }
   }
@@ -274,6 +325,8 @@
     OPTIONS: OPTIONS, LABELS: LABELS, COLORS: COLORS, BASE_MODELS: BASE_MODELS,
     FACE_ZONES: FACE_ZONES, WEIGHTS: WEIGHTS, THEMES: THEMES,
     defaultLook: defaultLook, normalizeLook: normalizeLook,
+    defaultStyle: defaultStyle, normalizeStyle: normalizeStyle,
+    styleOptions: styleOptions, resolveModel: resolveModel,
     scoreBreakdown: scoreBreakdown, scoreLook: scoreLook, verdict: verdict,
     createChallenge: createChallenge, encodeChallenge: encodeChallenge,
     decodeChallenge: decodeChallenge, compare: compare

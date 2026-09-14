@@ -37,6 +37,20 @@
   .privacy{font-size:15px;opacity:.75;text-align:center;margin:9px 0 0}
   @media(max-width:520px){.models{grid-template-columns:repeat(2,1fr)}}
 
+  /* 꾸미기: 얼굴형 / 머리 / 옷 */
+  .style-row{margin-bottom:12px}
+  .style-row h3{font-size:18px;margin:0 0 6px;color:var(--deep)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-family:inherit;font-size:16px;padding:9px 14px;border-radius:999px;cursor:pointer;
+        border:2px solid var(--line);background:#fff;color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
+  .chip .dot{display:inline-block;width:15px;height:15px;border-radius:50%;margin-right:6px;
+             vertical-align:-2px;border:2px solid rgba(0,0,0,.18)}
+  .modes{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+  .modes button{font-family:inherit;font-size:17px;padding:9px 20px;border-radius:999px;cursor:pointer;
+                border:2px solid var(--line);background:#fff;color:var(--ink)}
+  .modes button[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+
   .stage{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px;align-items:start}
   @media (max-width:680px){.stage{grid-template-columns:1fr}}
   .canvas-box{background:var(--soft);border-radius:18px;padding:10px;text-align:center}
@@ -97,7 +111,19 @@
   </div>
 
   <div class="card">
-    <h2>2. 오늘의 주문</h2>
+    <h2>2. 얼굴형·머리·옷 꾸미기</h2>
+    <div class="modes" id="view-mode">
+      <button type="button" data-mode="portrait" aria-pressed="true">🙂 얼굴만</button>
+      <button type="button" data-mode="full" aria-pressed="false">🧍 전신</button>
+    </div>
+    <div class="style-row"><h3>얼굴형</h3><div class="chips" id="face-shapes"></div></div>
+    <div class="style-row"><h3>머리 스타일</h3><div class="chips" id="hair-styles"></div></div>
+    <div class="style-row"><h3>머리 색</h3><div class="chips" id="hair-colors"></div></div>
+    <div class="style-row"><h3>옷 <span style="font-size:14px;opacity:.7">(전신에서 잘 보여요)</span></h3><div class="chips" id="outfits"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>3. 오늘의 주문</h2>
     <div class="order">
       <span class="emoji" id="theme-emoji">🐱</span>
       <span class="name" id="theme-name">고양이상 아이돌</span>
@@ -107,7 +133,7 @@
   </div>
 
   <div class="card">
-    <h2>3. 화장하기 — 색을 고르고 진하기를 조절해요</h2>
+    <h2>4. 화장하기 — 색을 고르고 진하기를 조절해요</h2>
     <div class="stage">
       <div class="canvas-box">
         <canvas id="face-canvas" width="560" height="700"></canvas>
@@ -123,7 +149,7 @@
   </div>
 
   <div class="card hidden" id="result-card">
-    <h2>4. 심사 결과</h2>
+    <h2>5. 심사 결과</h2>
     <p class="score-big" id="score-big">0점</p>
     <p class="verdict" id="verdict"></p>
     <ul class="bars" id="bars"></ul>
@@ -176,7 +202,20 @@
   var $ = function (id) { return document.getElementById(id); };
   var cv = $('face-canvas'), ctx = cv.getContext('2d');
 
-  var state = { theme: 'cat-idol', base: 'soft', look: G.defaultLook(), last: null, challenge: null, coinAwarded: false };
+  var state = { theme: 'cat-idol', base: 'soft', style: G.defaultStyle(), mode: 'portrait',
+                look: G.defaultLook(), last: null, challenge: null, coinAwarded: false };
+
+  /* 렌더러에 넘길 최종 모델 — 베이스 + 고른 얼굴형/머리/옷 + 보기 모드 */
+  function model() { return G.resolveModel(state.base, state.style, state.mode); }
+
+  /* 보기 모드에 맞춰 캔버스 비율을 바꾼다.
+     ⚠ 전신은 560x980 이라 얼굴 모드(560x700) 크기로 그리면 다리가 잘린다. */
+  function sizeCanvas() {
+    var full = state.mode === 'full';
+    cv.width = full ? BF.FULL_W : BF.BASE_W;
+    cv.height = full ? BF.FULL_H : BF.BASE_H;
+    cv.style.maxWidth = full ? '240px' : '280px';
+  }
 
   function shareBase() {
     try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
@@ -191,8 +230,9 @@
     var t = document.createElement('canvas');
     t.width = 148; t.height = 185;
     var tc = t.getContext('2d');
-    BF.draw(tc, m, t.width, t.height);
-    BF.drawFeatures(tc, m, t.width, t.height);
+    var pm = G.resolveModel(m.id, state.style, 'portrait');
+    BF.draw(tc, pm, t.width, t.height);
+    BF.drawFeatures(tc, pm, t.width, t.height);
     return t.toDataURL('image/png');
   }
 
@@ -204,7 +244,8 @@
       b.type = 'button'; b.className = 'model';
       b.setAttribute('aria-pressed', String(id === state.base));
       var img = document.createElement('img');
-      img.className = 'avatar'; img.alt = m.label; img.src = modelThumb(m);
+      img.className = 'avatar'; img.alt = m.label;
+      img.src = modelThumb({ id: id });
       b.appendChild(img);
       b.appendChild(document.createTextNode(m.label));
       b.addEventListener('click', function () {
@@ -213,6 +254,49 @@
       box.appendChild(b);
     });
   }
+
+  /* ---------- 얼굴형 · 머리 · 옷 ---------- */
+  function drawChips(boxId, kind, items, withDot) {
+    var box = $(boxId); box.innerHTML = '';
+    items.forEach(function (it) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip';
+      b.setAttribute('aria-pressed', String(state.style[kind] === it.id));
+      if (withDot) {
+        var dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.style.background = it.hex || it.main;
+        b.appendChild(dot);
+      }
+      b.appendChild(document.createTextNode(it.label));
+      b.addEventListener('click', function () {
+        state.style[kind] = it.id;
+        /* 베이스 썸네일도 바뀐 스타일을 따라가야 고를 때 헷갈리지 않는다 */
+        drawChips(boxId, kind, items, withDot);
+        drawBaseModels();
+        paint(); updateLive();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function drawStyleControls() {
+    var o = G.styleOptions();
+    drawChips('face-shapes', 'face', o.face, false);
+    drawChips('hair-styles', 'hairStyle', o.hairStyle, false);
+    drawChips('hair-colors', 'hairColor', o.hairColor, true);
+    drawChips('outfits', 'outfit', o.outfit, true);
+    [].forEach.call($('view-mode').querySelectorAll('button'), function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode));
+    });
+  }
+
+  [].forEach.call(document.querySelectorAll('#view-mode button'), function (b) {
+    b.addEventListener('click', function () {
+      state.mode = b.dataset.mode;
+      drawStyleControls(); sizeCanvas(); paint();
+    });
+  });
 
   /* ---------- 주제 ---------- */
   function drawThemes() {
@@ -285,7 +369,7 @@
      순서: 베이스 피부 → 화장(피부 클리핑) → 이목구비·머리 덮어 그리기.
      이목구비를 화장보다 나중에 그려야 아이라인·입술선이 색조에 묻히지 않는다. */
   function paint() {
-    var W = cv.width, H = cv.height, m = G.BASE_MODELS[state.base] || G.BASE_MODELS.soft;
+    var W = cv.width, H = cv.height, m = model();
     ctx.clearRect(0, 0, W, H);
     BF.draw(ctx, m, W, H);
 
@@ -317,7 +401,7 @@
 
   /* 상태를 코드로 바꾼 뒤(랜덤·리셋·도전장) 조절판을 다시 그려 맞춘다.
      안 하면 그림과 점수는 바뀌었는데 버튼·게이지는 옛 값을 보여 준다. */
-  function syncAll() { drawControls(); paint(); updateLive(); }
+  function syncAll() { drawStyleControls(); sizeCanvas(); drawControls(); paint(); updateLive(); }
 
   /* ---------- 심사 ---------- */
   function judge() {
@@ -393,7 +477,8 @@
   $('make-challenge').addEventListener('click', function () {
     if (!state.last) return;
     var name = prompt('도전자 이름을 정해주세요', '나') || '나';
-    var token = G.encodeChallenge(G.createChallenge(name, state.theme, state.look, state.base));
+    var token = G.encodeChallenge(
+      G.createChallenge(name, state.theme, state.look, state.base, state.style));
     $('link-out').value = location.href.split(/[?#]/)[0] + '?battle=' + token;
     $('link-card').classList.remove('hidden');
     $('link-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -447,6 +532,7 @@
   /* 처음부터 다시 하기 */
   $('reset-all').addEventListener('click', function () {
     state.look = G.defaultLook(); state.last = null; state.base = 'soft'; state.coinAwarded = false;
+    state.style = G.defaultStyle(); state.mode = 'portrait';
     if (!state.challenge) state.theme = 'cat-idol';
     $('result-card').classList.add('hidden');
     $('battle-card').classList.add('hidden');
@@ -463,6 +549,8 @@
       var c = G.decodeChallenge(m[1]);
       if (c) {
         state.challenge = c; state.theme = c.theme; state.base = c.base || 'soft';
+        /* 친구가 꾸민 모습 그대로 이어서 시작한다 */
+        if (c.style) state.style = G.normalizeStyle(c.style);
         $('challenge-card').classList.remove('hidden');
         $('challenge-text').textContent = c.name + '님이 ' + G.THEMES[c.theme].label +
           ' 주제로 ' + c.score + '점을 받았어요. 베이스 모델을 꾸며서 이겨보세요!';
