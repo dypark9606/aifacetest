@@ -31,14 +31,24 @@ assert.ok(sizeMatch, 'a 에 font-size 가 직접 지정돼야 한다');
 const cssPx = parseFloat(sizeMatch[1]) * ROOT_PX;
 const onScreenPx = cssPx * scale;
 
-/* 기준: 배포된 v13(2.1.2) 앱은 li 2rem(20px) 을 a 가 상속했다. */
+/* 기준: 배포된 v13(2.1.2) 앱은 li 2rem(20px) 을 a 가 상속했다.
+   ⚠ 사용자 판정 이력 (화면 표시 기준):
+       13.0px(20px) "너무 작다"
+       18.2px(28px) "적정"        <- 지금 목표
+       22.1px(34px, 한 줄 4개) "너무 크다"
+   위아래 양쪽을 다 막아야 한다. 크기만 키우다 두 번 되돌렸다. */
 const V13_CSS_PX = 20;
 const v13OnScreen = V13_CSS_PX * scale;
+const MIN_ON_SCREEN = 17.0;   // 이보다 작으면 "작다" 소리를 듣는다
+const MAX_ON_SCREEN = 20.0;   // 이보다 크면 "너무 크다" 소리를 듣는다
 
 assert.ok(cssPx > V13_CSS_PX,
   `탭 글자가 v13(${V13_CSS_PX}px)보다 작거나 같다: ${cssPx}px`);
-assert.ok(onScreenPx >= v13OnScreen * 1.5,
-  `화면 기준으로 v13(${v13OnScreen.toFixed(1)}px)보다 충분히 크지 않다: ${onScreenPx.toFixed(1)}px`);
+assert.ok(onScreenPx >= MIN_ON_SCREEN,
+  `화면 글자가 너무 작다: ${onScreenPx.toFixed(1)}px (최소 ${MIN_ON_SCREEN}px)`);
+assert.ok(onScreenPx <= MAX_ON_SCREEN,
+  `화면 글자가 너무 크다: ${onScreenPx.toFixed(1)}px (최대 ${MAX_ON_SCREEN}px) — ` +
+  `34px/한줄4개가 "너무 크다" 판정을 받았다`);
 
 // 칸 폭: 한 줄에 몇 개인지가 글자 크기의 상한이다
 // ⚠ li 규칙이 여러 개로 나뉘어 있을 수 있다. width 를 지정한 블록을 찾아야 한다.

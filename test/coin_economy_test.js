@@ -14,12 +14,13 @@ assert.deepStrictEqual(d, { granted: 100, balance: 100 });
 assert.deepStrictEqual(W.ensureDaily('2026-09-13'), { granted: 0, balance: 100 });
 assert.deepStrictEqual(W.ensureDaily('2026-09-14'), { granted: 100, balance: 200 });
 
-// 한 판 10코인. 잔액이 부족하면 시작할 수 없다.
-assert.strictEqual(W.GAME_COST, 10);
-assert.strictEqual(W.spend(W.GAME_COST), 190);
-W._setCoins(9);
+// 한 판 5코인. 잔액이 부족하면 시작할 수 없다.
+// (10코인은 하루 10판이라 아이가 금방 소진했다 — 사용자 요청으로 5코인으로 내림)
+assert.strictEqual(W.GAME_COST, 5);
+assert.strictEqual(W.spend(W.GAME_COST), 195);
+W._setCoins(4);
 assert.strictEqual(W.spend(W.GAME_COST), false);
-assert.strictEqual(W.getCoins(), 9);
+assert.strictEqual(W.getCoins(), 4);
 
 // 실력 보상: C < B < A < S, 신기록은 추가 보너스.
 assert.deepStrictEqual(['C','B','A','S'].map(t => W.gameReward(t, false)), [2,6,12,20]);

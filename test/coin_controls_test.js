@@ -21,3 +21,20 @@ assert.ok(read('js/mbti_quiz.js').includes('rewardAnalysis'), 'MBTI 완료 보�
 assert.ok(read('Sec13_makeup.html').includes("rewardAnalysis('makeup')"), '메이크업 완료 보상');
 
 console.log('PASS: coin economy wired into games and every analysis tab');
+
+/* 코인이 부족할 때, 얼굴 테스트를 하면 코인을 받는다는 걸 명시해야 한다.
+   "친구에게 요청"만 안내하면 아이는 코인을 스스로 벌 방법을 모른다.
+   ⚠ 문구가 '...'+A.GAME_COST+'...' 처럼 끊겨 있어 한 따옴표 덩어리만 보면 안 된다.
+      showCoinCard 호출 전체(닫는 괄호까지)를 잡아서 검사한다. */
+const lackCall = /showCoinCard\('🪙 코인이 부족해요',([\s\S]*?)\);/.exec(arcade);
+assert.ok(lackCall, '코인 부족 안내 문구를 찾을 수 없다');
+assert.ok(/얼굴 ?테스트|분석/.test(lackCall[1]),
+  '코인 부족 문구가 얼굴 테스트로 코인을 벌 수 있다고 안내하지 않는다');
+assert.ok(/ANALYSIS_REWARD/.test(lackCall[1]),
+  '분석 보상 액수를 상수로 안내해야 한다 (하드코딩하면 값이 어긋난다)');
+
+/* 한 판 값은 HTML 에 박아두지 말고 상수에서 그려야 한다.
+   실제로 10 -> 5 로 내렸을 때 "한 판 10코인" 안내가 그대로 남았다. */
+assert.ok(/cost-lead'\)\.textContent\s*=[\s\S]{0,80}GAME_COST/.test(arcade),
+  '한 판 값 안내가 A.GAME_COST 로 그려지지 않는다 (하드코딩 위험)');
+console.log('PASS: 코인 부족 시 얼굴 테스트 보상 안내');

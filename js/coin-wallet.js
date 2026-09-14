@@ -8,7 +8,9 @@
   else root.CoinWallet = api;
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  var DAILY_COINS = 100, GAME_COST = 10, ANALYSIS_REWARD = 5, GIFT_AMOUNT = 30;
+  /* GAME_COST: 한 판 값. 10 이면 하루 지급 100 으로 10판뿐이라 아이가 금방
+     소진했다 → 5 로 내려 하루 20판. 바꿀 땐 coin_economy_test.js 도 같이 본다. */
+  var DAILY_COINS = 100, GAME_COST = 5, ANALYSIS_REWARD = 5, GIFT_AMOUNT = 30;
   var STORE = null;
 
   function store() {

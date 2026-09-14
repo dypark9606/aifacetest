@@ -95,9 +95,9 @@
 <body>
 <div class="wrap">
   <h1>🕹️ 얼굴상 오락실</h1>
-  <p class="lead">한 판 10코인! 잘할수록 코인을 더 받아요</p>
+  <p class="lead" id="cost-lead">한 판 5코인! 잘할수록 코인을 더 받아요</p>
   <p class="coins">🪙 내 코인 <b id="coin-count">0</b></p>
-  <p class="economy">매일 첫 접속 +100 · C급 +2 · B급 +6 · A급 +12 · S급 +20 · 신기록 +5</p>
+  <p class="economy">매일 첫 접속 +100 · 얼굴 테스트 1회 +5 · C급 +2 · B급 +6 · A급 +12 · S급 +20 · 신기록 +5</p>
   <p class="notice hidden" id="daily-notice"></p>
   <div class="actions" style="margin:0 0 12px"><button class="btn coin" id="ask-coins">🎁 친구에게 코인 받기</button></div>
 
@@ -250,6 +250,10 @@
     $('hud-level-wrap').classList.add('hidden');
     $('hud-level').textContent = '1단계';
     $('coin-count').textContent = A.getCoins();
+    /* ⚠ 한 판 값을 HTML 에 하드코딩하면 상수를 바꿔도 안내가 옛 값으로 남는다.
+       (실제로 10 -> 5 로 내렸을 때 "한 판 10코인" 이 그대로 있었다) */
+    $('cost-lead').textContent =
+      '한 판 ' + A.GAME_COST + '코인! 잘할수록 코인을 더 받아요';
   }
 
   function drawBoard() {
@@ -296,7 +300,8 @@
   function start() {
     if (state.running) return;
     if (A.spendGame() === false) {
-      showCoinCard('🪙 코인이 부족해요', '한 판에 '+A.GAME_COST+'코인이 필요합니다. 친구에게 30코인을 요청해 보세요.', false);
+      showCoinCard('🪙 코인이 부족해요',
+        '한 판에 '+A.GAME_COST+'코인이 필요합니다. 위쪽 탭에서 얼굴 테스트(외모점수·동물상·사주·MBTI 등)를 하면 한 번에 '+A.ANALYSIS_REWARD+'코인을 받아요. 친구에게 30코인을 요청할 수도 있어요.', false);
       drawHud(); return false;
     }
     $('coin-card').classList.add('hidden');
