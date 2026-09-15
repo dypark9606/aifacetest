@@ -70,7 +70,41 @@
   .reflex-pad.wait{background:#8a2036}.reflex-pad.go{background:#1a7a4a}
   .bar{position:absolute;left:8%;right:8%;bottom:22px;height:26px;border-radius:99px;background:#2b2559;overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#25d07a,#ffd166,#ff4d6d)}
-  .boards{position:absolute;left:0;right:0;top:40px;text-align:center;font-size:30px;letter-spacing:4px}
+  /* 판자 뚫기 무대: 나무판 4장을 세로로 세워 나란히 놓는다 */
+  .boards{position:absolute;left:0;right:0;top:56px;height:150px;
+          display:flex;align-items:center;justify-content:center;gap:15px}
+  .plank{position:relative;width:26px;height:118px;border-radius:4px;
+         background:linear-gradient(180deg,#c98d4e,#9c6330);
+         box-shadow:inset 0 0 0 2px rgba(0,0,0,.22), 0 4px 10px rgba(0,0,0,.35)}
+  /* 나뭇결 */
+  .plank::after{content:'';position:absolute;inset:6px 4px;border-radius:2px;
+                background:repeating-linear-gradient(180deg,
+                  rgba(0,0,0,.10) 0 2px, transparent 2px 13px)}
+  /* 쪼개진 판자: 위아래 두 조각이 갈라져 날아간다 */
+  .plank-top,.plank-bot{position:absolute;left:0;right:0;border-radius:4px;
+        background:linear-gradient(180deg,#c98d4e,#9c6330);opacity:0}
+  .plank-top{top:0;height:50%}
+  .plank-bot{bottom:0;height:50%}
+  .plank.broken{background:transparent;box-shadow:none}
+  .plank.broken::after{opacity:0}
+  .plank.broken .plank-top{opacity:1;animation:plankbreak .42s ease-out forwards}
+  .plank.broken .plank-bot{opacity:1;animation:plankbreak .42s ease-out forwards;
+                           animation-direction:reverse}
+  @keyframes plankbreak{
+    0%{transform:translateY(0) rotate(0);opacity:1}
+    100%{transform:translateY(-58px) rotate(-38deg);opacity:0}
+  }
+  /* 날아가는 화살.
+     ⚠ top 을 임의 고정값으로 두면 판자 높이를 바꿀 때 화살이 판자를 비켜 간다.
+     .boards(top:56px, height:150px)의 세로 중앙 = 56 + 75 = 131px 에 맞춘다.
+     transform:translateY(-50%) 로 글리프 중심을 그 선에 올린다. */
+  .arrow-fly{position:absolute;left:2%;top:131px;font-size:30px;z-index:6;
+             pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+  @keyframes arrowfly{
+    0%{transform:translate(0,-50%) scale(.85);opacity:0}
+    12%{opacity:1}
+    100%{transform:translate(var(--dist,50%),-50%) scale(1.05);opacity:1}
+  }
 
   .actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:10px}
   .btn{font-family:inherit;font-size:19px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;

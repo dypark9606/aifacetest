@@ -188,12 +188,28 @@
     return { stop: function () { dead = true; clearTimeout(waitT); } };
   }
 
-  /* ---------- 3) 화살 판자 뚫기 (누르고 있다 떼는 힘) ---------- */
+  /* ---------- 화살 판자 뚫기 ----------
+     기존엔 🎯 이모지를 관통 수만큼 늘어놓을 뿐이라 "뚫었다"는 맛이 없었다.
+     이제 판자 4장을 실제로 세워두고, 화살이 왼쪽에서 날아와
+     뚫린 장수만큼만 판자가 쪼개지도록 한다. */
+  var PLANKS = 4;                    /* 한 발에 최대 4장 */
+
   function arrow(o) {
     var f = make(o.field), dead = false, shots = 0, total = 0, TOTAL = 3;
-    var boards = document.createElement('div');
-    boards.className = 'boards';
-    f.appendChild(boards);
+
+    /* 판자 4장을 세운다 */
+    var stage = document.createElement('div');
+    stage.className = 'boards';
+    var planks = [];
+    for (var i = 0; i < PLANKS; i++) {
+      var p = document.createElement('div');
+      p.className = 'plank';
+      p.innerHTML = '<span class="plank-top"></span><span class="plank-bot"></span>';
+      stage.appendChild(p);
+      planks.push(p);
+    }
+    f.appendChild(stage);
+
     var bar = document.createElement('div');
     bar.className = 'bar'; bar.innerHTML = '<i></i>';
     f.appendChild(bar);
@@ -203,6 +219,41 @@
     msg.textContent = '화면을 누르고 있다가 떼세요';
     f.appendChild(msg);
     f.classList.add('tap');
+
+    function resetPlanks() {
+      planks.forEach(function (p) { p.className = 'plank'; });
+    }
+
+    function buzz(ms) {
+      try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
+    }
+
+    /* 화살이 날아가 n 장을 차례로 뚫는다 */
+    function flyArrow(n, done) {
+      var a = document.createElement('div');
+      a.className = 'arrow-fly';
+      a.textContent = '🏹';
+      f.appendChild(a);
+      /* 관통 장수에 따라 날아가는 거리가 달라진다 */
+      var dist = n > 0 ? (18 + n * 19) : 30;
+      a.style.setProperty('--dist', dist + '%');
+      a.style.animation = 'arrowfly .5s cubic-bezier(.2,.7,.3,1) forwards';
+
+      /* 판자를 하나씩 차례로 깬다 — 동시에 깨면 관통이 아니라 폭발로 보인다 */
+      for (var k = 0; k < n; k++) {
+        (function (idx) {
+          setTimeout(function () {
+            if (!planks[idx]) return;
+            planks[idx].className = 'plank broken';
+            buzz(18);
+          }, 120 + idx * 95);
+        })(k);
+      }
+      setTimeout(function () {
+        if (a.parentNode) a.parentNode.removeChild(a);
+        if (done) done();
+      }, 140 + n * 95 + 320);
+    }
 
     /* ⚠ 게이지를 타이머 누적으로 계산하면 안 된다. 탭이 가려지거나 iframe 이
        화면 밖이면 브라우저가 타이머를 늦춰(throttle) 게이지가 거의 0 인 채로
@@ -235,12 +286,25 @@
       /* 100%에 가까울수록 많이 뚫린다 — 최대 4장/발 */
       var pierced = Math.max(0, Math.round(power / 25));
       total += pierced; shots++;
-      boards.textContent = new Array(pierced + 1).join('🎯') || '💨';
-      msg.textContent = pierced ? pierced + '장 관통!' : '빗나감!';
-      o.onScore(total);
-      o.onTime((TOTAL - shots) + '발 남음');
-      if (shots >= TOTAL) { dead = true; setTimeout(function () { o.onEnd(total); }, 500); }
-      else setTimeout(function () { if (!dead) { fill.style.width = '0'; msg.textContent = '누르고 있다가 떼세요'; } }, 700);
+      msg.textContent = '슝—';
+
+      flyArrow(pierced, function () {
+        msg.textContent = pierced ? pierced + '장 관통! 💥' : '빗나감! 💨';
+        o.onScore(total);
+        o.onTime((TOTAL - shots) + '발 남음');
+        if (shots >= TOTAL) {
+          dead = true;
+          setTimeout(function () { o.onEnd(total); }, 600);
+        } else {
+          setTimeout(function () {
+            if (!dead) {
+              fill.style.width = '0';
+              resetPlanks();
+              msg.textContent = '누르고 있다가 떼세요';
+            }
+          }, 800);
+        }
+      });
     }
 
     f.addEventListener('mousedown', down); f.addEventListener('mouseup', up);

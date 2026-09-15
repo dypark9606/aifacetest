@@ -81,3 +81,16 @@ assert.strictEqual(ids.length, 4, '게임은 4종이어야 한다 (비행기 삭
 assert.ok(!ids.includes('plane'), '비행기가 남아 있다');
 
 console.log('PASS: 게임 4종, 까마귀 pointerdown+넓은 히트영역, 두꺼비 레벨/피드백');
+
+/* --- 8. 판자 뚫기에 실제 관통 연출이 있어야 한다 ---
+   기존엔 🎯 이모지를 관통 수만큼 나열할 뿐이라 "뚫렸다"는 느낌이 없었다.
+   판자 4장을 세워두고, 화살이 날아가, 뚫린 판자만 부서져야 한다. */
+assert.ok(/plank|board-col/.test(games), '판자를 개별 요소로 세우지 않는다');
+assert.ok(/arrow-fly|flyArrow/.test(games), '화살이 날아가는 연출이 없다');
+assert.ok(/broken|\.hit\b/.test(games), '뚫린 판자 표시가 없다');
+assert.ok(/@keyframes\s+arrowfly/.test(html), '화살 비행 애니메이션 CSS 가 없다');
+assert.ok(/@keyframes\s+plankbreak/.test(html), '판자 파괴 애니메이션 CSS 가 없다');
+assert.ok(/\.plank\b/.test(html), '판자 CSS 가 없다');
+/* 뚫린 장수와 화면에 부서지는 판자 수가 같아야 한다 */
+assert.ok(/pierced/.test(games), '관통 장수 계산이 사라졌다');
+console.log('PASS: 판자 관통 연출 (화살 비행 + 판자 파괴)');
