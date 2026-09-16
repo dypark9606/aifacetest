@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>내 얼굴 메이크업</title>
+<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root{--pink:#ff6b9d;--deep:#c2185b;--soft:#fff0f6;--line:#f3c6da;--ink:#3a2b33;--gold:#f5a623}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0 0 40px;font-family:'Jua',-apple-system,'Malgun Gothic',sans-serif;
+       background:linear-gradient(180deg,#fff7fb 0%,#ffeef6 100%);color:var(--ink)}
+  .wrap{max-width:780px;margin:0 auto;padding:14px}
+  h1{font-size:33px;text-align:center;margin:8px 0 2px;color:var(--deep)}
+  .lead{text-align:center;font-size:18px;margin:0 0 12px;opacity:.85}
+
+  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:15px;margin-bottom:14px;
+        box-shadow:0 6px 18px rgba(194,24,91,.08)}
+  .card h2{font-size:23px;margin:0 0 10px;color:var(--deep)}
+
+  /* 사진 넣는 자리 */
+  .drop{border:3px dashed var(--line);border-radius:18px;background:#fffafc;
+        min-height:170px;display:flex;align-items:center;justify-content:center;
+        flex-direction:column;gap:6px;cursor:pointer;text-align:center;padding:16px}
+  .drop .plus{font-size:46px;color:var(--pink);line-height:1}
+  .drop .hint{font-size:17px;opacity:.8}
+  .drop.busy{opacity:.6}
+  #file{display:none}
+  .status{font-size:17px;text-align:center;margin:10px 0 0;min-height:24px}
+  .status.bad{color:#c62828}
+
+  /* 결과 캔버스 */
+  .stage{position:relative;text-align:center;margin-top:12px}
+  #out{max-width:100%;border-radius:16px;border:3px solid #fff;
+       box-shadow:0 6px 20px rgba(80,30,55,.18);display:none}
+  .compare{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+  .compare button{font-family:inherit;font-size:17px;padding:9px 16px;border-radius:999px;
+    border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  .compare button[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
+
+  /* 화장품 고르기 */
+  .part{border-top:2px dashed var(--line);padding-top:12px;margin-top:12px}
+  .part:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .part h3{font-size:19px;margin:0 0 8px;color:var(--deep)}
+  .shelf{display:flex;flex-wrap:wrap;gap:8px}
+  .item{font-family:inherit;font-size:16px;padding:8px 13px;border-radius:999px;
+        border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
+        display:flex;align-items:center;gap:7px}
+  .item .dot{width:19px;height:19px;border-radius:50%;border:2px solid rgba(0,0,0,.12);display:inline-block}
+  .item[aria-pressed="true"]{border-color:var(--deep);background:var(--soft);font-weight:bold}
+  .slider{display:flex;align-items:center;gap:10px;margin-top:9px}
+  .slider label{font-size:17px;white-space:nowrap}
+  .slider input{flex:1;accent-color:var(--pink)}
+  .slider .val{font-size:17px;color:var(--deep);min-width:52px;text-align:right}
+
+  .actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:13px}
+  .btn{font-family:inherit;font-size:19px;padding:12px 20px;border-radius:999px;border:0;
+       background:var(--pink);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(255,107,157,.4)}
+  .btn.sub{background:#fff;color:var(--deep);border:2px solid var(--line);box-shadow:none}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+
+  .why{background:var(--soft);border-radius:14px;padding:12px;margin-top:11px}
+  .why li{font-size:17px;margin:5px 0}
+  .privacy{font-size:15px;opacity:.75;text-align:center;margin:10px 0 0;line-height:1.5}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💄 내 얼굴 메이크업</h1>
+  <p class="lead">내 사진에 직접 발라 보고, 나한테 어울리는 색을 찾아요!</p>
+
+  <div class="card">
+    <h2>1. 내 사진 넣기</h2>
+    <label class="drop" id="drop" for="file">
+      <span class="plus">＋</span>
+      <span class="hint">정면으로 크게 나온 사진일수록 잘 맞아요</span>
+    </label>
+    <input type="file" id="file" accept="image/*" />
+    <p class="status" id="status"></p>
+    <p class="privacy">
+      🔒 사진은 <b>이 기기 밖으로 나가지 않아요.</b> 서버로 보내지 않고 브라우저 안에서만 처리하고,
+      화면을 닫으면 사라져요.
+    </p>
+  </div>
+
+  <div class="card hidden" id="stage-card">
+    <h2>2. 발라 보기</h2>
+    <div class="stage">
+      <canvas id="out"></canvas>
+      <div class="compare">
+        <button type="button" id="cmp-after" aria-pressed="true">💄 화장 후</button>
+        <button type="button" id="cmp-before" aria-pressed="false">🙂 원본</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="suggest">✨ 나에게 어울리는 화장 추천</button>
+    </div>
+    <div class="why hidden" id="why-box">
+      <ul id="why-list" style="margin:0;padding-left:20px"></ul>
+    </div>
+  </div>
+
+  <div class="card hidden" id="shelf-card">
+    <h2>3. 화장품 고르기</h2>
+    <div id="shelf"></div>
+    <div class="actions">
+      <button class="btn sub" id="reset">↩️ 민낯으로</button>
+      <button class="btn" id="save">💾 사진 저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/facemesh.js"></script>
+<script src="js/photo-makeup.js"></script>
+<script>
+(function () {
+  'use strict';
+  var PM = window.PhotoMakeup, FM = window.FM;
+  function $(id) { return document.getElementById(id); }
+
+  var state = { res: null, look: PM.defaultLook(), showBefore: false };
+
+  /* ---------- 상태 메시지 ---------- */
+  function status(msg, bad) {
+    var el = $('status');
+    el.textContent = msg || '';
+    el.classList.toggle('bad', !!bad);
+  }
+
+  /* ---------- 화장품 진열대 ---------- */
+  function buildShelf() {
+    var box = $('shelf');
+    box.innerHTML = '';
+    PM.PARTS.forEach(function (part) {
+      var wrap = document.createElement('div');
+      wrap.className = 'part';
+      var h = document.createElement('h3');
+      h.textContent = part.label;
+      wrap.appendChild(h);
+
+      if (part.kind === 'color') {
+        var shelf = document.createElement('div');
+        shelf.className = 'shelf';
+        PM.PRODUCTS[part.key].forEach(function (p) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'item';
+          b.dataset.part = part.key;
+          b.dataset.value = p.id;
+          b.setAttribute('aria-pressed', String(state.look[part.key].value === p.id));
+          var dot = document.createElement('span');
+          dot.className = 'dot';
+          dot.style.background = p.hex;
+          b.appendChild(dot);
+          b.appendChild(document.createTextNode(p.label));
+          b.addEventListener('click', function () {
+            state.look[part.key].value = p.id;
+            syncShelf();
+            paint();
+          });
+          shelf.appendChild(b);
+        });
+        wrap.appendChild(shelf);
+      }
+
+      /* 진하기(또는 강도) 슬라이더는 모든 부위에 있다 */
+      var row = document.createElement('div');
+      row.className = 'slider';
+      var lab = document.createElement('label');
+      lab.textContent = part.kind === 'amount' ? '강도' : '진하기';
+      var inp = document.createElement('input');
+      inp.type = 'range'; inp.min = 0; inp.max = 100;
+      inp.value = state.look[part.key].level;
+      inp.dataset.part = part.key;
+      var val = document.createElement('span');
+      val.className = 'val';
+      val.textContent = state.look[part.key].level + '%';
+      inp.addEventListener('input', function () {
+        state.look[part.key].level = Number(inp.value);
+        val.textContent = inp.value + '%';
+        paint();
+      });
+      row.appendChild(lab); row.appendChild(inp); row.appendChild(val);
+      wrap.appendChild(row);
+      box.appendChild(wrap);
+    });
+  }
+
+  function syncShelf() {
+    document.querySelectorAll('#shelf .item').forEach(function (b) {
+      b.setAttribute('aria-pressed',
+        String(state.look[b.dataset.part].value === b.dataset.value));
+    });
+    document.querySelectorAll('#shelf input[type=range]').forEach(function (r) {
+      r.value = state.look[r.dataset.part].level;
+      var v = r.parentNode.querySelector('.val');
+      if (v) v.textContent = r.value + '%';
+    });
+  }
+
+  /* ---------- 그리기 ---------- */
+  function paint() {
+    if (!state.res) return;
+    var cv = $('out');
+    if (state.showBefore) {
+      cv.width = state.res.canvas.width;
+      cv.height = state.res.canvas.height;
+      cv.getContext('2d').drawImage(state.res.canvas, 0, 0);
+    } else {
+      PM.render(cv, state.res, state.look);
+    }
+    cv.style.display = 'block';
+  }
+
+  /* ---------- 사진 읽기 ---------- */
+  $('file').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    $('drop').classList.add('busy');
+    status('사진을 읽고 얼굴을 찾는 중이에요…');
+    PM.analyze(f).then(function (res) {
+      $('drop').classList.remove('busy');
+      state.res = res;
+      if (!res.pts) {
+        status(res.warn || '얼굴을 찾지 못했어요.', true);
+        $('stage-card').classList.add('hidden');
+        $('shelf-card').classList.add('hidden');
+        return;
+      }
+      status(res.warn || '준비됐어요! 아래에서 화장품을 골라 보세요.', !!res.warn);
+      $('stage-card').classList.remove('hidden');
+      $('shelf-card').classList.remove('hidden');
+      buildShelf();
+      paint();
+      $('stage-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch(function (e) {
+      $('drop').classList.remove('busy');
+      status('사진을 읽지 못했어요. (' + e.message + ')', true);
+    });
+  });
+
+  /* ---------- 원본/화장 후 비교 ---------- */
+  function setCompare(before) {
+    state.showBefore = before;
+    $('cmp-before').setAttribute('aria-pressed', String(before));
+    $('cmp-after').setAttribute('aria-pressed', String(!before));
+    paint();
+  }
+  $('cmp-before').addEventListener('click', function () { setCompare(true); });
+  $('cmp-after').addEventListener('click', function () { setCompare(false); });
+
+  /* ---------- 추천 ---------- */
+  $('suggest').addEventListener('click', function () {
+    if (!state.res || !state.res.pts) return;
+    var s = PM.suggest(state.res.pts);
+    if (!s) return;
+    state.look = s.look;
+    syncShelf();
+    setCompare(false);
+    var box = $('why-box'), list = $('why-list');
+    list.innerHTML = '';
+    s.why.forEach(function (w) {
+      var li = document.createElement('li');
+      li.textContent = w;
+      list.appendChild(li);
+    });
+    box.classList.remove('hidden');
+  });
+
+  /* ---------- 민낯 / 저장 ---------- */
+  $('reset').addEventListener('click', function () {
+    Object.keys(state.look).forEach(function (k) { state.look[k].level = 0; });
+    syncShelf();
+    setCompare(false);
+  });
+
+  $('save').addEventListener('click', function () {
+    var cv = $('out');
+    if (!cv || cv.style.display === 'none') return;
+    try {
+      var a = document.createElement('a');
+      a.download = 'my-makeup.png';
+      a.href = cv.toDataURL('image/png');
+      a.click();
+    } catch (e) {
+      status('저장에 실패했어요. 화면을 길게 눌러 이미지를 저장해 주세요.', true);
+    }
+  });
+
+  /* 모델은 미리 불러둔다 — 처음 한 번 몇 초 걸린다 */
+  FM.load().catch(function () {
+    status('얼굴 인식 모듈을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.', true);
+  });
+})();
+</script>
+</body>
+</html>
