@@ -133,3 +133,47 @@ assert.ok(/기기 밖으로 나가지 않아요|전송되지 않|브라우저 �
 assert.ok(/showBefore/.test(html), '원본과 비교하는 기능이 없다');
 
 console.log('PASS: 내 사진 메이크업 — 부위 6종, 색 19가지, 아이섀도 영역, 추천 분기, 사진 미전송');
+
+/* --- 11. 카메라로 바로 찍기 ---
+   딸 신고: "앨범에서 불러오는 건 되는데 카메라로 바로 찍는 게 안 된다".
+   원인 3가지가 겹쳐 있었다. 하나라도 빠지면 다시 앨범만 열린다. */
+
+/* (a) 화면에 카메라 입력칸과 버튼이 있어야 한다 */
+assert.ok(/id="file-cam"/.test(html), '카메라용 입력칸(#file-cam)이 없다');
+assert.ok(/capture=/.test(html),
+  'capture 속성이 없으면 모바일 브라우저에서 카메라가 바로 안 열린다');
+assert.ok(/id="btn-cam"/.test(html) && /id="btn-album"/.test(html),
+  '사진 찍기 / 앨범 버튼이 둘 다 있어야 한다');
+/* 두 입력칸이 같은 처리로 이어져야 한다 */
+assert.ok(/\$\('file-cam'\)\.addEventListener\('change'/.test(html),
+  '카메라 입력칸의 change 가 연결되지 않았다 — 찍어도 아무 일이 없다');
+
+/* (b) 앱(Capacitor)에서 native.js 가 이 영역을 가로채야 한다 */
+const tpl = path.join(ROOT, '..', '13.mobile_app', 'native.js.tpl');
+if (fs.existsSync(tpl)) {
+  const nat = fs.readFileSync(tpl, 'utf8');
+  assert.ok(/\.drop/.test(nat),
+    "native.js 가 '.drop' 을 가로채지 않는다 — 앱에서 네이티브 카메라가 안 열린다");
+  assert.ok(/data-pick/.test(nat),
+    '카메라/앨범을 콕 집어 여는 경로(data-pick)가 없다');
+  assert.ok(/source \|\| 'PROMPT'/.test(nat),
+    "pickPhoto 가 source 를 못 받는다 — '사진 찍기'를 눌러도 선택창이 또 뜬다");
+  /* label for= 로 바깥에 놓인 입력칸도 찾아야 한다 */
+  assert.ok(/getAttribute\('for'\)/.test(nat),
+    "label 바깥의 입력칸을 못 찾는다 — .drop 을 눌러도 반응이 없다");
+}
+
+/* (c) 안드로이드 CAMERA 권한이 선언돼야 한다 ---
+   이게 진짜 원인이었다. FileProvider 는 있었지만 권한이 없어 촬영이 실패했다. */
+const manifest = path.join(ROOT, '..', '13.mobile_app', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+if (fs.existsSync(manifest)) {
+  const mf = fs.readFileSync(manifest, 'utf8');
+  assert.ok(/android\.permission\.CAMERA/.test(mf),
+    'AndroidManifest 에 CAMERA 권한이 없다 — 카메라로 찍기가 실패한다');
+  assert.ok(/android\.hardware\.camera[\s\S]{0,60}required="false"/.test(mf),
+    'camera 기능을 required="true" 로 두면 카메라 없는 기기에 설치가 막힌다');
+  assert.ok(/FileProvider/.test(mf),
+    'FileProvider 가 없으면 찍은 사진을 앱이 읽지 못한다');
+}
+
+console.log('PASS: 카메라 촬영 경로 (UI·native 브리지·안드로이드 권한)');

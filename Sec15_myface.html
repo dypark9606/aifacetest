@@ -25,7 +25,7 @@
   .drop .plus{font-size:46px;color:var(--pink);line-height:1}
   .drop .hint{font-size:17px;opacity:.8}
   .drop.busy{opacity:.6}
-  #file{display:none}
+  #file,#file-cam{display:none}
   .status{font-size:17px;text-align:center;margin:10px 0 0;min-height:24px}
   .status.bad{color:#c62828}
 
@@ -74,9 +74,17 @@
     <h2>1. 내 사진 넣기</h2>
     <label class="drop" id="drop" for="file">
       <span class="plus">＋</span>
-      <span class="hint">정면으로 크게 나온 사진일수록 잘 맞아요</span>
+      <span class="hint">앨범에서 고르거나 바로 찍어요</span>
     </label>
+    <!-- ⚠ 앱에서는 native.js 가 이 영역(.drop)을 가로채 '사진 찍기 / 앨범에서 고르기'를
+         고르는 네이티브 창을 띄운다. 클래스 이름을 바꾸면 카메라가 안 열린다.
+         웹(모바일 브라우저)에서는 아래 두 버튼이 각각 카메라와 앨범을 연다. -->
     <input type="file" id="file" accept="image/*" />
+    <input type="file" id="file-cam" accept="image/*" capture="user" />
+    <div class="actions drop-pick" id="pick-row">
+      <button class="btn" type="button" id="btn-cam" data-pick="file-cam">📷 사진 찍기</button>
+      <button class="btn sub" type="button" id="btn-album" data-pick="file">🖼️ 앨범에서 고르기</button>
+    </div>
     <p class="status" id="status"></p>
     <p class="privacy">
       🔒 사진은 <b>이 기기 밖으로 나가지 않아요.</b> 서버로 보내지 않고 브라우저 안에서만 처리하고,
@@ -233,8 +241,10 @@
     cv.style.display = 'block';
   }
 
-  /* ---------- 사진 읽기 ---------- */
-  $('file').addEventListener('change', function () {
+  /* ---------- 사진 읽기 ----------
+     ⚠ 입력칸이 둘이다: #file(앨범) / #file-cam(카메라 바로 열기).
+     둘 다 같은 처리로 넘겨야 어느 쪽으로 넣어도 동작한다. */
+  function handlePick() {
     var f = this.files && this.files[0];
     if (!f) return;
     $('drop').classList.add('busy');
@@ -259,7 +269,14 @@
       $('drop').classList.remove('busy');
       status('사진을 읽지 못했어요. (' + e.message + ')', true);
     });
-  });
+  }
+  $('file').addEventListener('change', handlePick);
+  $('file-cam').addEventListener('change', handlePick);
+
+  /* 버튼 → 해당 입력칸 열기.
+     앱에서는 native.js 가 이 클릭을 가로채 네이티브 카메라/앨범을 띄운다. */
+  $('btn-cam').addEventListener('click', function () { $('file-cam').click(); });
+  $('btn-album').addEventListener('click', function () { $('file').click(); });
 
   /* ---------- 원본/화장 후 비교 ---------- */
   function setCompare(before) {
