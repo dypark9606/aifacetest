@@ -92,11 +92,32 @@ assert.ok(/state\.running\.stop\(\)/.test(drawLv[0]),
 /* 게임별로 난이도를 기억해야 한다 */
 assert.ok(/levelMap\[/.test(html), '게임별 난이도를 기억하지 않는다');
 
-/* 폰에서 누를 수 있는 크기여야 한다 */
+/* 폰에서 누를 수 있는 크기여야 한다.
+   ⚠ min-height 만 찾으면 height 로 지정한 경우를 놓친다. 둘 다 본다.
+   게임 버튼(114px)의 절반인 57px 이 기준이고, 터치 최소치는 44px. */
 const lvCss = /\.lvbtn\{[\s\S]*?\}/.exec(html);
 assert.ok(lvCss, '.lvbtn 스타일이 없다');
-assert.ok(/min-height:\s*4[4-9]px|min-height:\s*[5-9]\dpx/.test(lvCss[0]),
-  '난이도 버튼이 손가락으로 누르기엔 너무 작다 (최소 44px)');
+const hMatch = /(?:min-)?height:\s*(\d+)px/.exec(lvCss[0]);
+assert.ok(hMatch, '난이도 버튼 높이가 지정되지 않았다');
+const btnH = Number(hMatch[1]);
+assert.ok(btnH >= 44,
+  `난이도 버튼이 손가락으로 누르기엔 너무 작다: ${btnH}px (최소 44px)`);
+assert.ok(btnH <= 70,
+  `난이도 버튼이 너무 크다: ${btnH}px (게임 버튼 114px 의 절반인 57px 안팎이어야 한다)`);
+
+/* 게임 고르기가 먼저, 난이도가 그다음이어야 한다 (사용자 지정 순서) */
+const iGame = html.indexOf('1. 게임 고르기');
+const iLevel = html.indexOf('2. 난이도 고르기');
+assert.ok(iGame > 0 && iLevel > 0, '카드 번호(1. 게임 / 2. 난이도)가 없다');
+assert.ok(iGame < iLevel, '게임 고르기가 난이도보다 위에 있어야 한다');
+
+/* ⚠ 게임 버튼을 누르면 즉시 시작된다. 난이도가 아래에 있으면 존재를 모른 채 지나친다
+   (실제로 그래서 "난이도가 안 보인다"는 신고가 나왔다).
+   게임 카드 안에서 현재 난이도를 보여주고 아래로 데려가야 한다. */
+assert.ok(/id="cur-level"/.test(html), '게임 카드에 현재 난이도 표시가 없다');
+assert.ok(/id="go-level"/.test(html), '난이도로 이동하는 링크가 없다');
+assert.ok(/cur\.textContent = state\.level/.test(html),
+  '현재 난이도 표시가 갱신되지 않는다');
 
 /* --- 8. 두꺼비의 시간 경과 가속은 유지된다 --- */
 assert.strictEqual(typeof G._moleLevelAt, 'function', '두꺼비 단계 함수가 사라졌다');

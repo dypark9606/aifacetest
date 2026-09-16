@@ -27,14 +27,15 @@
   .gbtn .e{display:block;font-size:30px}
   .gbtn .b{display:block;font-size:14px;opacity:.8}
 
-  /* 난이도 1~10 — 폰에서 한 손으로 누를 수 있어야 하므로 한 줄 5개, 두 줄.
-     ⚠ 10개를 한 줄에 넣으면 칸이 36px 밑으로 내려가 손가락으로 못 누른다. */
-  .levels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-  .lvbtn{font-family:inherit;font-size:20px;padding:12px 0;border-radius:14px;cursor:pointer;
+  /* 난이도 1~10 — 게임 버튼 영역의 **절반** 크기로 둔다.
+     게임 버튼이 높이 114px 이므로 난이도는 약 57px.
+     ⚠ 한 줄 10개로 쪼개면 칸 폭이 33px 까지 내려가 손가락으로 못 누른다.
+     그래서 한 줄 5개 x 2줄을 유지하되 높이를 낮춘다(터치 최소 44px 확보). */
+  .levels{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+  .lvbtn{font-family:inherit;font-size:19px;padding:0;border-radius:13px;cursor:pointer;
          border:2px solid var(--line);background:#241f4d;color:var(--ink);text-align:center;
-         min-height:48px;touch-action:manipulation}
+         height:57px;line-height:53px;touch-action:manipulation}
   .lvbtn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#241f4d;font-weight:bold}
-  @media(max-width:360px){.lvbtn{font-size:18px;min-height:44px}}
 
   .hud{display:flex;justify-content:space-around;font-size:20px;margin-bottom:8px}
   .hud b{color:var(--gold)}
@@ -154,15 +155,22 @@
   </div>
 
   <div class="card">
-    <h2>1. 난이도 고르기 <span style="font-size:15px;opacity:.7">(1 쉬움 ~ 10 어려움)</span></h2>
-    <div class="levels" id="levels"></div>
-    <p class="hint" id="level-desc"></p>
-  </div>
-
-  <div class="card">
-    <h2>2. 게임 고르기 <span style="font-size:15px;opacity:.7">(누르면 바로 시작!)</span></h2>
+    <h2>1. 게임 고르기 <span style="font-size:15px;opacity:.7">(누르면 바로 시작!)</span></h2>
     <div class="picker" id="picker"></div>
     <p class="hint" id="game-desc"></p>
+    <!-- ⚠ 게임 버튼을 누르면 그 자리에서 바로 시작한다. 난이도 카드가 아래에 있으면
+         스크롤할 이유가 없어 존재를 모른 채 지나친다(실제로 그랬다).
+         그래서 여기서 현재 난이도를 보여주고 아래로 데려간다. -->
+    <p class="hint" style="margin-top:6px">
+      현재 난이도 <b id="cur-level" style="color:var(--gold)">1</b>단계 —
+      <a href="#level-card" id="go-level" style="color:var(--gold)">아래에서 바꾸기 ↓</a>
+    </p>
+  </div>
+
+  <div class="card" id="level-card">
+    <h2>2. 난이도 고르기 <span style="font-size:15px;opacity:.7">(1 쉬움 ~ 10 어려움)</span></h2>
+    <div class="levels" id="levels"></div>
+    <p class="hint" id="level-desc"></p>
   </div>
 
   <div class="card">
@@ -346,6 +354,9 @@
              : ax.unit + ' 속도가 적당해요';
     $('level-desc').textContent =
       state.level + '단계 (' + word + ') — ' + says + ' · ▶ 시작을 누르면 이 난이도로 해요.';
+    /* 게임 고르기 카드에도 현재 난이도를 비춘다 */
+    var cur = $('cur-level');
+    if (cur) cur.textContent = state.level;
   }
 
   function drawHud() {
@@ -451,6 +462,11 @@
 
   $('start').addEventListener('click', start);
   $('again').addEventListener('click', start);
+  /* iframe 안에서는 #앵커 이동이 부모 페이지를 흔들 수 있다. 직접 스크롤한다. */
+  $('go-level').addEventListener('click', function (e) {
+    e.preventDefault();
+    $('level-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
   $('share-result').addEventListener('click', function () { if (state.last !== null) shareText(resultText()); });
   $('share-battle').addEventListener('click', function () {
     if (state.last === null || !state.challenge) return;
