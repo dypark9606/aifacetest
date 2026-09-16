@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>내 얼굴 성형하기</title>
+<link href="https://fonts.googleapis.com/css?family=Jua&display=swap" rel="stylesheet" />
+<style>
+  :root{--vi:#7c5cff;--deep:#4527a0;--soft:#f3f0ff;--line:#cfc4f5;--ink:#2e2740;--warn:#c62828}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0 0 40px;font-family:'Jua',-apple-system,'Malgun Gothic',sans-serif;
+       background:linear-gradient(180deg,#f8f6ff 0%,#efeaff 100%);color:var(--ink)}
+  .wrap{max-width:780px;margin:0 auto;padding:14px}
+  h1{font-size:33px;text-align:center;margin:8px 0 2px;color:var(--deep)}
+  .lead{text-align:center;font-size:18px;margin:0 0 12px;opacity:.85}
+
+  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:15px;margin-bottom:14px;
+        box-shadow:0 6px 18px rgba(69,39,160,.08)}
+  .card h2{font-size:23px;margin:0 0 10px;color:var(--deep)}
+
+  .drop{border:3px dashed var(--line);border-radius:18px;background:#fbfaff;
+        min-height:170px;display:flex;align-items:center;justify-content:center;
+        flex-direction:column;gap:6px;cursor:pointer;text-align:center;padding:16px}
+  .drop .plus{font-size:46px;color:var(--vi);line-height:1}
+  .drop .hint{font-size:17px;opacity:.8}
+  .drop.busy{opacity:.6}
+  #file,#file-cam,#file-target{display:none}
+  .status{font-size:17px;text-align:center;margin:10px 0 0;min-height:24px}
+  .status.bad{color:var(--warn)}
+
+  .stage{position:relative;text-align:center;margin-top:12px}
+  #out{max-width:100%;border-radius:16px;border:3px solid #fff;
+       box-shadow:0 6px 20px rgba(40,20,80,.18);display:none}
+  .compare{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+  .compare button{font-family:inherit;font-size:17px;padding:9px 16px;border-radius:999px;
+    border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  .compare button[aria-pressed="true"]{background:var(--vi);border-color:var(--vi);color:#fff}
+
+  /* 부위 탭 */
+  .parts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+  .ptab{font-family:inherit;font-size:17px;height:52px;border-radius:14px;
+        border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
+        display:flex;align-items:center;justify-content:center}
+  .ptab[aria-pressed="true"]{background:var(--vi);border-color:var(--vi);color:#fff;font-weight:bold}
+  .ptab .n{font-size:14px;margin-left:5px;opacity:.9}
+
+  .intro{font-size:16px;opacity:.8;margin:0 0 10px}
+
+  .op{border-top:2px dashed var(--line);padding-top:12px;margin-top:12px}
+  .op:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .op .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .op h3{font-size:19px;margin:0;color:var(--deep)}
+  .op .amt{font-size:17px;color:var(--vi);min-width:56px;text-align:right}
+  .op .name{font-size:15px;opacity:.75;margin:3px 0 0}
+  .op .desc{font-size:15px;opacity:.7;margin:4px 0 0;line-height:1.45}
+  .op input[type=range]{width:100%;accent-color:var(--vi);margin-top:7px}
+  .op .ends{display:flex;justify-content:space-between;font-size:14px;opacity:.6}
+
+  .actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:13px}
+  .btn{font-family:inherit;font-size:19px;padding:12px 20px;border-radius:999px;border:0;
+       background:var(--vi);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(124,92,255,.4)}
+  .btn.sub{background:#fff;color:var(--deep);border:2px solid var(--line);box-shadow:none}
+  .btn.sm{font-size:16px;padding:9px 15px}
+
+  .packs{display:flex;flex-wrap:wrap;gap:8px}
+  .pack{font-family:inherit;font-size:16px;padding:9px 14px;border-radius:999px;
+        border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  .pack[aria-pressed="true"]{background:var(--soft);border-color:var(--deep);font-weight:bold}
+  .packnote{font-size:15px;opacity:.78;margin:9px 0 0;line-height:1.5}
+
+  .why{background:var(--soft);border-radius:14px;padding:12px;margin-top:11px}
+  .why li{font-size:16px;margin:6px 0;line-height:1.45}
+  .score{font-size:21px;text-align:center;color:var(--deep);margin:0 0 8px}
+  .score b{font-size:30px}
+
+  .note{font-size:15px;opacity:.75;text-align:center;margin:10px 0 0;line-height:1.55}
+  .disclaimer{background:#fff8e1;border:2px solid #ffe082;border-radius:14px;
+              padding:11px;font-size:15px;line-height:1.55;margin-top:11px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🩺 내 얼굴 성형하기</h1>
+  <p class="lead">내 사진으로 미리 해 보는 성형 상담! 스케일바를 움직여 보세요.</p>
+
+  <div class="card">
+    <h2>1. 내 사진 넣기</h2>
+    <label class="drop" id="drop" for="file">
+      <span class="plus">＋</span>
+      <span class="hint">앨범에서 고르거나 바로 찍어요</span>
+    </label>
+    <!-- ⚠ 앱에서는 native.js 가 이 영역(.drop)과 data-pick 버튼을 가로채
+         네이티브 카메라/앨범을 띄운다. 클래스·속성 이름을 바꾸면 카메라가 안 열린다. -->
+    <input type="file" id="file" accept="image/*" />
+    <input type="file" id="file-cam" accept="image/*" capture="user" />
+    <div class="actions drop-pick">
+      <button class="btn" type="button" id="btn-cam" data-pick="file-cam">📷 사진 찍기</button>
+      <button class="btn sub" type="button" id="btn-album" data-pick="file">🖼️ 앨범에서 고르기</button>
+    </div>
+    <p class="status" id="status"></p>
+    <p class="note">
+      🔒 사진은 <b>이 기기 밖으로 나가지 않아요.</b> 서버로 보내지 않고 브라우저 안에서만 처리해요.
+    </p>
+  </div>
+
+  <div class="card hidden" id="stage-card">
+    <h2>2. 바뀐 얼굴 보기</h2>
+    <div class="stage">
+      <canvas id="out"></canvas>
+      <div class="compare">
+        <button type="button" id="cmp-after" aria-pressed="true">✨ 수술 후</button>
+        <button type="button" id="cmp-before" aria-pressed="false">🙂 지금</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn sub sm" id="reset">↩️ 원래대로</button>
+      <button class="btn sm" id="save">💾 사진 저장</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="ops-card">
+    <h2>3. 부위별로 바꿔 보기</h2>
+    <div class="parts" id="parts"></div>
+    <p class="intro" id="intro"></p>
+    <div id="ops"></div>
+  </div>
+
+  <div class="card hidden" id="pack-card">
+    <h2>4. 수술 묶음으로 해 보기</h2>
+    <div class="packs" id="packs"></div>
+    <p class="packnote" id="packnote">상담에서 자주 묶어 부르는 조합이에요. 눌러 보세요.</p>
+  </div>
+
+  <div class="card hidden" id="target-card">
+    <h2>5. 닮고 싶은 얼굴과 비교</h2>
+    <p class="intro">
+      닮고 싶은 얼굴 사진을 넣으면, <b>무엇이 얼마나 다른지</b> 재서
+      필요한 시술을 순서대로 알려 줘요.
+    </p>
+    <input type="file" id="file-target" accept="image/*" />
+    <div class="actions">
+      <button class="btn" type="button" id="btn-target" data-pick="file-target">🎯 닮고 싶은 얼굴 넣기</button>
+    </div>
+    <p class="status" id="tstatus"></p>
+    <div class="why hidden" id="tbox">
+      <p class="score" id="tscore"></p>
+      <ul id="tlist" style="margin:0;padding-left:20px"></ul>
+      <div class="actions">
+        <button class="btn sm" id="apply-target">✨ 이대로 적용해 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="disclaimer">
+      ⚠️ <b>이건 놀이예요.</b> 실제 수술 결과가 아니고, 의학적 조언도 아니에요.
+      사진을 그림처럼 늘리고 줄여 본 것뿐이라 실제와 많이 달라요.
+      진짜 상담은 꼭 <b>성형외과 전문의</b>와 하세요.
+      그리고 지금 내 얼굴도 충분히 예뻐요 🙂
+    </div>
+  </div>
+</div>
+
+<script src="js/coin-wallet.js"></script>
+<script src="js/facemesh.js"></script>
+<script src="js/photo-surgery.js"></script>
+<script>
+(function () {
+  'use strict';
+  var PS = window.PhotoSurgery, FM = window.FM;
+  function $(id) { return document.getElementById(id); }
+
+  var state = {
+    res: null, plan: PS.defaultPlan(), showBefore: false,
+    part: PS.CATALOG[0].key, coinAwarded: false, pack: null, targetPts: null
+  };
+
+  /* ---------- 코인 (메이크업 탭과 같은 방식) ---------- */
+  function wallet() {
+    try { return (window.top && window.top.CoinWallet) || window.CoinWallet || null; }
+    catch (e) { return window.CoinWallet || null; }
+  }
+  function awardCoins() {
+    if (state.coinAwarded) return;
+    var w = wallet();
+    if (!w || !w.rewardAnalysis) return;
+    try {
+      var b = w.rewardAnalysis('surgery');
+      state.coinAwarded = true;
+      status('준비됐어요! 아래에서 부위를 골라 보세요. · 🪙 +5 (현재 ' + b + ')');
+    } catch (e) { }
+  }
+
+  function status(msg, bad) {
+    var el = $('status');
+    el.textContent = msg || '';
+    el.classList.toggle('bad', !!bad);
+  }
+
+  /* ---------- 그리기 ----------
+     ⚠ 슬라이더를 움직일 때마다 바로 그리면 버벅인다. 그래서 한 박자 모아 그린다.
+     ⚠⚠ 이때 requestAnimationFrame 을 쓰면 안 된다.
+     탭이 화면 앞에 없거나(다른 탭 선택) 브라우저가 창을 안 그리는 동안에는
+     rAF 콜백이 아예 안 불려서 **슬라이더를 움직여도 얼굴이 그대로다**.
+     실제로 그 증상을 겪었다. setTimeout 은 그런 상황에서도 돈다. */
+  var pending = false;
+  function paint() {
+    if (pending) return;
+    pending = true;
+    setTimeout(function () {
+      pending = false;
+      if (!state.res) return;
+      var cv = $('out');
+      if (state.showBefore) {
+        cv.width = state.res.canvas.width;
+        cv.height = state.res.canvas.height;
+        cv.getContext('2d').drawImage(state.res.canvas, 0, 0);
+      } else {
+        PS.render(cv, state.res, state.plan);
+      }
+      cv.style.display = 'block';
+    }, 16);
+  }
+
+  /* ---------- 부위 탭 ---------- */
+  function countActive(groupKey) {
+    var n = 0;
+    PS.ALL.forEach(function (it) {
+      if (it.group === groupKey && state.plan[it.id]) n++;
+    });
+    return n;
+  }
+  function buildParts() {
+    var box = $('parts');
+    box.innerHTML = '';
+    PS.CATALOG.forEach(function (g) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ptab';
+      b.dataset.part = g.key;
+      b.setAttribute('aria-pressed', String(state.part === g.key));
+      b.appendChild(document.createTextNode(g.label));
+      var n = countActive(g.key);
+      if (n) {
+        var s = document.createElement('span');
+        s.className = 'n';
+        s.textContent = '●' + n;
+        b.appendChild(s);
+      }
+      b.addEventListener('click', function () {
+        state.part = g.key;
+        buildParts();
+        buildOps();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  /* ---------- 시술 슬라이더 ---------- */
+  function buildOps() {
+    var g = PS.CATALOG.filter(function (x) { return x.key === state.part; })[0];
+    if (!g) return;
+    $('intro').textContent = g.intro;
+    var box = $('ops');
+    box.innerHTML = '';
+
+    g.items.forEach(function (it) {
+      var wrap = document.createElement('div');
+      wrap.className = 'op';
+
+      var top = document.createElement('div');
+      top.className = 'top';
+      var h = document.createElement('h3');
+      h.textContent = it.label;
+      var amt = document.createElement('span');
+      amt.className = 'amt';
+      amt.textContent = state.plan[it.id] || 0;
+      top.appendChild(h); top.appendChild(amt);
+      wrap.appendChild(top);
+
+      var nm = document.createElement('p');
+      nm.className = 'name';
+      nm.textContent = '🏥 ' + it.op;
+      wrap.appendChild(nm);
+
+      var inp = document.createElement('input');
+      inp.type = 'range';
+      inp.min = it.dir === 'one' ? 0 : -100;
+      inp.max = 100;
+      inp.value = state.plan[it.id] || 0;
+      inp.dataset.op = it.id;
+      inp.addEventListener('input', function () {
+        state.plan[it.id] = Number(inp.value);
+        amt.textContent = inp.value;
+        state.pack = null;
+        syncPacks();
+        paint();
+      });
+      inp.addEventListener('change', buildParts);
+      wrap.appendChild(inp);
+
+      var ends = document.createElement('div');
+      ends.className = 'ends';
+      var e1 = document.createElement('span');
+      var e2 = document.createElement('span');
+      e1.textContent = it.dir === 'one' ? '안 함' : '작게 / 줄임';
+      e2.textContent = it.dir === 'one' ? '많이' : '크게 / 늘림';
+      ends.appendChild(e1); ends.appendChild(e2);
+      wrap.appendChild(ends);
+
+      var d = document.createElement('p');
+      d.className = 'desc';
+      d.textContent = it.desc;
+      wrap.appendChild(d);
+
+      box.appendChild(wrap);
+    });
+  }
+
+  function syncOps() {
+    document.querySelectorAll('#ops input[type=range]').forEach(function (r) {
+      r.value = state.plan[r.dataset.op] || 0;
+      var a = r.parentNode.querySelector('.amt');
+      if (a) a.textContent = r.value;
+    });
+    buildParts();
+  }
+
+  /* ---------- 수술 묶음 ---------- */
+  function buildPacks() {
+    var box = $('packs');
+    box.innerHTML = '';
+    PS.PACKAGES.forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pack';
+      b.dataset.pack = p.id;
+      b.textContent = p.label;
+      b.setAttribute('aria-pressed', String(state.pack === p.id));
+      b.addEventListener('click', function () {
+        if (state.pack === p.id) {              // 다시 누르면 해제
+          state.pack = null;
+          state.plan = PS.defaultPlan();
+          $('packnote').textContent = '상담에서 자주 묶어 부르는 조합이에요. 눌러 보세요.';
+        } else {
+          state.pack = p.id;
+          state.plan = PS.defaultPlan();
+          Object.keys(p.plan).forEach(function (k) { state.plan[k] = p.plan[k]; });
+          $('packnote').textContent = p.note;
+        }
+        syncPacks();
+        syncOps();
+        setCompare(false);
+      });
+      box.appendChild(b);
+    });
+  }
+  function syncPacks() {
+    document.querySelectorAll('#packs .pack').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(state.pack === b.dataset.pack));
+    });
+  }
+
+  /* ---------- 사진 읽기 ---------- */
+  function handlePick() {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    $('drop').classList.add('busy');
+    status('사진을 읽고 얼굴을 찾는 중이에요…');
+    PS.analyze(f).then(function (res) {
+      $('drop').classList.remove('busy');
+      state.res = res;
+      if (!res.pts) {
+        status(res.warn || '얼굴을 찾지 못했어요.', true);
+        ['stage-card', 'ops-card', 'pack-card', 'target-card'].forEach(function (id) {
+          $(id).classList.add('hidden');
+        });
+        return;
+      }
+      status(res.warn || '준비됐어요! 아래에서 부위를 골라 보세요.', !!res.warn);
+      ['stage-card', 'ops-card', 'pack-card', 'target-card'].forEach(function (id) {
+        $(id).classList.remove('hidden');
+      });
+      buildParts(); buildOps(); buildPacks();
+      paint();
+      awardCoins();
+      $('stage-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch(function (e) {
+      $('drop').classList.remove('busy');
+      status('사진을 읽지 못했어요. (' + e.message + ')', true);
+    });
+  }
+  $('file').addEventListener('change', handlePick);
+  $('file-cam').addEventListener('change', handlePick);
+  $('btn-cam').addEventListener('click', function () { $('file-cam').click(); });
+  $('btn-album').addEventListener('click', function () { $('file').click(); });
+
+  /* ---------- 지금 / 수술 후 ---------- */
+  function setCompare(before) {
+    state.showBefore = before;
+    $('cmp-before').setAttribute('aria-pressed', String(before));
+    $('cmp-after').setAttribute('aria-pressed', String(!before));
+    paint();
+  }
+  $('cmp-before').addEventListener('click', function () { setCompare(true); });
+  $('cmp-after').addEventListener('click', function () { setCompare(false); });
+
+  /* ---------- 닮고 싶은 얼굴 ---------- */
+  $('btn-target').addEventListener('click', function () { $('file-target').click(); });
+  $('file-target').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    if (!f || !state.res || !state.res.pts) return;
+    var el = $('tstatus');
+    el.classList.remove('bad');
+    el.textContent = '목표 얼굴을 재는 중이에요…';
+    PS.analyze(f).then(function (t) {
+      if (!t.pts) {
+        el.textContent = '목표 사진에서 얼굴을 찾지 못했어요. 정면 사진을 넣어 주세요.';
+        el.classList.add('bad');
+        return;
+      }
+      state.targetPts = t.pts;
+      var r = PS.compare(state.res.pts, t.pts);
+      if (!r) { el.textContent = '비교하지 못했어요.'; el.classList.add('bad'); return; }
+      el.textContent = '';
+      $('tscore').innerHTML = '지금 닮은 정도 <b>' + r.score + '%</b>';
+      var list = $('tlist');
+      list.innerHTML = '';
+      if (!r.list.length) {
+        var li0 = document.createElement('li');
+        li0.textContent = '크게 다른 곳이 없어요! 이미 많이 닮았어요 🙂';
+        list.appendChild(li0);
+      } else {
+        r.list.forEach(function (s, i) {
+          var li = document.createElement('li');
+          li.textContent = (i + 1) + '순위 · ' + s.group + ' ' + s.label +
+                           ' — ' + s.op + ' (정도 ' + s.amount + ')';
+          list.appendChild(li);
+        });
+      }
+      $('tbox').classList.remove('hidden');
+      $('apply-target').onclick = function () {
+        state.plan = r.plan;
+        state.pack = null;
+        syncPacks(); syncOps(); setCompare(false);
+        $('stage-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    }).catch(function (e) {
+      el.textContent = '목표 사진을 읽지 못했어요. (' + e.message + ')';
+      el.classList.add('bad');
+    });
+  });
+
+  /* ---------- 원래대로 / 저장 ---------- */
+  $('reset').addEventListener('click', function () {
+    state.plan = PS.defaultPlan();
+    state.pack = null;
+    syncPacks(); syncOps(); setCompare(false);
+  });
+
+  $('save').addEventListener('click', function () {
+    var cv = $('out');
+    if (!cv || cv.style.display === 'none') return;
+    try {
+      var a = document.createElement('a');
+      a.download = 'my-surgery.png';
+      a.href = cv.toDataURL('image/png');
+      a.click();
+    } catch (e) {
+      status('저장에 실패했어요. 화면을 길게 눌러 이미지를 저장해 주세요.', true);
+    }
+  });
+
+  FM.load().catch(function () {
+    status('얼굴 인식 모듈을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.', true);
+  });
+})();
+</script>
+</body>
+</html>

@@ -129,6 +129,11 @@ a[href$='section15'] {
 	background-repeat: repeat;
 	color: black;
 }
+a[href$='section16'] {
+	background-image: url('img/img_back_6.jfif');
+	background-repeat: repeat;
+	color: black;
+}
 a[href$='section14'] {
 	background-image: url('img/img_back_6.jfif');
 	background-repeat: repeat;
