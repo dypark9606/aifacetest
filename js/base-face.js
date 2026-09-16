@@ -148,7 +148,10 @@
   /* 전신 모드에서 머리가 차지하는 영역.
      화장은 얼굴 좌표계로 그려지므로, 전신일 때 어디에 축소해 넣을지 알아야 한다. */
   /* 머리를 조금 키우고 아래로 내려 목 길이를 줄인다(실측 74px → 약 40px). */
-  var FULL_HEAD = { x: 0.214, y: 0.012, w: 0.572, h: 0.424 };
+  /* ⚠ 머리 크기는 등신 비율을 결정한다. BODY 상수와 반드시 같이 움직인다.
+     0.572/0.424 = 2.9등신(유아 체형), 0.414/0.307 = 4.0등신(빈약).
+     최종 3.4등신. */
+  var FULL_HEAD = { x: 0.254, y: 0.012, w: 0.491, h: 0.364 };
 
   function headRect(m, W, H) {
     W = W || BW; H = H || BH;
@@ -483,10 +486,13 @@
     wg.addColorStop(0, '#ddd2cf'); wg.addColorStop(0.4, '#fdfbfa'); wg.addColorStop(1, '#f0e7e4');
     ctx.fillStyle = wg; ctx.fillRect(cx - 60, cy - 40, 120, 80);
 
-    /* 홍채 */
-    /* ⚠ 홍채 반지름은 눈 반폭(34)의 40% 안쪽이어야 눈 밖으로 새지 않는다.
-       눈을 줄일 때 홍채를 같이 줄이지 않으면 눈알이 튀어나온 것처럼 보인다. */
-    var ix = cx + dir * 1, iy = cy + 1, ir = style === 'doe' ? 14 : style === 'cool' ? 11.5 : 13;
+    /* 홍채
+       ⚠ 반지름은 눈 반폭(34)의 40% 안쪽이어야 눈 밖으로 새지 않는다.
+       ⚠⚠ 세로 위치가 중요하다. 눈구멍은 위 -21 ~ 아래 +14 라 세로중심이 -3.5 인데
+       예전엔 홍채를 +1 에 뒀다. 그러면 홍채 위로 흰자가 넓게 드러나
+       위를 흘겨보는 삼백안이 된다(딸이 "괴상하다"고 한 인상의 일부).
+       실제 눈은 윗눈꺼풀이 홍채 위쪽을 살짝 덮는다 → 세로중심보다 약간 위. */
+    var ix = cx + dir * 1, iy = cy - 5, ir = style === 'doe' ? 14 : style === 'cool' ? 11.5 : 13;
     var ig = ctx.createRadialGradient(ix - 4, iy - 5, 2, ix, iy, ir);
     ig.addColorStop(0, mix(m.iris, '#ffffff', 0.45));
     ig.addColorStop(0.55, m.iris);
@@ -525,22 +531,26 @@
     /* 아이라인이 굵으면 만화 선이 된다. 눈이 작아진 만큼 선도 얇게. */
     ctx.strokeStyle = '#3a291f'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
     eyeShape(ctx, cx, cy, dir, style); ctx.stroke();
-    /* 속눈썹도 눈 크기에 비례해 줄인다 (예전 길이 20~24 는 눈보다 길었다) */
-    var lashes = [[0.62, 9], [0.82, 11], [0.98, 10], [1.08, 7]];
+    /* 속눈썹도 눈 크기에 비례해 줄인다 (예전 길이 20~24 는 눈보다 길었다).
+       ⚠ 마지막 두 가닥(t>=0.98)을 길게 두면 눈꼬리 밖으로 뻗쳐
+       얼굴 옆에 검은 수염처럼 보인다. 바깥으로 갈수록 짧게 한다. */
+    var lashes = [[0.60, 8], [0.80, 10], [0.95, 8], [1.05, 5]];
     lashes.forEach(function (l) {
       var t = l[0], len = l[1];
       var bx = cx + dir * (t * 29), by = cy - (style === 'cool' ? 10 : 13) + Math.abs(t - 0.8) * 8;
       ctx.lineWidth = 1.9;
       ctx.beginPath();
       ctx.moveTo(bx, by);
-      ctx.quadraticCurveTo(bx + dir * len * 0.6, by - len * 0.7, bx + dir * len, by - len * 0.85);
+      /* 위로 솟는 각을 낮춰(0.55) 자연스럽게 눕힌다 */
+      ctx.quadraticCurveTo(bx + dir * len * 0.6, by - len * 0.45, bx + dir * len, by - len * 0.55);
       ctx.stroke();
     });
-    /* 아랫속눈썹 */
-    ctx.lineWidth = 1.8; ctx.globalAlpha = 0.75;
+    /* 아랫속눈썹 — ⚠ 눈 아래 경계는 cy + bottom(11~17)이다.
+       예전 값(cy+20~24, 길이 8)은 눈 밖 볼 위에 그어져 눈물자국처럼 보였다. */
+    ctx.lineWidth = 1.4; ctx.globalAlpha = 0.6;
     [-0.5, 0, 0.5].forEach(function (t) {
-      var bx = cx + dir * (t * 34), by = cy + (style === 'doe' ? 24 : 20);
-      ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + dir * 3, by + 8); ctx.stroke();
+      var bx = cx + dir * (t * 22), by = cy + (style === 'doe' ? 15 : 12);
+      ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + dir * 2, by + 4); ctx.stroke();
     });
     ctx.restore();
   }
@@ -701,16 +711,28 @@
   var BODY = {
     /* ⚠ 이 값들은 서로 맞물린다. 목 아래끝(neckBot)이 어깨선(shoulderY)보다
        위에 있으면 머리가 공중에 떠 보인다. 반드시 어깨가 목을 덮어야 한다.
-       또 팔 중심(armX)은 어깨 반폭(shoulderHalf)보다 안쪽이어야 몸에 붙는다. */
-    neckTop: 352, neckBot: 418,
-    shoulderY: 420, shoulderHalf: 122,
-    chestY: 486, chestHalf: 104,
-    waistY: 578, waistHalf: 82,
-    hipY: 648, hipHalf: 100,
-    kneeY: 796, ankleY: 932, footY: 966,
+       또 팔 중심(armX)은 어깨 반폭(shoulderHalf)보다 안쪽이어야 몸에 붙는다.
+
+       ⚠⚠ 등신 비율 — 실측으로만 맞춘다.
+       2026-09-15 실측 결과 **2.9등신**이었다(머리 318px / 전신 922px).
+       머리가 몸 3분의 1이라 유아 체형처럼 보였다.
+       한 번은 4.0등신까지 줄여봤는데 이번엔 목이 길고 몸이 빈약해
+       마네킹처럼 보였다(딸 눈높이엔 4.0도 과하다). 최종 **3.4등신**.
+       세로값은 어깨 372 → 발 966 구간으로, 가로는 어깨가 머리폭의
+       1.35배가 되도록 맞췄다.
+       ⚠ FULL_HEAD / 세로값 / 가로값 셋은 반드시 같이 움직인다. */
+    neckTop: 314, neckBot: 378,
+    shoulderY: 372, shoulderHalf: 104,
+    chestY: 444, chestHalf: 89,
+    waistY: 544, waistHalf: 70,
+    hipY: 620, hipHalf: 86,
+    kneeY: 781, ankleY: 929, footY: 966,
     /* ⚠ 팔 바깥끝(armX+armHalf)이 가슴 반폭(chestHalf)을 크게 넘으면
-       팔이 몸통 밖에 붕 뜬 것처럼 보인다. 8px 이내로 유지한다. */
-    armX: 88, armHalf: 23, handY: 652
+       팔이 몸통 밖에 붕 뜬 것처럼 보인다. 8px 이내로 유지한다.
+       ⚠⚠ 반대로 팔이 몸통 안으로 다 들어가면 옷에 덮여 아예 안 보인다.
+       팔 중심(armX)은 가슴 반폭보다 바깥이어야 팔뚝이 드러난다.
+       실측 기준: armX ≈ chestHalf + 6, 그래야 소매 아래로 팔이 보인다. */
+    armX: 95, armHalf: 18, handY: 624
   };
 
   function skinFill(ctx, m, y0, y1) {
@@ -1227,6 +1249,7 @@
            FACE_SHAPES: FACE_SHAPES, HAIR_STYLES: HAIR_STYLES,
            HAIR_COLORS: HAIR_COLORS, OUTFITS: OUTFITS, MODES: MODES,
            BASE_W: BW, BASE_H: BH, FULL_W: FULL_W, FULL_H: FULL_H, BODY: BODY,
+           FULL_HEAD: FULL_HEAD,
            NECK_LEN: NECK_LEN, SHAPE: SHAPE,
            EYE_Y: EYE_Y, BROW_Y: BROW_Y, NOSE_Y: NOSE_Y, MOUTH_Y: MOUTH_Y };
 });

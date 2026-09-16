@@ -373,26 +373,41 @@
     ctx.clearRect(0, 0, W, H);
     BF.draw(ctx, m, W, H);
 
-    var order = ['shade', 'brow', 'eye', 'blush', 'lip', 'gloss'];
-    order.forEach(function (key) {
-      var st = state.look[key]; if (!st || st.level <= 0) return;
-      var zones = G.FACE_ZONES[key] || [], color = G.COLORS[key][st.value];
-      var alpha = (st.level / 100) * (key === 'shade' ? 0.24 : key === 'gloss' ? 0.16 : 0.50);
-      ctx.save();
-      BF.clip(ctx, m, W, H); ctx.clip();
-      ctx.globalCompositeOperation = key === 'gloss' ? 'lighter' : (key === 'brow' ? 'source-over' : 'multiply');
-      ctx.globalAlpha = alpha;
-      zones.forEach(function (z) {
-        var cx=z[0]*W, cy=z[1]*H, rx=z[2]*W, ry=z[3]*H;
-        var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(rx,ry));
-        /* 색이 꽉 찬 구간을 좁게 두고 길게 흐려야 '칠한 자국'이 아니라 화장으로 보인다. */
-        grd.addColorStop(0,color); grd.addColorStop(.18,color); grd.addColorStop(1,'rgba(255,255,255,0)');
-        ctx.fillStyle=grd; ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill();
+    /* ⚠ 레이어 순서가 핵심이다.
+       피부 화장(쉐이딩·볼터치)은 이목구비 **아래**에 깔려야 자연스럽고,
+       눈·눈썹·입술 화장은 이목구비 **위**에 얹혀야 보인다.
+       예전엔 전부 drawFeatures() 앞에 칠해서, 나중에 그려지는 눈/입술이
+       색을 덮어 버렸다(실측: 립 100% 로 올려도 픽셀 변화 0). */
+    function layer(keys) {
+      keys.forEach(function (key) {
+        var st = state.look[key]; if (!st || st.level <= 0) return;
+        var zones = G.FACE_ZONES[key] || [], color = G.COLORS[key][st.value];
+        /* ⚠ 눈썹은 이미 어두워서 흐린 그라데이션을 얹으면 표가 안 난다(실측 변화 20).
+           눈썹만 불투명도를 높이고 색이 꽉 찬 구간을 넓게 잡는다.
+           ⚠ 쉐이딩(shade)도 0.24 로는 100% 에서도 밝기 변화가 6~18 뿐이라
+           슬라이더를 끝까지 올려도 달라진 걸 못 느낀다. 0.45 로 올린다. */
+        var alpha = (st.level / 100) *
+          (key === 'shade' ? 0.45 : key === 'gloss' ? 0.16 : key === 'brow' ? 0.85 : 0.50);
+        ctx.save();
+        BF.clip(ctx, m, W, H); ctx.clip();
+        ctx.globalCompositeOperation = key === 'gloss' ? 'lighter' : (key === 'brow' ? 'source-over' : 'multiply');
+        ctx.globalAlpha = alpha;
+        zones.forEach(function (z) {
+          var cx=z[0]*W, cy=z[1]*H, rx=z[2]*W, ry=z[3]*H;
+          var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(rx,ry));
+          /* 색이 꽉 찬 구간을 좁게 두고 길게 흐려야 '칠한 자국'이 아니라 화장으로 보인다.
+             단 눈썹은 형태를 따라가야 하므로 꽉 찬 구간을 넓게 잡는다. */
+          var solid = key === 'brow' ? 0.55 : 0.18;
+          grd.addColorStop(0,color); grd.addColorStop(solid,color); grd.addColorStop(1,'rgba(255,255,255,0)');
+          ctx.fillStyle=grd; ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill();
+        });
+        ctx.restore();
       });
-      ctx.restore();
-    });
+    }
 
+    layer(['shade', 'blush']);          /* 피부 위 → 이목구비 아래 */
     BF.drawFeatures(ctx, m, W, H);
+    layer(['brow', 'eye', 'lip', 'gloss']);   /* 이목구비 위 */
   }
 
   function updateLive() {
@@ -460,10 +475,19 @@
 
   $('judge').addEventListener('click', judge);
   $('random').addEventListener('click', function () {
+    /* 화장 랜덤 */
     Object.keys(G.OPTIONS).forEach(function (k) {
       var arr = G.OPTIONS[k];
       state.look[k].value = arr[Math.floor(Math.random() * arr.length)];
       state.look[k].level = Math.floor(Math.random() * 101);
+    });
+    /* ⚠ 꾸미기(얼굴형·머리·머리색·옷)도 같이 돌려야 한다.
+       예전엔 화장만 바꿔서, 머리 18종·옷 20종을 넣어도 랜덤을 아무리 눌러도
+       늘 같은 단발·티셔츠만 나왔다(실측: 6회 눌러도 스타일 1가지). */
+    var o = G.styleOptions();
+    Object.keys(o).forEach(function (k) {
+      var arr = o[k];
+      if (arr && arr.length) state.style[k] = arr[Math.floor(Math.random() * arr.length)].id;
     });
     syncAll();
   });

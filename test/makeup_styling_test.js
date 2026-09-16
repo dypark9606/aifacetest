@@ -91,9 +91,15 @@ BF.FACE_SHAPES.forEach(function (f) {
 /* 팔은 어깨 안쪽에 있어야 몸에 붙는다 */
 assert.ok(BF.BODY.armX < BF.BODY.shoulderHalf,
   '팔 중심이 어깨 밖으로 나가면 팔이 공중에 뜬다');
-/* 팔이 몸통 밖으로 크게 벗어나면 떠 보인다 */
-assert.ok((BF.BODY.armX + BF.BODY.armHalf) - BF.BODY.chestHalf <= 8,
-  '팔이 가슴폭 밖으로 ' + ((BF.BODY.armX + BF.BODY.armHalf) - BF.BODY.chestHalf) + 'px 벗어났다');
+/* 팔이 몸통 밖으로 크게 벗어나면 떠 보인다.
+   ⚠ 기준은 가슴(chestHalf)이 아니라 **어깨(shoulderHalf)** 다.
+   가슴 기준으로 8px 이내를 강제하면 팔이 몸통 안으로 들어가
+   옷에 완전히 덮여 아예 안 보인다(실측: 정장·셔츠에서 팔 픽셀 0).
+   팔은 가슴보다 바깥, 어깨선 안쪽에 있어야 팔뚝이 드러난다. */
+assert.ok(BF.BODY.armX > BF.BODY.chestHalf,
+  '팔이 가슴폭 안쪽이라 옷에 덮여 안 보인다');
+assert.ok((BF.BODY.armX + BF.BODY.armHalf) - BF.BODY.shoulderHalf <= 12,
+  '팔이 어깨폭 밖으로 ' + ((BF.BODY.armX + BF.BODY.armHalf) - BF.BODY.shoulderHalf) + 'px 벗어났다');
 /* 몸 비율: 어깨는 얼굴 폭의 1.3~2.0배 */
 const headWidth = BF.headRect({ mode: 'full' }, BF.FULL_W, BF.FULL_H).w * 0.52;
 const ratio = (BF.BODY.shoulderHalf * 2) / headWidth;

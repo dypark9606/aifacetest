@@ -122,4 +122,47 @@ sleeveCalls.forEach(arg => {
   assert.ok(!/hipY\s*\+/.test(arg),
     `소매 끝이 hipY 를 넘어 팔을 덮는다: drawSleeves(ctx, ${arg}, ...)`);
 });
-console.log('PASS: 소매가 팔을 덮지 않음');
+console.log('PASS: 소매가 팔을 통째로 덮지 않는다');
+
+/* --- 9. 전신 등신 비율 ---
+   실측 이력: 2.9등신(유아 체형) → 4.0등신(목 길고 빈약) → 3.4등신(채택).
+   FULL_HEAD 와 BODY 는 맞물려 있어 하나만 바꾸면 비율이 깨진다. */
+const FH = BF.FULL_HEAD;
+assert.ok(FH, 'FULL_HEAD 가 export 되지 않아 등신 검사를 건너뛴다');
+{
+  /* ⚠ FULL_HEAD.h 는 얼굴 캔버스(560x700) 전체를 끼워넣는 칸이라
+     머리 위아래 여백까지 포함한다. 실제로 보이는 머리(정수리~턱)는
+     그 칸의 약 0.81 배다(브라우저 픽셀 실측: 칸 357px 중 머리 274px).
+     그래서 FH.h 를 그대로 나누면 실측보다 작게 나온다. */
+  const headH = FH.h * 980 * 0.81;
+  const heads = 980 / headH;
+  assert.ok(heads >= 3.1 && heads <= 3.8,
+    `전신 등신이 범위를 벗어났다: ${heads.toFixed(2)}등신 ` +
+    `(실측 이력: 2.9=유아체형, 4.0=목 길고 빈약, 3.4=채택)`);
+  /* 머리는 가로 중앙에 있어야 한다 */
+  assert.ok(Math.abs((FH.x + FH.w / 2) - 0.5) < 0.01,
+    '전신 머리가 가로 중앙에서 벗어났다');
+}
+
+/* --- 10. 팔이 옷에 덮여 사라지면 안 된다 ---
+   armX 가 chestHalf 안쪽이면 팔뚝이 옷 밑에 완전히 가려진다(실측: 팔 픽셀 0). */
+assert.ok(BF.BODY.armX > BF.BODY.chestHalf,
+  `팔이 몸통 안쪽이라 옷에 덮여 안 보인다: armX ${BF.BODY.armX} <= chestHalf ${BF.BODY.chestHalf}`);
+assert.ok(BF.BODY.armX + BF.BODY.armHalf <= BF.BODY.shoulderHalf + 12,
+  `팔이 어깨 밖으로 너무 나갔다: ${BF.BODY.armX + BF.BODY.armHalf} vs 어깨 ${BF.BODY.shoulderHalf}`);
+
+/* --- 11. 몸통은 원통이면 안 된다 (허리가 어깨보다 좁아야 한다) --- */
+assert.ok(BF.BODY.waistHalf < BF.BODY.chestHalf && BF.BODY.chestHalf < BF.BODY.shoulderHalf,
+  `몸통이 원통이다: 어깨 ${BF.BODY.shoulderHalf} / 가슴 ${BF.BODY.chestHalf} / 허리 ${BF.BODY.waistHalf}`);
+
+/* --- 12. 세로 순서가 어긋나면 안 된다 --- */
+const order = ['neckTop', 'shoulderY', 'chestY', 'waistY', 'hipY', 'kneeY', 'ankleY', 'footY'];
+for (let i = 1; i < order.length; i++) {
+  assert.ok(BF.BODY[order[i]] > BF.BODY[order[i - 1]],
+    `신체 세로 순서가 뒤집혔다: ${order[i - 1]}(${BF.BODY[order[i - 1]]}) >= ${order[i]}(${BF.BODY[order[i]]})`);
+}
+/* 목 아래끝이 어깨보다 위면 머리가 공중에 뜬다 */
+assert.ok(BF.BODY.neckBot >= BF.BODY.shoulderY,
+  `목이 어깨에 닿지 않아 머리가 떠 보인다: neckBot ${BF.BODY.neckBot} < shoulderY ${BF.BODY.shoulderY}`);
+
+console.log('PASS: 전신 등신 3.4, 팔 노출, 몸통 실루엣, 세로 순서');
