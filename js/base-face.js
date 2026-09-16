@@ -36,15 +36,24 @@
             [417,238,384,126,280,120]]
   };
 
-  /* 얼굴형별 특징 — 눈 간격, 입 크기, 광대 위치 */
+  /* 얼굴형별 특징 — 눈 간격, 입 크기, 광대 위치
+     ⚠ 실제 얼굴은 **두 눈 사이 간격 == 눈 하나 폭** 이다.
+     눈폭 68 이므로 eyeGap ≈ 68 이어야 한다. 예전 값(88~94)은
+     눈 사이가 눈폭의 1.7배로 벌어져 얼굴이 기괴해 보였다.
+     mouthW 는 눈동자 사이보다 좁아야 한다(사람 얼굴 규칙). */
   var SHAPE = {
-    round: { eyeGap: 92, chin: 575, cheek: 432, mouthW: 52 },
-    oval:  { eyeGap: 90, chin: 588, cheek: 438, mouthW: 50 },
-    heart: { eyeGap: 94, chin: 556, cheek: 424, mouthW: 54 },
-    long:  { eyeGap: 88, chin: 602, cheek: 448, mouthW: 48 }
+    round: { eyeGap: 69, chin: 575, cheek: 432, mouthW: 52 },
+    oval:  { eyeGap: 68, chin: 588, cheek: 438, mouthW: 50 },
+    heart: { eyeGap: 70, chin: 556, cheek: 424, mouthW: 54 },
+    long:  { eyeGap: 67, chin: 602, cheek: 448, mouthW: 48 }
   };
 
-  var EYE_Y = 330, BROW_Y = 282, NOSE_Y = 430, MOUTH_Y = 492;
+  /* 세로 배치 — 고전 삼정(이마:중안:하안 = 1:1:1) 기준.
+     얼굴 상단 60, 턱 약 575~600 이므로 얼굴 높이 ≈ 515.
+     ⚠ 예전 값(BROW 282, EYE 330)은 이상 위치보다 50px 아래라
+     이마가 과도하게 넓고 이목구비가 몰려 보였다. */
+  var EYE_Y = 300, BROW_Y = 252, NOSE_Y = 412, MOUTH_Y = 482;
+  var MOUTH_W = 1.0;        /* SHAPE.mouthW 에 곱하는 배율 */
 
   /* ------------------------------------------------------------------
    * 꾸미기 선택지 — 머리 스타일 / 머리 색 / 옷 / 얼굴형
@@ -57,15 +66,34 @@
     { id: 'long',  label: '긴형' }
   ];
 
+  /* 머리 스타일 — 딸 요청으로 8종 → 18종.
+     length: 길이대. outX/botY 를 잡아 뒷머리 실루엣이 결정된다.
+     ⚠ length 만 같으면 앞머리만 달라 실루엣이 똑같아 보인다(실측으로 4쌍 중복 발견).
+     그래서 vol(볼륨: 옆폭 보정)과 wavy 로 같은 길이대 안에서도 형태를 갈라 놓는다.
+     tied: 묶은 머리는 뒷머리 실루엣 자체가 달라진다. */
   var HAIR_STYLES = [
-    { id: 'bob',      label: '단발' },
-    { id: 'long',     label: '긴생머리' },
-    { id: 'wave',     label: '웨이브' },
-    { id: 'short',    label: '숏컷' },
-    { id: 'ponytail', label: '포니테일' },
-    { id: 'twintail', label: '양갈래' },
-    { id: 'bun',      label: '올림머리' },
-    { id: 'curly',    label: '곱슬' }
+    /* 짧은 머리 */
+    { id: 'pixie',     label: '픽시컷',     length: 'shortest', vol: -10 },
+    { id: 'short',     label: '숏컷',       length: 'shortest', vol: 0 },
+    { id: 'shorthime', label: '시스루뱅',   length: 'short', bang: 'seethru', vol: -6 },
+    { id: 'bob',       label: '단발',       length: 'short', vol: 0 },
+    { id: 'bobcurl',   label: '웨이브단발', length: 'short', wavy: 1, vol: 8 },
+    { id: 'hime',      label: '히메컷',     length: 'mid',   bang: 'hime', vol: -8 },
+    /* 중간 길이 */
+    { id: 'medium',    label: '중단발',     length: 'mid',   vol: 0 },
+    { id: 'layered',   label: '레이어드',   length: 'mid',   wavy: 0.6, vol: 6 },
+    { id: 'wave',      label: '웨이브',     length: 'mid',   wavy: 1, vol: 12 },
+    /* 긴 머리 */
+    { id: 'long',      label: '긴생머리',   length: 'long',  vol: 0 },
+    { id: 'longwave',  label: '긴웨이브',   length: 'long',  wavy: 1, vol: 10 },
+    { id: 'curly',     label: '곱슬',       length: 'long',  wavy: 1.4, vol: 16 },
+    /* 묶은 머리 */
+    { id: 'ponytail',  label: '포니테일',   length: 'long',  tied: 'pony' },
+    { id: 'highpony',  label: '높은포니',   length: 'long',  tied: 'highpony' },
+    { id: 'twintail',  label: '양갈래',     length: 'long',  tied: 'twin' },
+    { id: 'braid',     label: '땋은머리',   length: 'long',  tied: 'braid' },
+    { id: 'twinbraid', label: '양갈래땋기', length: 'long',  tied: 'twinbraid' },
+    { id: 'bun',       label: '올림머리',   length: 'short', tied: 'bun' }
   ];
 
   var HAIR_COLORS = [
@@ -80,15 +108,33 @@
   ];
 
   /* 옷: main = 기본 천, trim = 장식·소매, kind = 실루엣 */
+  /* 옷 — 딸 요청으로 8종 → 20종, 카테고리별로 묶는다.
+     kind: 실제 그리기 방식(몇 가지를 공유). cat: UI 에서 묶는 이름. */
   var OUTFITS = [
-    { id: 'tee',     label: '티셔츠',   kind: 'tee',    main: '#f2a7c3', trim: '#ffffff' },
-    { id: 'dress',   label: '원피스',   kind: 'dress',  main: '#8f7ad6', trim: '#f6e7ff' },
-    { id: 'hoodie',  label: '후드티',   kind: 'hoodie', main: '#5f7f9e', trim: '#dfe9f3' },
-    { id: 'hanbok',  label: '한복',     kind: 'hanbok', main: '#d94f5c', trim: '#f3e3b8' },
-    { id: 'uniform', label: '교복',     kind: 'uniform',main: '#33405e', trim: '#f0f2f7' },
-    { id: 'idol',    label: '무대의상', kind: 'idol',   main: '#1f1b33', trim: '#ffd166' },
-    { id: 'sporty',  label: '운동복',   kind: 'sporty', main: '#2f9e6e', trim: '#ffffff' },
-    { id: 'coat',    label: '코트',     kind: 'coat',   main: '#b3805a', trim: '#e8d7c4' }
+    /* 캐주얼 */
+    { id: 'tee',      label: '티셔츠',     cat: '캐주얼', kind: 'tee',    main: '#f2a7c3', trim: '#ffffff' },
+    { id: 'stripetee',label: '줄무늬티',   cat: '캐주얼', kind: 'stripe', main: '#4a6fa5', trim: '#ffffff' },
+    { id: 'hoodie',   label: '후드티',     cat: '캐주얼', kind: 'hoodie', main: '#5f7f9e', trim: '#dfe9f3' },
+    { id: 'denim',    label: '청자켓',     cat: '캐주얼', kind: 'jacket', main: '#4f6d97', trim: '#9fb8d6' },
+    { id: 'cardigan', label: '가디건',     cat: '캐주얼', kind: 'jacket', main: '#e0b088', trim: '#fff3e2' },
+    { id: 'overall',  label: '멜빵바지',   cat: '캐주얼', kind: 'overall',main: '#6b8fc2', trim: '#ffd9e6' },
+    /* 정장 */
+    { id: 'suit',     label: '정장',       cat: '정장',   kind: 'suit',   main: '#2d3247', trim: '#ffffff' },
+    { id: 'blazer',   label: '블레이저',   cat: '정장',   kind: 'suit',   main: '#5b4a6b', trim: '#f2ecf7' },
+    { id: 'shirt',    label: '셔츠',       cat: '정장',   kind: 'shirt',  main: '#f4f6fa', trim: '#c9d3e2' },
+    { id: 'vest',     label: '조끼정장',   cat: '정장',   kind: 'vest',   main: '#3d4b3a', trim: '#e8e2d2' },
+    { id: 'trench',   label: '트렌치코트', cat: '정장',   kind: 'coat',   main: '#c0a17c', trim: '#ece0cd' },
+    { id: 'coat',     label: '코트',       cat: '정장',   kind: 'coat',   main: '#b3805a', trim: '#e8d7c4' },
+    /* 드레스 */
+    { id: 'dress',    label: '원피스',     cat: '드레스', kind: 'dress',  main: '#8f7ad6', trim: '#f6e7ff' },
+    { id: 'gown',     label: '드레스',     cat: '드레스', kind: 'dress',  main: '#d96a94', trim: '#ffe3ef' },
+    { id: 'wedding',  label: '웨딩드레스', cat: '드레스', kind: 'dress',  main: '#f7f4f0', trim: '#e6dccf' },
+    /* 특별의상 */
+    { id: 'hanbok',   label: '한복',       cat: '특별',   kind: 'hanbok', main: '#d94f5c', trim: '#f3e3b8' },
+    { id: 'uniform',  label: '교복',       cat: '특별',   kind: 'uniform',main: '#33405e', trim: '#f0f2f7' },
+    { id: 'idol',     label: '무대의상',   cat: '특별',   kind: 'idol',   main: '#1f1b33', trim: '#ffd166' },
+    { id: 'sporty',   label: '운동복',     cat: '스포츠', kind: 'sporty', main: '#2f9e6e', trim: '#ffffff' },
+    { id: 'tracksuit',label: '트레이닝',   cat: '스포츠', kind: 'sporty', main: '#26304a', trim: '#ff6b6b' }
   ];
 
   var MODES = ['portrait', 'full'];
@@ -197,21 +243,44 @@
   /* ---------- 뒷머리 ----------
      ⚠ 묶은 머리(포니테일·양갈래·올림머리)는 **뒷머리 실루엣 자체가 달라야** 한다.
      앞머리만 바꾸고 뒤를 그대로 두면 어떤 스타일을 골라도 똑같아 보인다. */
+  /* ---------- 뒷머리 ----------
+     ⚠ 예전엔 스타일 id 를 하나씩 if 로 분기했다. 스타일을 8종에서 18종으로
+     늘리자 새 스타일 10종이 전부 "기본" 실루엣으로 떨어져 똑같아 보였다.
+     그래서 **속성(length / tied / wavy)** 으로 그리도록 바꿨다.
+     새 스타일을 추가할 때 HAIR_STYLES 에 속성만 주면 자동으로 그려진다. */
+  function hairStyleDef(m) {
+    for (var i = 0; i < HAIR_STYLES.length; i++) {
+      if (HAIR_STYLES[i].id === m.hairStyle) return HAIR_STYLES[i];
+    }
+    return HAIR_STYLES[0];
+  }
+
+  /* 길이대별 뒷머리 외곽선 (바깥폭, 아래끝, 안쪽 어깨선) */
+  var HAIR_LEN = {
+    shortest: { outX: 118, botY: 420, inY: 420 },
+    short:    { outX: 106, botY: 508, inY: 470 },
+    mid:      { outX:  98, botY: 580, inY: 500 },
+    long:     { outX:  92, botY: 648, inY: 552 }
+  };
+
   function drawHairBack(ctx, m) {
+    var def = hairStyleDef(m);
+    var L = HAIR_LEN[def.length] || HAIR_LEN.long;
     var fill = hairGradient(ctx)(m);
     ctx.fillStyle = fill;
 
-    /* 묶은 머리는 머리 덩어리를 먼저 그린다(머리통 뒤로 깔린다) */
-    if (m.hairStyle === 'ponytail') {
-      ctx.beginPath();                                   /* 뒤로 넘긴 꼬리 */
-      ctx.moveTo(408, 250);
-      ctx.bezierCurveTo(486, 268, 508, 380, 486, 486);
-      ctx.bezierCurveTo(474, 552, 452, 590, 430, 612);
-      ctx.quadraticCurveTo(414, 566, 420, 512);
-      ctx.bezierCurveTo(428, 430, 430, 330, 396, 288);
+    /* --- 1. 묶은 머리 덩어리는 머리통 뒤에 먼저 깔린다 --- */
+    if (def.tied === 'pony' || def.tied === 'highpony') {
+      var ty = def.tied === 'highpony' ? 196 : 250;      /* 묶는 높이 */
+      ctx.beginPath();
+      ctx.moveTo(408, ty);
+      ctx.bezierCurveTo(486, ty + 18, 508, ty + 130, 486, ty + 236);
+      ctx.bezierCurveTo(474, ty + 302, 452, ty + 340, 430, ty + 362);
+      ctx.quadraticCurveTo(414, ty + 316, 420, ty + 262);
+      ctx.bezierCurveTo(428, ty + 180, 430, ty + 80, 396, ty + 38);
       ctx.closePath(); ctx.fill();
-    } else if (m.hairStyle === 'twintail') {
-      [[126, -1], [434, 1]].forEach(function (p) {       /* 양쪽 갈래 */
+    } else if (def.tied === 'twin' || def.tied === 'twinbraid') {
+      [[126, -1], [434, 1]].forEach(function (p) {
         var x = p[0], d = p[1];
         ctx.beginPath();
         ctx.moveTo(x, 246);
@@ -220,8 +289,36 @@
         ctx.bezierCurveTo(x - d * 18, 520, x - d * 10, 400, x - d * 22, 300);
         ctx.closePath(); ctx.fill();
       });
-    } else if (m.hairStyle === 'curly') {
-      for (var c = 0; c < 16; c++) {                     /* 곱슬 뭉치 */
+      if (def.tied === 'twinbraid') {          /* 땋은 마디 */
+        ctx.save(); ctx.globalAlpha = 0.30;
+        ctx.strokeStyle = mix(m.hair, '#000000', 0.45); ctx.lineWidth = 3;
+        [[150, -1], [410, 1]].forEach(function (p) {
+          for (var k = 0; k < 5; k++) {
+            var yy = 320 + k * 52;
+            ctx.beginPath();
+            ctx.ellipse(p[0] + p[1] * 14, yy, 26, 15, p[1] * 0.25, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        });
+        ctx.restore();
+      }
+    } else if (def.tied === 'braid') {
+      ctx.beginPath();                          /* 한 갈래로 앞으로 넘긴 땋기 */
+      ctx.moveTo(392, 268);
+      ctx.bezierCurveTo(446, 300, 452, 420, 436, 540);
+      ctx.bezierCurveTo(430, 588, 418, 616, 402, 634);
+      ctx.quadraticCurveTo(378, 604, 380, 548);
+      ctx.bezierCurveTo(384, 440, 382, 330, 360, 296);
+      ctx.closePath(); ctx.fill();
+      ctx.save(); ctx.globalAlpha = 0.32;
+      ctx.strokeStyle = mix(m.hair, '#000000', 0.45); ctx.lineWidth = 3.4;
+      for (var bk = 0; bk < 6; bk++) {
+        ctx.beginPath();
+        ctx.ellipse(406, 330 + bk * 50, 30, 17, -0.2, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+    } else if (def.wavy >= 1.3) {
+      for (var c = 0; c < 16; c++) {            /* 곱슬 뭉치 */
         var ang = Math.PI * (0.06 + 0.92 * (c / 15));
         var cx = 280 - Math.cos(ang) * 196, cy = 330 - Math.sin(ang) * 250;
         ctx.beginPath(); ctx.arc(cx, cy, 56 + (c % 3) * 9, 0, Math.PI * 2); ctx.fill();
@@ -232,70 +329,36 @@
       }
     }
 
+    /* --- 2. 머리통을 감싸는 본체 --- */
+    /* vol 로 같은 길이대 안에서도 옆폭을 갈라 놓는다(중복 실루엣 방지) */
+    var outX = L.outX - (def.vol || 0), botY = L.botY, inY = L.inY;
+    /* 묶은 머리는 옆머리가 없어 머리통에 딱 붙는다 */
+    if (def.tied) { outX = 122; botY = 424; inY = 424; }
+
     ctx.beginPath();
-    if (m.hairStyle === 'short') {
-      ctx.moveTo(280, 74);
-      ctx.bezierCurveTo(148, 74, 106, 196, 118, 312);
-      ctx.bezierCurveTo(124, 372, 146, 404, 160, 420);
-      ctx.lineTo(400, 420);
-      ctx.bezierCurveTo(414, 404, 436, 372, 442, 312);
-      ctx.bezierCurveTo(454, 196, 412, 74, 280, 74);
-    } else if (m.hairStyle === 'bob') {
-      ctx.moveTo(280, 70);
-      ctx.bezierCurveTo(140, 70, 96, 200, 106, 330);
-      ctx.bezierCurveTo(112, 418, 130, 470, 148, 508);
-      ctx.quadraticCurveTo(196, 496, 214, 470);
-      ctx.lineTo(346, 470);
-      ctx.quadraticCurveTo(364, 496, 412, 508);
-      ctx.bezierCurveTo(430, 470, 448, 418, 454, 330);
-      ctx.bezierCurveTo(464, 200, 420, 70, 280, 70);
-    } else if (m.hairStyle === 'wave') {
-      ctx.moveTo(280, 66);
-      ctx.bezierCurveTo(128, 66, 86, 210, 96, 348);
-      ctx.bezierCurveTo(102, 446, 82, 528, 104, 640);
-      ctx.quadraticCurveTo(150, 610, 168, 540);
-      ctx.quadraticCurveTo(186, 470, 196, 430);
-      ctx.lineTo(364, 430);
-      ctx.quadraticCurveTo(374, 470, 392, 540);
-      ctx.quadraticCurveTo(410, 610, 456, 640);
-      ctx.bezierCurveTo(478, 528, 458, 446, 464, 348);
-      ctx.bezierCurveTo(474, 210, 432, 66, 280, 66);
-    } else if (m.hairStyle === 'ponytail' || m.hairStyle === 'bun') {
-      /* 묶은 머리는 옆으로 흐르는 머리가 없어 머리통에 붙는다 */
-      ctx.moveTo(280, 72);
-      ctx.bezierCurveTo(158, 72, 116, 194, 122, 306);
-      ctx.bezierCurveTo(126, 368, 146, 402, 162, 424);
-      ctx.lineTo(398, 424);
-      ctx.bezierCurveTo(414, 402, 434, 368, 438, 306);
-      ctx.bezierCurveTo(444, 194, 402, 72, 280, 72);
-    } else if (m.hairStyle === 'twintail') {
-      ctx.moveTo(280, 70);
-      ctx.bezierCurveTo(150, 70, 110, 196, 118, 316);
-      ctx.bezierCurveTo(122, 378, 142, 416, 158, 442);
-      ctx.lineTo(402, 442);
-      ctx.bezierCurveTo(418, 416, 438, 378, 442, 316);
-      ctx.bezierCurveTo(450, 196, 410, 70, 280, 70);
-    } else if (m.hairStyle === 'curly') {
-      ctx.moveTo(280, 78);
-      ctx.bezierCurveTo(152, 78, 112, 200, 120, 320);
-      ctx.bezierCurveTo(126, 396, 148, 440, 166, 468);
-      ctx.lineTo(394, 468);
-      ctx.bezierCurveTo(412, 440, 434, 396, 440, 320);
-      ctx.bezierCurveTo(448, 200, 408, 78, 280, 78);
+    ctx.moveTo(280, 68);
+    ctx.bezierCurveTo(280 - (280 - outX) * 0.86, 68, outX - 12, 200, outX, 330);
+    if (def.wavy && !def.tied) {
+      /* 웨이브: 옆선을 물결지게 내린다 */
+      ctx.bezierCurveTo(outX + 6, 446, outX - 14, 528, outX + 8, botY);
+      ctx.quadraticCurveTo(outX + 52, botY - 30, outX + 70, botY - 100);
+      ctx.quadraticCurveTo(outX + 88, botY - 170, outX + 98, inY - 122);
+      ctx.lineTo(560 - outX - 98, inY - 122);
+      ctx.quadraticCurveTo(560 - outX - 88, botY - 170, 560 - outX - 70, botY - 100);
+      ctx.quadraticCurveTo(560 - outX - 52, botY - 30, 560 - outX - 8, botY);
+      ctx.bezierCurveTo(560 - outX - 6, 528, 560 - outX + 14, 446, 560 - outX, 330);
     } else {
-      ctx.moveTo(280, 66);
-      ctx.bezierCurveTo(126, 66, 88, 206, 98, 344);
-      ctx.bezierCurveTo(104, 452, 96, 552, 112, 648);
-      ctx.quadraticCurveTo(158, 626, 178, 552);
-      ctx.lineTo(382, 552);
-      ctx.quadraticCurveTo(402, 626, 448, 648);
-      ctx.bezierCurveTo(464, 552, 456, 452, 462, 344);
-      ctx.bezierCurveTo(472, 206, 434, 66, 280, 66);
+      ctx.bezierCurveTo(outX + 6, 418, outX + 24, 470, outX + 42, botY);
+      ctx.quadraticCurveTo(outX + 90, botY - 12, outX + 108, inY);
+      ctx.lineTo(560 - outX - 108, inY);
+      ctx.quadraticCurveTo(560 - outX - 90, botY - 12, 560 - outX - 42, botY);
+      ctx.bezierCurveTo(560 - outX - 24, 470, 560 - outX - 6, 418, 560 - outX, 330);
     }
+    ctx.bezierCurveTo(560 - outX + 12, 200, 280 + (280 - outX) * 0.86, 68, 280, 68);
     ctx.closePath(); ctx.fill();
 
-    /* 올림머리 덩어리와 묶음 머리끈은 머리통 위에 얹는다 */
-    if (m.hairStyle === 'bun') {
+    /* --- 3. 머리통 위에 얹는 장식 --- */
+    if (def.tied === 'bun') {
       ctx.beginPath(); ctx.ellipse(280, 68, 78, 58, 0, 0, Math.PI * 2); ctx.fill();
       ctx.save(); ctx.globalAlpha = 0.28; ctx.strokeStyle = mix(m.hair, '#ffffff', 0.5);
       ctx.lineWidth = 3;
@@ -304,16 +367,22 @@
       }
       ctx.restore();
     }
-    if (m.hairStyle === 'ponytail') {
+    if (def.tied === 'pony' || def.tied === 'highpony') {
       ctx.fillStyle = mix(m.hair, '#000000', 0.35);
-      ctx.beginPath(); ctx.ellipse(404, 262, 20, 15, -0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(404, def.tied === 'highpony' ? 208 : 262, 20, 15, -0.4, 0, Math.PI * 2);
+      ctx.fill();
     }
-    if (m.hairStyle === 'twintail') {
+    if (def.tied === 'twin' || def.tied === 'twinbraid') {
       ctx.fillStyle = mix(m.hair, '#000000', 0.35);
       ctx.beginPath();
       ctx.ellipse(140, 258, 17, 13, 0.4, 0, Math.PI * 2);
       ctx.ellipse(420, 258, 17, 13, -0.4, 0, Math.PI * 2);
       ctx.fill();
+    }
+    if (def.tied === 'braid') {
+      ctx.fillStyle = mix(m.hair, '#000000', 0.35);
+      ctx.beginPath(); ctx.ellipse(392, 276, 18, 13, -0.4, 0, Math.PI * 2); ctx.fill();
     }
   }
 
@@ -365,40 +434,49 @@
   function drawNose(ctx, m) {
     ctx.save();
     /* ⚠ 콧대는 좁고 진한 타원을 쓰면 얼굴에 막대 두 개가 선 것처럼 보인다.
-       넓고 아주 옅게 깔고, 코끝 주변에서만 형태를 잡는다. */
-    soft(ctx, 264, NOSE_Y - 28, 20, 62, m.skinShadow, 0.16);       /* 콧대 왼쪽 음영 */
-    soft(ctx, 297, NOSE_Y - 28, 20, 62, m.skinShadow, 0.10);       /* 콧대 오른쪽(광원쪽) */
-    soft(ctx, 281, NOSE_Y - 30, 12, 54, '#ffffff', 0.13);          /* 콧대 하이라이트 */
-    soft(ctx, 280, NOSE_Y + 6, 26, 14, m.skinShadow, 0.22);        /* 코끝 아래 */
-    soft(ctx, 280, NOSE_Y - 6, 13, 9, '#ffffff', 0.22);            /* 코끝 광 */
-    ctx.strokeStyle = 'rgba(140,88,66,.55)'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+       넓고 아주 옅게 깔고, 코끝 주변에서만 형태를 잡는다.
+       ⚠⚠ 하이라이트도 세로로 길게 넣으면 콧등에 흰 줄이 그어진 것처럼 보인다.
+       짧고 옅게, 코끝 쪽에만 둔다. */
+    soft(ctx, 266, NOSE_Y - 24, 18, 52, m.skinShadow, 0.13);       /* 콧대 왼쪽 음영 */
+    soft(ctx, 295, NOSE_Y - 24, 18, 52, m.skinShadow, 0.08);       /* 콧대 오른쪽(광원쪽) */
+    /* ⚠ 콧대 하이라이트는 넣지 않는다. 세로로 밝은 영역을 주면 아무리 옅어도
+       콧등에 흰 줄이 그어진 것처럼 보인다(딸 지적). 코끝 광만으로 충분하다. */
+    soft(ctx, 280, NOSE_Y + 6, 24, 13, m.skinShadow, 0.20);        /* 코끝 아래 */
+    soft(ctx, 280, NOSE_Y - 5, 11, 8, '#ffffff', 0.15);            /* 코끝 광 */
+    ctx.strokeStyle = 'rgba(140,88,66,.42)'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
     ctx.beginPath();                                               /* 콧방울 */
-    ctx.moveTo(262, NOSE_Y + 2); ctx.quadraticCurveTo(270, NOSE_Y + 12, 280, NOSE_Y + 9);
-    ctx.quadraticCurveTo(290, NOSE_Y + 12, 298, NOSE_Y + 2);
+    ctx.moveTo(265, NOSE_Y + 2); ctx.quadraticCurveTo(272, NOSE_Y + 11, 280, NOSE_Y + 8);
+    ctx.quadraticCurveTo(288, NOSE_Y + 11, 295, NOSE_Y + 2);
     ctx.stroke();
-    ctx.fillStyle = 'rgba(120,74,56,.5)';
-    ctx.beginPath(); ctx.ellipse(268, NOSE_Y + 6, 4, 2.6, -0.3, 0, Math.PI * 2);
-    ctx.ellipse(292, NOSE_Y + 6, 4, 2.6, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(120,74,56,.42)';
+    ctx.beginPath(); ctx.ellipse(270, NOSE_Y + 6, 3.4, 2.2, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(290, NOSE_Y + 6, 3.4, 2.2, 0.3, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
 
   /* ---------- 눈 ---------- */
+  /* ⚠ 눈 크기는 "귀엽게" 키우면 즉시 애니메이션 캐릭터가 된다.
+     고전 인체비례: 얼굴 폭 = 눈 5개 폭. 머리 폭 약 297px 이므로
+     눈 하나 ≈ 59px, 즉 **반폭 30px** 이 사람 비율이다.
+     예전엔 반폭 52px(눈폭 104px)로 실제의 1.75배였고,
+     딸이 "괴상한 애니메이션 같다"고 한 가장 큰 원인이었다.
+     인형 느낌을 조금 남기려 34px(=1.15배)까지만 허용한다. */
   function eyeShape(ctx, cx, cy, dir, style) {
-    var w = 52, inner = cx - dir * w, outer = cx + dir * w;
-    var topLift = style === 'cat' ? 30 : style === 'doe' ? 36 : style === 'cool' ? 22 : 33;
-    var tail = style === 'cat' ? -12 : style === 'doe' ? 2 : style === 'cool' ? -6 : 0;
-    var bottom = style === 'doe' ? 26 : style === 'cool' ? 17 : 22;
+    var w = 34, inner = cx - dir * w, outer = cx + dir * w;
+    var topLift = style === 'cat' ? 19 : style === 'doe' ? 23 : style === 'cool' ? 14 : 21;
+    var tail = style === 'cat' ? -8 : style === 'doe' ? 1 : style === 'cool' ? -4 : 0;
+    var bottom = style === 'doe' ? 17 : style === 'cool' ? 11 : 14;
     ctx.beginPath();
-    ctx.moveTo(inner, cy + 2);
-    ctx.bezierCurveTo(cx - dir * 26, cy - topLift, cx + dir * 24, cy - topLift + 4, outer, cy + tail);
-    ctx.bezierCurveTo(cx + dir * 22, cy + bottom, cx - dir * 26, cy + bottom - 4, inner, cy + 2);
+    ctx.moveTo(inner, cy + 1);
+    ctx.bezierCurveTo(cx - dir * 17, cy - topLift, cx + dir * 16, cy - topLift + 3, outer, cy + tail);
+    ctx.bezierCurveTo(cx + dir * 14, cy + bottom, cx - dir * 17, cy + bottom - 3, inner, cy + 1);
     ctx.closePath();
   }
 
   function drawEye(ctx, m, cx, dir) {
     var cy = EYE_Y, style = m.eye;
     /* 눈두덩 음영 */
-    soft(ctx, cx, cy - 24, 52, 24, mix(m.skinShadow, '#9c6248', 0.25), 0.30);
+    soft(ctx, cx, cy - 16, 34, 16, mix(m.skinShadow, '#9c6248', 0.25), 0.26);
     /* 흰자 */
     ctx.save(); eyeShape(ctx, cx, cy, dir, style); ctx.clip();
     var wg = ctx.createLinearGradient(0, cy - 30, 0, cy + 26);
@@ -406,7 +484,9 @@
     ctx.fillStyle = wg; ctx.fillRect(cx - 60, cy - 40, 120, 80);
 
     /* 홍채 */
-    var ix = cx + dir * 2, iy = cy + 1, ir = style === 'doe' ? 22 : style === 'cool' ? 18 : 20;
+    /* ⚠ 홍채 반지름은 눈 반폭(34)의 40% 안쪽이어야 눈 밖으로 새지 않는다.
+       눈을 줄일 때 홍채를 같이 줄이지 않으면 눈알이 튀어나온 것처럼 보인다. */
+    var ix = cx + dir * 1, iy = cy + 1, ir = style === 'doe' ? 14 : style === 'cool' ? 11.5 : 13;
     var ig = ctx.createRadialGradient(ix - 4, iy - 5, 2, ix, iy, ir);
     ig.addColorStop(0, mix(m.iris, '#ffffff', 0.45));
     ig.addColorStop(0.55, m.iris);
@@ -442,13 +522,15 @@
 
     /* 아이라인 + 속눈썹 */
     ctx.save();
-    ctx.strokeStyle = '#2a1c16'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
+    /* 아이라인이 굵으면 만화 선이 된다. 눈이 작아진 만큼 선도 얇게. */
+    ctx.strokeStyle = '#3a291f'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
     eyeShape(ctx, cx, cy, dir, style); ctx.stroke();
-    var lashes = [[0.62, 20], [0.8, 24], [0.95, 22], [1.06, 16]];
+    /* 속눈썹도 눈 크기에 비례해 줄인다 (예전 길이 20~24 는 눈보다 길었다) */
+    var lashes = [[0.62, 9], [0.82, 11], [0.98, 10], [1.08, 7]];
     lashes.forEach(function (l) {
       var t = l[0], len = l[1];
-      var bx = cx + dir * (t * 44), by = cy - (style === 'cool' ? 16 : 21) + Math.abs(t - 0.8) * 12;
-      ctx.lineWidth = 3.4;
+      var bx = cx + dir * (t * 29), by = cy - (style === 'cool' ? 10 : 13) + Math.abs(t - 0.8) * 8;
+      ctx.lineWidth = 1.9;
       ctx.beginPath();
       ctx.moveTo(bx, by);
       ctx.quadraticCurveTo(bx + dir * len * 0.6, by - len * 0.7, bx + dir * len, by - len * 0.85);
@@ -468,18 +550,20 @@
     var y = BROW_Y, color = mix(m.hair, '#6a4433', 0.35);
     ctx.save();
     ctx.strokeStyle = color; ctx.lineCap = 'round';
-    /* 형태 */
-    ctx.lineWidth = 9;
+    /* 형태 — ⚠ 눈썹은 눈보다 조금만 길어야 한다(눈폭 68 -> 눈썹 76 정도).
+       예전엔 폭 94 / 굵기 9 로, 눈이 작아진 뒤 얼굴에 검은 막대를 붙인 꼴이 됐다. */
+    ctx.lineWidth = 5.5;
+    ctx.globalAlpha = 0.88;
     ctx.beginPath();
-    ctx.moveTo(cx - dir * 46, y + 8);
-    ctx.quadraticCurveTo(cx + dir * 2, y - 13, cx + dir * 48, y + 2);
+    ctx.moveTo(cx - dir * 37, y + 6);
+    ctx.quadraticCurveTo(cx + dir * 2, y - 10, cx + dir * 39, y + 2);
     ctx.stroke();
     /* 결 */
-    ctx.lineWidth = 1.6; ctx.globalAlpha = 0.65;
+    ctx.lineWidth = 1.2; ctx.globalAlpha = 0.5;
     for (var i = 0; i < 12; i++) {
-      var t = i / 11, bx = cx + dir * (-46 + 94 * t);
-      var by = y + 8 - 20 * Math.sin(Math.PI * t) + 3 * t;
-      ctx.beginPath(); ctx.moveTo(bx, by + 4); ctx.lineTo(bx + dir * 5, by - 5); ctx.stroke();
+      var t = i / 11, bx = cx + dir * (-37 + 76 * t);
+      var by = y + 6 - 15 * Math.sin(Math.PI * t) + 3 * t;
+      ctx.beginPath(); ctx.moveTo(bx, by + 3); ctx.lineTo(bx + dir * 4, by - 4); ctx.stroke();
     }
     ctx.restore();
   }
@@ -493,18 +577,21 @@
     ctx.beginPath(); ctx.moveTo(274, y - 34); ctx.lineTo(274, y - 14);
     ctx.moveTo(286, y - 34); ctx.lineTo(286, y - 14); ctx.stroke();
 
+    /* ⚠ 입술 두께. 예전엔 위 15 + 아래 31 = 46px 로 입폭(100)의 절반이라
+       입만 도드라져 보였다. 실제 입술 높이는 입폭의 1/3 안쪽이다.
+       윗입술:아랫입술 = 1:1.4 비율을 지킨다. */
     function lipPath() {
       ctx.beginPath();
       ctx.moveTo(280 - w, y);
-      ctx.quadraticCurveTo(280 - w * 0.6, y - 15, 280 - w * 0.22, y - 7);   /* 큐피드 활 왼쪽 */
-      ctx.quadraticCurveTo(280, y - 14, 280 + w * 0.22, y - 7);
-      ctx.quadraticCurveTo(280 + w * 0.6, y - 15, 280 + w, y);
-      ctx.quadraticCurveTo(280 + w * 0.55, y + 28, 280, y + 31);
-      ctx.quadraticCurveTo(280 - w * 0.55, y + 28, 280 - w, y);
+      ctx.quadraticCurveTo(280 - w * 0.6, y - 10, 280 - w * 0.22, y - 5);   /* 큐피드 활 왼쪽 */
+      ctx.quadraticCurveTo(280, y - 9.5, 280 + w * 0.22, y - 5);
+      ctx.quadraticCurveTo(280 + w * 0.6, y - 10, 280 + w, y);
+      ctx.quadraticCurveTo(280 + w * 0.55, y + 18, 280, y + 20);
+      ctx.quadraticCurveTo(280 - w * 0.55, y + 18, 280 - w, y);
       ctx.closePath();
     }
     lipPath();
-    var lg = ctx.createLinearGradient(0, y - 16, 0, y + 32);
+    var lg = ctx.createLinearGradient(0, y - 11, 0, y + 21);
     lg.addColorStop(0, mix(m.lip, '#000000', 0.25));
     lg.addColorStop(0.42, m.lip);
     lg.addColorStop(0.62, mix(m.lip, '#ffffff', 0.18));
@@ -525,67 +612,55 @@
   }
 
   /* ---------- 앞머리 ---------- */
+  /* ---------- 앞머리 ----------
+     ⚠ 뒷머리와 같은 이유로 id 분기를 버리고 속성(bang / tied / length)으로 그린다.
+     bang: 'seethru'(시스루뱅) / 'hime'(일자 히메컷) / 없으면 기본 가름머리. */
   function hairFrontPath(ctx, m) {
+    var def = hairStyleDef(m);
+    var L = HAIR_LEN[def.length] || HAIR_LEN.long;
+    var outX = def.tied ? 122 : (L.outX - (def.vol || 0));
+    var topY = 68;
     ctx.fillStyle = hairGradient(ctx)(m);
     ctx.beginPath();
-    if (m.hairStyle === 'short') {
-      ctx.moveTo(118, 286);
-      ctx.bezierCurveTo(122, 150, 196, 74, 286, 74);
-      ctx.bezierCurveTo(392, 74, 444, 158, 442, 288);
-      ctx.quadraticCurveTo(414, 196, 340, 170);
-      ctx.quadraticCurveTo(300, 232, 256, 196);
-      ctx.quadraticCurveTo(196, 210, 160, 262);
-      ctx.quadraticCurveTo(140, 276, 118, 286);
-    } else if (m.hairStyle === 'bob') {
-      ctx.moveTo(106, 300);
-      ctx.bezierCurveTo(108, 146, 186, 70, 280, 70);
-      ctx.bezierCurveTo(378, 70, 452, 150, 454, 300);
-      ctx.quadraticCurveTo(432, 206, 372, 168);
-      ctx.quadraticCurveTo(322, 228, 268, 206);
-      ctx.quadraticCurveTo(188, 214, 140, 268);
-      ctx.quadraticCurveTo(122, 284, 106, 300);
-    } else if (m.hairStyle === 'wave') {
-      ctx.moveTo(96, 310);
-      ctx.bezierCurveTo(100, 150, 180, 66, 280, 66);
-      ctx.bezierCurveTo(384, 66, 460, 152, 464, 310);
-      ctx.quadraticCurveTo(440, 200, 386, 160);
-      ctx.quadraticCurveTo(332, 226, 262, 190);
-      ctx.quadraticCurveTo(178, 200, 132, 272);
-      ctx.quadraticCurveTo(112, 292, 96, 310);
-    } else if (m.hairStyle === 'ponytail' || m.hairStyle === 'bun') {
-      /* 이마를 드러내고 옆으로 빗어 넘긴 앞머리 */
-      ctx.moveTo(122, 300);
-      ctx.bezierCurveTo(124, 152, 190, 72, 280, 72);
-      ctx.bezierCurveTo(376, 72, 440, 156, 438, 300);
+
+    if (def.bang === 'hime') {
+      /* 히메컷: 이마를 가로로 덮는 일자 뱅 */
+      ctx.moveTo(outX, 300);
+      ctx.bezierCurveTo(outX + 4, 150, 190, topY, 280, topY);
+      ctx.bezierCurveTo(370, topY, 560 - outX - 4, 150, 560 - outX, 300);
+      ctx.lineTo(560 - outX - 16, 252);
+      ctx.lineTo(outX + 16, 252);
+      ctx.closePath();
+    } else if (def.bang === 'seethru') {
+      /* 시스루뱅: 얇게 내려 이마가 비친다 */
+      ctx.moveTo(outX, 296);
+      ctx.bezierCurveTo(outX + 4, 150, 190, topY, 280, topY);
+      ctx.bezierCurveTo(370, topY, 560 - outX - 4, 150, 560 - outX, 296);
+      ctx.quadraticCurveTo(470, 210, 392, 188);
+      ctx.quadraticCurveTo(336, 236, 280, 214);
+      ctx.quadraticCurveTo(224, 236, 168, 188);
+      ctx.quadraticCurveTo(90, 210, outX, 296);
+      ctx.closePath();
+    } else if (def.tied) {
+      /* 묶은 머리: 이마를 드러내고 옆으로 빗어 넘긴다 */
+      ctx.moveTo(outX, 300);
+      ctx.bezierCurveTo(outX + 2, 152, 190, 72, 280, 72);
+      ctx.bezierCurveTo(376, 72, 560 - outX - 2, 156, 560 - outX, 300);
       ctx.quadraticCurveTo(424, 206, 372, 168);
       ctx.quadraticCurveTo(300, 130, 206, 176);
-      ctx.quadraticCurveTo(152, 212, 122, 300);
-    } else if (m.hairStyle === 'twintail') {
-      ctx.moveTo(118, 306);
-      ctx.bezierCurveTo(120, 150, 190, 70, 280, 70);
-      ctx.bezierCurveTo(378, 70, 442, 154, 442, 306);
-      ctx.quadraticCurveTo(420, 198, 356, 166);
-      ctx.quadraticCurveTo(306, 226, 248, 190);
-      ctx.quadraticCurveTo(174, 200, 138, 268);
-      ctx.quadraticCurveTo(126, 288, 118, 306);
-    } else if (m.hairStyle === 'curly') {
-      /* 곱슬은 직선 대신 둥근 뭉치가 이어지는 실루엣 */
-      ctx.moveTo(120, 312);
-      ctx.bezierCurveTo(122, 156, 192, 78, 280, 78);
-      ctx.bezierCurveTo(374, 78, 440, 158, 440, 312);
-      ctx.quadraticCurveTo(414, 232, 380, 214);
-      ctx.quadraticCurveTo(350, 254, 316, 220);
-      ctx.quadraticCurveTo(286, 258, 250, 216);
-      ctx.quadraticCurveTo(214, 254, 184, 216);
-      ctx.quadraticCurveTo(146, 240, 120, 312);
+      ctx.quadraticCurveTo(152, 212, outX, 300);
+      ctx.closePath();
     } else {
-      ctx.moveTo(98, 306);
-      ctx.bezierCurveTo(102, 148, 180, 66, 280, 66);
-      ctx.bezierCurveTo(382, 66, 458, 150, 462, 306);
-      ctx.quadraticCurveTo(436, 198, 368, 162);
-      ctx.quadraticCurveTo(318, 214, 250, 188);
-      ctx.quadraticCurveTo(176, 198, 134, 268);
-      ctx.quadraticCurveTo(114, 288, 98, 306);
+      /* 기본: 한쪽으로 자연스럽게 가른 앞머리.
+         길이대에 따라 옆폭만 달라진다. */
+      ctx.moveTo(outX, 300);
+      ctx.bezierCurveTo(outX + 4, 148, 186, topY, 280, topY);
+      ctx.bezierCurveTo(378, topY, 560 - outX - 4, 150, 560 - outX, 300);
+      ctx.quadraticCurveTo(560 - outX - 24, 206, 372, 168);
+      ctx.quadraticCurveTo(322, 228, 268, 206);
+      ctx.quadraticCurveTo(188, 214, 140, 268);
+      ctx.quadraticCurveTo(outX + 16, 284, outX, 300);
+      ctx.closePath();
     }
     ctx.closePath(); ctx.fill();
 
@@ -810,7 +885,127 @@
     g.addColorStop(0.5, main);
     g.addColorStop(1, mix(main, '#000000', 0.24));
 
-    if (kind === 'dress') {
+    if (kind === 'suit') {
+      /* 정장: 안에 셔츠, 위에 재킷, V 자 라펠 */
+      ctx.fillStyle = mix('#f6f7fa', '#ffffff', 0.3);            /* 셔츠 */
+      bodicePath(ctx, BODY.hipY, BODY.waistHalf + 12, 20, shoulderY); ctx.fill();
+      ctx.fillStyle = g;                                          /* 재킷 몸통 */
+      ctx.beginPath();
+      ctx.moveTo(280 - BODY.chestHalf - 6, shoulderY);
+      ctx.lineTo(280 - 22, shoulderY + 10);
+      ctx.lineTo(280 - 30, BODY.hipY + 26);
+      ctx.lineTo(280 - BODY.waistHalf - 16, BODY.hipY + 30);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(280 + BODY.chestHalf + 6, shoulderY);
+      ctx.lineTo(280 + 22, shoulderY + 10);
+      ctx.lineTo(280 + 30, BODY.hipY + 26);
+      ctx.lineTo(280 + BODY.waistHalf + 16, BODY.hipY + 30);
+      ctx.closePath(); ctx.fill();
+      /* ⚠ 소매 끝을 handY(652) 근처까지 내리면 팔이 통째로 덮여 사라진다.
+         긴팔은 손목 살짝 위(handY - 26)에서 끝내 손이 보이게 한다. */
+      drawSleeves(ctx, BODY.handY - 26, 30, shoulderY);
+      ctx.fillStyle = mix(main, '#ffffff', 0.18);                 /* 라펠 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 24, shoulderY + 8);
+      ctx.lineTo(280 - 4, BODY.chestY + 18);
+      ctx.lineTo(280 - 40, BODY.chestY - 4);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(280 + 24, shoulderY + 8);
+      ctx.lineTo(280 + 4, BODY.chestY + 18);
+      ctx.lineTo(280 + 40, BODY.chestY - 4);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = trim;                                       /* 넥타이 */
+      ctx.beginPath();
+      ctx.moveTo(280, BODY.chestY + 6); ctx.lineTo(280 - 11, BODY.chestY + 30);
+      ctx.lineTo(280, BODY.chestY + 92); ctx.lineTo(280 + 11, BODY.chestY + 30);
+      ctx.closePath(); ctx.fill();
+
+    } else if (kind === 'shirt') {
+      ctx.fillStyle = g;
+      bodicePath(ctx, BODY.hipY + 14, BODY.waistHalf + 12, 20, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.handY - 28, 28, shoulderY);
+      ctx.strokeStyle = mix(trim, '#000000', 0.15); ctx.lineWidth = 3;
+      ctx.beginPath();                                            /* 단추선 */
+      ctx.moveTo(280, shoulderY + 30); ctx.lineTo(280, BODY.hipY + 6); ctx.stroke();
+      ctx.fillStyle = mix(trim, '#000000', 0.25);                 /* 깃 */
+      ctx.beginPath();
+      ctx.moveTo(280 - 30, shoulderY + 6); ctx.lineTo(280, shoulderY + 40);
+      ctx.lineTo(280 - 6, shoulderY + 6); ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(280 + 30, shoulderY + 6); ctx.lineTo(280, shoulderY + 40);
+      ctx.lineTo(280 + 6, shoulderY + 6); ctx.closePath(); ctx.fill();
+
+    } else if (kind === 'vest') {
+      ctx.fillStyle = mix('#f6f7fa', '#ffffff', 0.3);             /* 셔츠 */
+      bodicePath(ctx, BODY.hipY + 10, BODY.waistHalf + 12, 20, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.handY - 28, 26, shoulderY);
+      ctx.fillStyle = g;                                          /* 조끼 */
+      ctx.beginPath();
+      ctx.moveTo(280 - BODY.chestHalf + 12, shoulderY + 8);
+      ctx.lineTo(280 - 18, shoulderY + 16);
+      ctx.lineTo(280, BODY.chestY + 26);
+      ctx.lineTo(280 + 18, shoulderY + 16);
+      ctx.lineTo(280 + BODY.chestHalf - 12, shoulderY + 8);
+      ctx.lineTo(280 + BODY.waistHalf + 6, BODY.hipY);
+      ctx.lineTo(280 - BODY.waistHalf - 6, BODY.hipY);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = trim;
+      ctx.beginPath();
+      ctx.moveTo(280, BODY.chestY - 6); ctx.lineTo(280 - 9, BODY.chestY + 14);
+      ctx.lineTo(280, BODY.chestY + 60); ctx.lineTo(280 + 9, BODY.chestY + 14);
+      ctx.closePath(); ctx.fill();
+
+    } else if (kind === 'jacket') {
+      /* 청자켓·가디건: 앞이 열려 안쪽 티가 보인다 */
+      ctx.fillStyle = mix('#f3eee9', '#ffffff', 0.2);
+      bodicePath(ctx, BODY.hipY + 10, BODY.waistHalf + 10, 20, shoulderY); ctx.fill();
+      ctx.fillStyle = g;
+      [-1, 1].forEach(function (d) {
+        ctx.beginPath();
+        ctx.moveTo(280 + d * (BODY.chestHalf + 6), shoulderY);
+        ctx.lineTo(280 + d * 26, shoulderY + 12);
+        ctx.lineTo(280 + d * 32, BODY.hipY + 16);
+        ctx.lineTo(280 + d * (BODY.waistHalf + 14), BODY.hipY + 20);
+        ctx.closePath(); ctx.fill();
+      });
+      drawSleeves(ctx, BODY.handY - 24, 31, shoulderY);
+      ctx.strokeStyle = mix(trim, '#000000', 0.1); ctx.lineWidth = 2.6;
+      [-1, 1].forEach(function (d) {
+        ctx.beginPath();
+        ctx.moveTo(280 + d * 28, shoulderY + 16);
+        ctx.lineTo(280 + d * 34, BODY.hipY + 14); ctx.stroke();
+      });
+
+    } else if (kind === 'stripe') {
+      ctx.fillStyle = g;
+      bodicePath(ctx, BODY.hipY, BODY.waistHalf + 10, 20, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY + 6, 28, shoulderY);
+      ctx.save();                                                 /* 가로 줄무늬 */
+      bodicePath(ctx, BODY.hipY, BODY.waistHalf + 10, 20, shoulderY); ctx.clip();
+      ctx.fillStyle = trim; ctx.globalAlpha = 0.85;
+      for (var sy = shoulderY + 14; sy < BODY.hipY; sy += 26) {
+        ctx.fillRect(280 - 120, sy, 240, 11);
+      }
+      ctx.restore();
+
+    } else if (kind === 'overall') {
+      ctx.fillStyle = mix(trim, '#ffffff', 0.25);                 /* 안에 입은 티 */
+      bodicePath(ctx, BODY.chestY + 30, BODY.chestHalf, 22, shoulderY); ctx.fill();
+      drawSleeves(ctx, BODY.chestY - 10, 26, shoulderY);
+      ctx.fillStyle = g;                                          /* 멜빵바지 */
+      ctx.beginPath();
+      ctx.moveTo(280 - BODY.waistHalf - 8, BODY.chestY + 18);
+      ctx.lineTo(280 + BODY.waistHalf + 8, BODY.chestY + 18);
+      ctx.lineTo(280 + BODY.hipHalf + 6, BODY.kneeY + 40);
+      ctx.lineTo(280 - BODY.hipHalf - 6, BODY.kneeY + 40);
+      ctx.closePath(); ctx.fill();
+      [-1, 1].forEach(function (d) {                              /* 멜빵끈 */
+        ctx.fillRect(280 + d * 30 - 9, shoulderY + 6, 18, BODY.chestY - shoulderY + 16);
+      });
+
+    } else if (kind === 'dress') {
       ctx.fillStyle = g;
       skirtPath(ctx, BODY.waistY, BODY.kneeY + 20, 150); ctx.fill();
       bodicePath(ctx, BODY.waistY + 8, BODY.waistHalf + 10, 22, shoulderY); ctx.fill();
