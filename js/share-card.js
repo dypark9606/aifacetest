@@ -67,7 +67,7 @@
 
   function fileName() {
     /* 파일명에 사용자 문자열을 넣지 않는다 — 경로 탈출과 OS별 금지문자 문제를 원천 차단. */
-    return 'makeup-battle.png';
+    return 'face-test.png';
   }
 
   /* ---------- 이미지 그리기 (브라우저 전용) ---------- */

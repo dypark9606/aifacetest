@@ -111,6 +111,7 @@
   </div>
 </div>
 
+<script src="js/coin-wallet.js"></script>
 <script src="js/facemesh.js"></script>
 <script src="js/photo-makeup.js"></script>
 <script>
@@ -119,7 +120,26 @@
   var PM = window.PhotoMakeup, FM = window.FM;
   function $(id) { return document.getElementById(id); }
 
-  var state = { res: null, look: PM.defaultLook(), showBefore: false };
+  var state = { res: null, look: PM.defaultLook(), showBefore: false, coinAwarded: false };
+
+  /* ---------- 코인 ----------
+     ⚠ 메이크업 배틀을 지우면서 코인 획득처가 하나 사라졌다.
+     이 탭이 그 자리를 잇는다. 한 번 화장을 해 보면 5코인.
+     지갑은 부모 프레임(window.top)에 있다 — iframe 안에서 직접 못 찾는다. */
+  function wallet() {
+    try { return (window.top && window.top.CoinWallet) || window.CoinWallet || null; }
+    catch (e) { return window.CoinWallet || null; }
+  }
+  function awardCoins() {
+    if (state.coinAwarded) return;
+    var w = wallet();
+    if (!w || !w.rewardAnalysis) return;
+    try {
+      var balance = w.rewardAnalysis('myface');
+      state.coinAwarded = true;
+      status('준비됐어요! 화장품을 골라 보세요. · 🪙 +5 (현재 ' + balance + ')');
+    } catch (e) { }
+  }
 
   /* ---------- 상태 메시지 ---------- */
   function status(msg, bad) {
@@ -233,6 +253,7 @@
       $('shelf-card').classList.remove('hidden');
       buildShelf();
       paint();
+      awardCoins();
       $('stage-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }).catch(function (e) {
       $('drop').classList.remove('busy');

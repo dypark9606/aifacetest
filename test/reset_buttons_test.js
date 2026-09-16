@@ -26,7 +26,8 @@ const readui = fs.readFileSync('js/readui.js', 'utf8');
 assert.match(readui, /다른 사진으로 다시 하기/, '얼굴사주 화면의 다시 하기');
 const mbti = fs.readFileSync('js/mbti_quiz.js', 'utf8');
 assert.match(mbti, /처음부터 다시 하기/, 'MBTI 화면의 다시 하기');
-const makeup = fs.readFileSync('Sec13_makeup.html', 'utf8');
-assert.match(makeup, /id="reset-all"/, '메이크업 배틀에도 전체 리셋 버튼');
+/* ⚠ 메이크업 배틀(Sec13)은 삭제됐다. 내 얼굴 메이크업이 그 자리를 잇는다. */
+const myface = fs.readFileSync('Sec15_myface.html', 'utf8');
+assert.match(myface, /id="reset"/, '내 얼굴 메이크업에도 되돌리기 버튼');
 
 console.log('PASS: every screen offers a reset path');

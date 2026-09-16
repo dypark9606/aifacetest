@@ -16,5 +16,5 @@ assert.deepStrictEqual(card.CARD.story, { w: 1080, h: 1920 });
 assert.deepStrictEqual(card.CARD.feed, { w: 1080, h: 1350 });
 
 // 파일 이름은 안전한 문자만 남긴다
-assert.strictEqual(card.fileName('고양이상 아이돌/../x'), 'makeup-battle.png');
+assert.strictEqual(card.fileName('고양이상 아이돌/../x'), 'face-test.png');
 console.log('PASS: instagram share card helpers');

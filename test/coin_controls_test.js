@@ -13,12 +13,14 @@ const index = read('index.html');
 assert.ok(index.includes('js/coin-wallet.js') && index.includes('global-coin-count'), '메인 화면 코인 잔액');
 
 ['Sec1_appea.html','Sec2_man_ent.html','Sec3_ani.html','Sec4_rich.html','Sec5_good_bad.html',
- 'Sec5_couple.html','Sec6_saju.html','Sec7_fortune.html','Sec11_faceSaju.html','Sec12_mbti.html','Sec13_makeup.html']
+ 'Sec5_couple.html','Sec6_saju.html','Sec7_fortune.html','Sec11_faceSaju.html','Sec12_mbti.html','Sec15_myface.html']
 .forEach(p => assert.ok(read(p).includes('js/coin-wallet.js'), p + ' 분석 보상 지갑 로드'));
 assert.ok(read('js/roast.js').includes('rewardAnalysis'), '기존 얼굴 분석 완료 보상');
 assert.ok(read('js/readui.js').includes('rewardAnalysis'), '얼굴사주 완료 보상');
 assert.ok(read('js/mbti_quiz.js').includes('rewardAnalysis'), 'MBTI 완료 보상');
-assert.ok(read('Sec13_makeup.html').includes("rewardAnalysis('makeup')"), '메이크업 완료 보상');
+/* ⚠ 메이크업 배틀(Sec13)을 지우면서 코인 획득처가 하나 사라졌다.
+   내 얼굴 메이크업(Sec15)이 그 자리를 잇는다. 이게 빠지면 아이가 코인을 벌 곳이 준다. */
+assert.ok(read('Sec15_myface.html').includes("rewardAnalysis('myface')"), '내 얼굴 메이크업 완료 보상');
 
 console.log('PASS: coin economy wired into games and every analysis tab');
 

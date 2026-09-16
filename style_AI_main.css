@@ -121,8 +121,10 @@ a[href$='section12'] {
 	color: black;
 }
 /* 신규 놀이 탭도 기존 체크무늬 순서를 그대로 잇는다.
-   위쪽 탭·옆 탭과 같은 배경이 닿지 않게 1 ↔ 6 을 번갈아 배치한다. */
-a[href$='section13'] {
+   위쪽 탭·옆 탭과 같은 배경이 닿지 않게 1 ↔ 6 을 번갈아 배치한다.
+   ⚠ 탭을 추가하면 여기에도 반드시 규칙을 넣어야 한다.
+   빠뜨리면 그 탭만 배경 없이 허옇게 뜬다(section15 가 그랬다). */
+a[href$='section15'] {
 	background-image: url('img/img_back_1.jpg');
 	background-repeat: repeat;
 	color: black;
