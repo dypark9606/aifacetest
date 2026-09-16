@@ -142,7 +142,6 @@
   <p class="coins">🪙 내 코인 <b id="coin-count">0</b></p>
   <p class="economy">매일 첫 접속 +100 · 얼굴 테스트 1회 +5 · C급 +2 · B급 +6 · A급 +12 · S급 +20 · 신기록 +5</p>
   <p class="notice hidden" id="daily-notice"></p>
-  <div class="actions" style="margin:0 0 12px"><button class="btn coin" id="ask-coins">🎁 친구에게 코인 받기</button></div>
 
   <div class="card hidden" id="challenge-card">
     <h2>📨 도전장 도착</h2>
@@ -152,22 +151,18 @@
   <div class="card hidden" id="coin-card">
     <h2 id="coin-title">🪙 코인이 부족해요</h2>
     <p id="coin-text" style="font-size:18px;margin:0 0 8px"></p>
-    <div class="actions">
-      <button class="btn coin hidden" id="send-coins">🎁 30코인 보내기</button>
-      <button class="btn" id="share-coin-request">💬 친구에게 요청 보내기</button>
-    </div>
   </div>
 
   <div class="card">
-    <h2>게임 고르기</h2>
-    <div class="picker" id="picker"></div>
-    <p class="hint" id="game-desc"></p>
-  </div>
-
-  <div class="card">
-    <h2>난이도 고르기 <span style="font-size:15px;opacity:.7">(1 쉬움 ~ 10 어려움)</span></h2>
+    <h2>1. 난이도 고르기 <span style="font-size:15px;opacity:.7">(1 쉬움 ~ 10 어려움)</span></h2>
     <div class="levels" id="levels"></div>
     <p class="hint" id="level-desc"></p>
+  </div>
+
+  <div class="card">
+    <h2>2. 게임 고르기 <span style="font-size:15px;opacity:.7">(누르면 바로 시작!)</span></h2>
+    <div class="picker" id="picker"></div>
+    <p class="hint" id="game-desc"></p>
   </div>
 
   <div class="card">
@@ -260,25 +255,13 @@
   }
 
   function arcadeUrl() { return location.href.split(/[?#]/)[0]; }
-  function showCoinCard(title, text, canSend) {
+  /* ⚠ '친구에게 코인 받기'는 2026-09-16 삭제됐다(사용자 지시).
+     코인은 매일 접속 +100, 얼굴 테스트 +5, 게임 등급 보상으로만 번다.
+     showCoinCard 는 "코인이 부족해요" 안내용으로만 남는다. */
+  function showCoinCard(title, text) {
     $('coin-title').textContent = title;
     $('coin-text').textContent = text;
-    $('send-coins').classList.toggle('hidden', !canSend);
-    $('share-coin-request').classList.toggle('hidden', !!canSend);
     $('coin-card').classList.remove('hidden');
-  }
-  function shareCoinMessage(text, url) {
-    var msg = text + '\n' + url + '\n📱 앱 설치: https://play.google.com/store/apps/details?id=com.dypark9606.aifacetest';
-    if (navigator.share) { navigator.share({title:'얼굴상 오락실 코인',text:msg}).catch(function(){}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(msg).then(
-      function(){ alert('코인 메시지를 복사했어요. 친구에게 보내세요!'); },
-      function(){ prompt('복사해서 친구에게 보내세요',msg); });
-    else prompt('복사해서 친구에게 보내세요',msg);
-  }
-  function askCoins() {
-    var name = prompt('친구에게 보일 이름', '나') || '나';
-    var tok = A.createCoinRequest(name);
-    shareCoinMessage('🪙 '+name+'님이 게임 코인이 필요해요. 30코인을 보내주세요!', arcadeUrl()+'?coinRequest='+tok);
   }
 
   function drawPicker() {
@@ -425,7 +408,7 @@
     if (state.running) return;
     if (A.spendGame() === false) {
       showCoinCard('🪙 코인이 부족해요',
-        '한 판에 '+A.GAME_COST+'코인이 필요합니다. 위쪽 탭에서 얼굴 테스트(외모점수·동물상·사주·MBTI 등)를 하면 한 번에 '+A.ANALYSIS_REWARD+'코인을 받아요. 친구에게 30코인을 요청할 수도 있어요.', false);
+        '한 판에 '+A.GAME_COST+'코인이 필요합니다. 위쪽 탭에서 얼굴 테스트(외모점수·동물상·사주·MBTI 등)를 하면 한 번에 '+A.ANALYSIS_REWARD+'코인을 받아요. 매일 처음 들어오면 100코인을 드려요!');
       drawHud(); return false;
     }
     $('coin-card').classList.add('hidden');
@@ -468,19 +451,6 @@
 
   $('start').addEventListener('click', start);
   $('again').addEventListener('click', start);
-  $('ask-coins').addEventListener('click', askCoins);
-  $('share-coin-request').addEventListener('click', askCoins);
-  $('send-coins').addEventListener('click', function () {
-    if (!state.coinRequest) return;
-    var gift = A.createCoinGift(state.coinRequest);
-    if (!gift) {
-      showCoinCard('🪙 보낼 코인이 부족해요', '30코인이 있어야 친구에게 보낼 수 있습니다.', false);
-      drawHud(); return;
-    }
-    drawHud(); $('coin-card').classList.add('hidden');
-    shareCoinMessage('🎁 ' + state.coinRequest.name + '님에게 30코인을 보냈어요! 아래 링크를 열면 받아요.',
-      arcadeUrl() + '?coinGift=' + gift);
-  });
   $('share-result').addEventListener('click', function () { if (state.last !== null) shareText(resultText()); });
   $('share-battle').addEventListener('click', function () {
     if (state.last === null || !state.challenge) return;
@@ -562,14 +532,9 @@
       $('daily-notice').classList.remove('hidden');
     }
 
-    var requestMatch = /[?&]coinRequest=([A-Za-z0-9_-]+)/.exec(location.search);
-    if (requestMatch) {
-      var request = A.decodeCoinToken(requestMatch[1]);
-      if (request && request.kind === 'request') {
-        state.coinRequest = request;
-        showCoinCard('🎁 친구의 코인 요청', request.name + '님에게 30코인을 보내시겠어요? 내 코인에서 30개가 차감됩니다.', true);
-      }
-    }
+    /* ⚠ coinRequest(친구에게 코인 요청) 경로는 2026-09-16 삭제됐다.
+       이미 뿌려진 옛 링크를 눌러도 조용히 무시한다 — 없어진 기능을 다시
+       띄우면 "지웠는데 왜 나오냐"가 된다. 코인 선물 받기(coinGift)는 유지. */
 
     var m = /[?&]arcade=([A-Za-z0-9_-]+)/.exec(location.search);
     if (m) {

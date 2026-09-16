@@ -5,8 +5,13 @@ const read = p => fs.readFileSync(p, 'utf8');
 const arcade = read('Sec14_arcade.html');
 assert.ok(arcade.includes('js/coin-wallet.js'), '오락실에 공용 지갑 로드');
 assert.ok(arcade.includes('A.spendGame()'), '게임 시작 때 코인 차감');
-assert.ok(arcade.includes('id="ask-coins"') && arcade.includes('id="send-coins"'), '친구 요청·보내기 UI');
-assert.ok(arcade.includes('?coinRequest=') && arcade.includes('?coinGift='), '친구 코인 왕복 링크');
+/* ⚠ '친구에게 코인 받기/보내기'는 2026-09-16 삭제됐다(사용자 지시).
+   코인은 매일 접속 +100, 얼굴 테스트 +5, 게임 등급 보상으로만 번다.
+   되살아나면 안 되므로 **없는 것**을 검사한다. */
+assert.ok(!arcade.includes('id="ask-coins"'), '친구에게 코인 받기 버튼이 되살아났다');
+assert.ok(!arcade.includes('id="send-coins"'), '코인 보내기 버튼이 되살아났다');
+assert.ok(!arcade.includes('id="share-coin-request"'), '코인 요청 버튼이 되살아났다');
+assert.ok(!/askCoins|shareCoinMessage/.test(arcade), '코인 요청 함수가 남아 있다');
 assert.ok(arcade.includes('매일 첫 접속 +100'), '일일 지급과 보상표 안내');
 
 const index = read('index.html');
