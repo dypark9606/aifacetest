@@ -29,15 +29,62 @@
     return function () { clearInterval(t); };
   }
 
+  /* ══════════ 난이도 1~10 ══════════
+     ⚠ 딸 피드백: "속도 레벨을 1~10 으로 고르게 해줘. 그래야 성공 욕구가 생긴다."
+     시간에 따라 저절로 빨라지는 방식(두꺼비 MOLE_LEVELS)은 남기되,
+     **시작 난이도**를 사용자가 직접 고른다.
+
+     설계 규칙:
+     - 1 은 아이가 확실히 성공하는 속도, 10 은 어른도 버거운 속도.
+     - 1→10 이 선형이어야 "한 단계 올렸다"는 감각이 일정하다.
+     - 게임마다 '어려움'의 축이 다르다:
+         두꺼비 = 등장간격·노출시간(짧을수록 어려움)
+         까마귀 = 이동속도·등장간격
+         순발력 = 초록 대기시간(짧고 예측 어려울수록 어려움)
+         판자   = 게이지 왕복속도(빠를수록 100% 맞추기 어려움)
+     - 값은 반드시 이 함수 한 곳에서만 만든다. 게임 안에 숫자를 박으면
+       난이도를 바꿔도 안 먹는다. */
+  var MAX_LEVEL = 10;
+
+  function clampLevel(n) {
+    n = Math.round(Number(n) || 1);
+    return n < 1 ? 1 : (n > MAX_LEVEL ? MAX_LEVEL : n);
+  }
+
+  /* 1..10 -> 0..1 */
+  function levelT(n) { return (clampLevel(n) - 1) / (MAX_LEVEL - 1); }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function diffFor(game, level) {
+    var t = levelT(level);
+    if (game === 'mole') {
+      return { spawn: Math.round(lerp(1100, 380, t)),
+               up:    Math.round(lerp(1700, 620, t)) };
+    }
+    if (game === 'crow') {
+      return { speed: Math.round(lerp(70, 260, t)),
+               spawn: Math.round(lerp(900, 420, t)) };
+    }
+    if (game === 'reflex') {
+      return { min: Math.round(lerp(1400, 700, t)),
+               span: Math.round(lerp(2200, 900, t)) };
+    }
+    if (game === 'arrow') {
+      return { cycle: Math.round(lerp(1800, 650, t)) };
+    }
+    return {};
+  }
+
   /* ---------- 두꺼비 잡기 ----------
      ⚠ 딸 피드백: "너무 빠르다, 레벨이 있어야 한다".
      기존엔 등장 520ms / 노출 800ms 고정이라 처음부터 최고 난이도였다.
-     이제 느리게 시작해 10초마다 빨라진다. 잡으면 진동 + "꽥" 이 뜬다. */
-  var MOLE_LEVELS = [
-    { at: 0,  spawn: 950, up: 1500, label: '1단계' },   /* 여유롭게 시작 */
-    { at: 8,  spawn: 780, up: 1200, label: '2단계' },
-    { at: 16, spawn: 620, up: 950,  label: '3단계' },
-    { at: 23, spawn: 500, up: 780,  label: '4단계' }    /* 마지막에만 기존 난이도 */
+     이제 **고른 난이도에서 시작해** 시간이 지나며 조금씩 더 빨라진다.
+     잡으면 진동 + "꽥" 이 뜬다. */
+  var MOLE_STEPS = [
+    { at: 0,  mul: 1.00, label: '1단계' },   /* 고른 난이도 그대로 */
+    { at: 10, mul: 0.86, label: '2단계' },
+    { at: 20, mul: 0.74, label: '3단계' }
   ];
   var MOLE_CRIES = ['꽥!', '으악!', '꾸엑!', '깨굴!', '아야!'];
 
@@ -45,8 +92,8 @@
      ⚠ 예전엔 역순 루프로 훑어서 9초에 4단계가 걸리는 버그가 있었다. */
   function moleLevelAt(sec) {
     var want = 0;
-    for (var k = 0; k < MOLE_LEVELS.length; k++) {
-      if (sec >= MOLE_LEVELS[k].at) want = k;
+    for (var k = 0; k < MOLE_STEPS.length; k++) {
+      if (sec >= MOLE_STEPS[k].at) want = k;
     }
     return want;
   }
@@ -55,6 +102,8 @@
     var f = make(o.field), score = 0, dead = false;
     var holes = [], timers = [];
     var elapsed = 0, level = 0;
+    /* 고른 난이도가 기준값이 된다. 단계가 오르면 여기에 배수를 곱한다. */
+    var base = diffFor('mole', o.level);
 
     function buzz(ms) {
       try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
@@ -104,9 +153,9 @@
         h.dataset.up = '1'; h.className = 'hole up'; h.textContent = '🐸';
         var t = setTimeout(function () {
           if (h.dataset.up === '1') { h.dataset.up = '0'; h.className = 'hole'; h.textContent = ''; }
-        }, MOLE_LEVELS[level].up);
+        }, Math.round(base.up * MOLE_STEPS[level].mul));
         timers.push(t);
-      }, MOLE_LEVELS[level].spawn);
+      }, Math.round(base.spawn * MOLE_STEPS[level].mul));
     }
     schedule();
 
@@ -121,7 +170,7 @@
       if (want !== level) {
         level = want;
         schedule();
-        if (o.onLevel) o.onLevel(MOLE_LEVELS[level].label);
+        if (o.onLevel) o.onLevel(MOLE_STEPS[level].label);
       }
     }, 1000);
 
@@ -141,6 +190,7 @@
   /* ---------- 2) 순발력 테스트 (5회 평균 반응속도) ---------- */
   function reflex(o) {
     var f = make(o.field), dead = false;
+    var d = diffFor('reflex', o.level);
     var pad = document.createElement('div');
     pad.className = 'reflex-pad wait';
     pad.textContent = '초록으로 바뀌면 누르세요!';
@@ -160,7 +210,7 @@
         green = Date.now();
         pad.className = 'reflex-pad go';
         pad.textContent = '지금!';
-      }, 900 + Math.random() * 2200);
+      }, d.min + Math.random() * d.span);
     }
 
     pad.addEventListener('click', function () {
@@ -259,7 +309,7 @@
        화면 밖이면 브라우저가 타이머를 늦춰(throttle) 게이지가 거의 0 인 채로
        발사된다(실측: 0.45초 눌렀는데 4%). 그래서 **힘은 누른 시각과 뗀 시각의
        차이로 계산**하고, 타이머는 막대를 그리는 데만 쓴다. */
-    var CYCLE = 1200;            /* 0 → 100 → 0 한 바퀴에 걸리는 시간(ms) */
+    var CYCLE = diffFor('arrow', o.level).cycle;   /* 0 → 100 → 0 한 바퀴(ms). 난이도가 높을수록 짧다 */
     var startAt = 0, anim = null, holding = false;
 
     function powerAt(t) {
@@ -325,7 +375,7 @@
           손가락 터치는 최소 56~64px 가 필요하다. → CSS 에서 min-width/height 확보.
        3) 맞아도 💥 를 160ms 만 보여주고 지워 인지가 안 됐다.
           → 진동 + 죽는 연출 + 점수 팝업을 준다. */
-  function flyer(o, emoji, seconds, speedBase) {
+  function flyer(o, emoji, seconds, speedBase, spawnMs) {
     var f = make(o.field), score = 0, dead = false, items = [];
 
     function buzz(ms) {
@@ -370,7 +420,7 @@
 
       f.appendChild(el);
       items.push(item);
-    }, 620);
+    }, spawnMs);
 
     var last = Date.now();
     var move = setInterval(function () {
@@ -398,8 +448,12 @@
     return { stop: function () { cleanup(); stopTime(); } };
   }
 
-  function crow(o) { return flyer(o, '🐦', 30, 150); }
+  function crow(o) {
+    var d = diffFor('crow', o.level);
+    return flyer(o, '🐦', 30, d.speed, d.spawn);
+  }
 
   root.ArcadeGames = { mole: mole, reflex: reflex, arrow: arrow, crow: crow,
-                       _moleLevelAt: moleLevelAt, _MOLE_LEVELS: MOLE_LEVELS };
+                       MAX_LEVEL: MAX_LEVEL, diffFor: diffFor, clampLevel: clampLevel,
+                       _moleLevelAt: moleLevelAt, _MOLE_STEPS: MOLE_STEPS };
 })(typeof self !== 'undefined' ? self : this);

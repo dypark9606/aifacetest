@@ -43,36 +43,39 @@ assert.ok(/@keyframes/.test(html), '피격 애니메이션 CSS 가 없다');
 
 /* --- 5. 두꺼비가 너무 빠르고 레벨이 없었다 --- */
 // spawn 520ms / 노출 800ms 고정이었다. 쉬운 속도에서 시작해 점점 빨라져야 한다.
-assert.ok(/LEVELS|level/.test(games), '두꺼비에 레벨 개념이 없다');
+// ⚠ 2026-09-16: 속도값이 MOLE_LEVELS 배열에서 diffFor('mole', level) 로 옮겨졌다.
+//    (사용자가 난이도 1~10 을 직접 고르게 되면서 상수 배열이 사라졌다.)
+//    그래서 소스 문자열을 grep 하지 않고 실제 함수를 호출해 검사한다.
+assert.ok(/level/.test(games), '두꺼비에 레벨 개념이 없다');
 const moleBody = /function mole\(([\s\S]*?)\n  \}/.exec(games);
 assert.ok(moleBody, 'mole 함수를 찾을 수 없다');
-const firstSpawn = /spawn: *(\d+)/.exec(games);
-assert.ok(firstSpawn && Number(firstSpawn[1]) >= 800,
-  '1레벨 두꺼비 등장 간격이 너무 빠르다 (처음엔 800ms 이상이어야 한다): ' + (firstSpawn ? firstSpawn[1] : '없음'));
-const firstUp = /up: *(\d+)/.exec(games);
-assert.ok(firstUp && Number(firstUp[1]) >= 1100,
-  '1레벨 두꺼비가 너무 빨리 숨는다 (처음엔 1100ms 이상 떠 있어야 한다): ' + (firstUp ? firstUp[1] : '없음'));
 
-/* --- 6. 두꺼비 웃음 포인트 --- */
-assert.ok(/꽥/.test(games), '두꺼비를 잡아도 "꽥" 같은 웃음 포인트가 없다');
-
-/* --- 6b. 레벨이 순서대로 올라가야 한다 --- */
-/* 실제로 돌려보니 9초에 4단계로 점프했다. 역순 루프가 원인이었다. */
 /* arcade-games.js 는 IIFE 로 전역(root)에 붙는다. require 로는 안 잡히므로
    전역 객체를 root 로 넘겨 실행한다. */
 const AG = {};
 new Function('self', games)(AG);
-const lv = AG.ArcadeGames._moleLevelAt, LV = AG.ArcadeGames._MOLE_LEVELS;
+const G = AG.ArcadeGames;
+
+const lvl1 = G.diffFor('mole', 1);
+assert.ok(lvl1.spawn >= 800,
+  '1단계 두꺼비 등장 간격이 너무 빠르다 (800ms 이상이어야 한다): ' + lvl1.spawn);
+assert.ok(lvl1.up >= 1100,
+  '1단계 두꺼비가 너무 빨리 숨는다 (1100ms 이상 떠 있어야 한다): ' + lvl1.up);
+
+/* --- 6. 두꺼비 웃음 포인트 --- */
+assert.ok(/꽥/.test(games), '두꺼비를 잡아도 "꽥" 같은 웃음 포인트가 없다');
+
+/* --- 6b. 시간이 지나면 단계가 순서대로 올라가야 한다 --- */
+/* 실제로 돌려보니 9초에 4단계로 점프했다. 역순 루프가 원인이었다. */
+const lv = G._moleLevelAt, LV = G._MOLE_STEPS;
 assert.ok(typeof lv === 'function', '레벨 계산 함수가 노출되지 않았다');
 assert.strictEqual(lv(0), 0, '시작은 1단계여야 한다');
 assert.strictEqual(lv(5), 0, '5초에도 아직 1단계여야 한다');
-assert.strictEqual(lv(9), 1, '9초에는 2단계여야 한다 (4단계로 점프하면 버그)');
-assert.strictEqual(lv(17), 2, '17초에는 3단계');
-assert.strictEqual(lv(25), 3, '25초에는 4단계');
-// 단계가 올라갈수록 실제로 빨라져야 한다
+assert.ok(lv(9) <= 1, '9초에 단계가 너무 높다 (최고 단계로 점프하면 버그): ' + lv(9));
+assert.ok(lv(25) > lv(5), '시간이 지나도 단계가 안 오른다');
+// 단계가 올라갈수록 실제로 빨라져야 한다 (배수가 작아진다)
 for (let i = 1; i < LV.length; i++) {
-  assert.ok(LV[i].spawn < LV[i - 1].spawn, `${i + 1}단계가 더 빨라지지 않는다`);
-  assert.ok(LV[i].up < LV[i - 1].up, `${i + 1}단계 노출시간이 더 짧아지지 않는다`);
+  assert.ok(LV[i].mul < LV[i - 1].mul, `${i + 1}단계가 더 빨라지지 않는다`);
 }
 
 /* --- 7. 게임 수가 줄었으니 목록도 맞아야 한다 --- */

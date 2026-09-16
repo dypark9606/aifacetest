@@ -27,6 +27,15 @@
   .gbtn .e{display:block;font-size:30px}
   .gbtn .b{display:block;font-size:14px;opacity:.8}
 
+  /* 난이도 1~10 — 폰에서 한 손으로 누를 수 있어야 하므로 한 줄 5개, 두 줄.
+     ⚠ 10개를 한 줄에 넣으면 칸이 36px 밑으로 내려가 손가락으로 못 누른다. */
+  .levels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .lvbtn{font-family:inherit;font-size:20px;padding:12px 0;border-radius:14px;cursor:pointer;
+         border:2px solid var(--line);background:#241f4d;color:var(--ink);text-align:center;
+         min-height:48px;touch-action:manipulation}
+  .lvbtn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#241f4d;font-weight:bold}
+  @media(max-width:360px){.lvbtn{font-size:18px;min-height:44px}}
+
   .hud{display:flex;justify-content:space-around;font-size:20px;margin-bottom:8px}
   .hud b{color:var(--gold)}
   .field{position:relative;width:100%;height:340px;border-radius:16px;overflow:hidden;
@@ -156,6 +165,12 @@
   </div>
 
   <div class="card">
+    <h2>난이도 고르기 <span style="font-size:15px;opacity:.7">(1 쉬움 ~ 10 어려움)</span></h2>
+    <div class="levels" id="levels"></div>
+    <p class="hint" id="level-desc"></p>
+  </div>
+
+  <div class="card">
     <div class="hud">
       <span>점수 <b id="hud-score">0</b></span>
       <span>남은시간 <b id="hud-time">–</b></span>
@@ -219,7 +234,24 @@
   'use strict';
   var A = window.Arcade, GAMES = window.ArcadeGames;
   var $ = function (id) { return document.getElementById(id); };
-  var state = { id: 'mole', last: null, challenge: null, running: null, coinRequest: null };
+  /* ⚠ 난이도는 **게임마다 따로** 기억한다. 두꺼비는 3인데 까마귀는 7이 맞을 수 있고,
+     게임을 바꿀 때마다 1로 돌아가면 매번 다시 고르는 불편이 생긴다.
+     저장해 두면 다음에 열었을 때 그대로 이어서 도전한다. */
+  var LV_KEY = 'arcade.levels.v1';
+  function loadLevels() {
+    try {
+      var o = JSON.parse(localStorage.getItem(LV_KEY) || '{}');
+      return (o && typeof o === 'object') ? o : {};
+    } catch (e) { return {}; }
+  }
+  function saveLevels(o) {
+    try { localStorage.setItem(LV_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+  var levelMap = loadLevels();
+
+  var state = { id: 'mole', last: null, challenge: null, running: null, coinRequest: null,
+                level: 1 };
+  state.level = GAMES.clampLevel(levelMap[state.id] || 1);
 
   function baseUrl() {
     try { if (window.top !== window.self && document.referrer) return document.referrer.split(/[?#]/)[0]; }
@@ -264,7 +296,10 @@
            옛 판의 onEnd 가 터져 엉뚱한 점수가 기록된다. */
         if (state.running && state.running.stop) state.running.stop();
         state.running = null; state.last = null;
-        state.id = g.id; drawPicker(); drawHud(); clearField();
+        state.id = g.id;
+        /* 게임마다 기억해 둔 난이도로 되돌린다 */
+        state.level = GAMES.clampLevel(levelMap[g.id] || 1);
+        drawPicker(); drawLevels(); drawHud(); clearField();
         $('result-card').classList.add('hidden');
         $('battle-card').classList.add('hidden');
         $('link-card').classList.add('hidden');
@@ -273,6 +308,61 @@
       box.appendChild(b);
     });
     $('game-desc').textContent = A.game(state.id).desc;
+  }
+
+  /* 난이도 설명 — 숫자만 보여주면 무엇이 달라지는지 모른다.
+     ⚠ 문구는 **고른 단계 기준**으로 말해야 한다.
+     1단계에 "더 자주 나오고 더 빨리 숨어요"라고 쓰면 정반대로 읽힌다. */
+  var LEVEL_AXIS = {
+    mole:   { easy: '두꺼비가 천천히 나오고 오래 기다려 줘요',
+              hard: '두꺼비가 빠르게 나왔다 금방 숨어요',
+              unit: '두꺼비' },
+    crow:   { easy: '까마귀가 천천히 날아가요',
+              hard: '까마귀가 빠르게, 쉴 새 없이 날아와요',
+              unit: '까마귀' },
+    reflex: { easy: '초록불이 비교적 여유 있게 켜져요',
+              hard: '초록불이 언제 켜질지 종잡을 수 없어요',
+              unit: '초록불' },
+    arrow:  { easy: '힘 게이지가 천천히 움직여 맞추기 쉬워요',
+              hard: '힘 게이지가 빠르게 움직여 100% 맞추기 어려워요',
+              unit: '게이지' }
+  };
+
+  function levelTone(lv) {
+    if (lv <= 3) return 'easy';
+    if (lv >= 8) return 'hard';
+    return 'mid';
+  }
+
+  function drawLevels() {
+    var box = $('levels'); box.innerHTML = '';
+    for (var n = 1; n <= GAMES.MAX_LEVEL; n++) {
+      (function (lv) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'lvbtn';
+        b.textContent = lv;
+        b.dataset.level = String(lv);
+        b.setAttribute('aria-pressed', String(lv === state.level));
+        b.addEventListener('click', function () {
+          /* ⚠ 난이도를 바꾸면 **진행 중인 판을 반드시 멈춘다.**
+             안 멈추면 옛 타이머가 계속 돌아 새 난이도가 안 먹은 것처럼 보인다. */
+          if (state.running && state.running.stop) state.running.stop();
+          state.running = null;
+          state.level = lv;
+          levelMap[state.id] = lv; saveLevels(levelMap);
+          drawLevels(); drawHud(); clearField();
+        });
+        box.appendChild(b);
+      })(n);
+    }
+    var ax = LEVEL_AXIS[state.id] || { easy: '', hard: '', unit: '' };
+    var tone = levelTone(state.level);
+    var word = tone === 'easy' ? '쉬움' : (tone === 'hard' ? '어려움' : '보통');
+    var says = tone === 'easy' ? ax.easy
+             : tone === 'hard' ? ax.hard
+             : ax.unit + ' 속도가 적당해요';
+    $('level-desc').textContent =
+      state.level + '단계 (' + word + ') — ' + says + ' · ▶ 시작을 누르면 이 난이도로 해요.';
   }
 
   function drawHud() {
@@ -317,7 +407,7 @@
     $('coin-msg').textContent = '🪙 입장 -' + A.GAME_COST + ' · 보상 +' + got +
       (celebrate ? ' (신기록 +5 포함)' : '') + ' · 현재 ' + A.getCoins() + '코인';
     $('result-card').classList.remove('hidden');
-    drawPicker(); drawHud(); drawBoard();
+    drawPicker(); drawLevels(); drawHud(); drawBoard();
     if (state.challenge && state.challenge.game === state.id) showBattle(score);
     $('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -345,6 +435,7 @@
     clearField();
     state.running = GAMES[state.id]({
       field: $('field'),
+      level: state.level,
       onScore: function (s) { $('hud-score').textContent = s; },
       onTime: function (t) { $('hud-time').textContent = t; },
       /* 두꺼비만 단계가 오른다. 다른 게임에선 이 칸을 숨긴다. */
@@ -448,7 +539,7 @@
   $('reset-all').addEventListener('click', function () {
     if (state.running && state.running.stop) state.running.stop();
     state.running = null; state.last = null;
-    clearField(); drawHud(); drawPicker();
+    clearField(); drawHud(); drawPicker(); drawLevels();
     $('result-card').classList.add('hidden');
     $('battle-card').classList.add('hidden');
     $('link-card').classList.add('hidden');
@@ -490,7 +581,7 @@
           A.scoreText(c.game, c.score) + ' 기록! 이겨보세요.';
       }
     }
-    drawPicker(); drawHud(); drawBoard();
+    drawPicker(); drawLevels(); drawHud(); drawBoard();
   })();
 
   window.__shareResultText = function () { return state.last === null ? '' : resultText(); };
