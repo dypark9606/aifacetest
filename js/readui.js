@@ -160,6 +160,11 @@
 						w.ensureDaily();
 						var balance = w.rewardAnalysis(spec.title || 'face-saju'); coinAwarded = true;
 						res.appendChild(el('p', 'rd-coin', '🪙 얼굴 분석 보상 +5 · 현재 ' + balance + '코인'));
+						/* 분석을 끝까지 봤다 = 좋은 순간. 충분히 즐겼으면 별점을 부탁한다. */
+						try {
+							var RP = (window.top && window.top.RatePrompt) || window.RatePrompt;
+							if (RP) RP.goodAndMaybeAsk('analysis', { delay: 2500 });
+						} catch (e2) { }
 					}
 				} catch (e) { }
 			}

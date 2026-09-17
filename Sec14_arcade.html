@@ -229,6 +229,7 @@
 </div>
 
 <script src="js/coin-wallet.js"></script>
+<script src="js/rate-prompt.js"></script>
 <script src="js/arcade-core.js"></script>
 <script src="js/share-card.js"></script>
 <script src="js/arcade-games.js"></script>
@@ -404,6 +405,18 @@
     drawPicker(); drawLevels(); drawHud(); drawBoard();
     if (state.challenge && state.challenge.game === state.id) showBattle(score);
     $('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    /* 신기록을 세운 순간이 가장 기분 좋다 — 별점을 부탁하기 제일 좋은 때.
+       진 판이나 0점에서는 절대 묻지 않는다(낮은 별점이 돌아온다). */
+    if (window.RatePrompt) {
+      if (celebrate) {
+        window.RatePrompt.goodAndMaybeAsk('bestScore', {
+          delay: 2200,
+          message: '신기록 축하해요! 🎉 별점을 남겨 주시면 더 많은 친구들이 이 게임을 찾을 수 있어요!'
+        });
+      } else if (score > 0) {
+        window.RatePrompt.good('analysis');
+      }
+    }
   }
 
   function showBattle(mine) {

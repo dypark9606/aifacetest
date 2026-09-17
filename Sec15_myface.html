@@ -120,6 +120,7 @@
 </div>
 
 <script src="js/coin-wallet.js"></script>
+<script src="js/rate-prompt.js"></script>
 <script src="js/facemesh.js"></script>
 <script src="js/photo-makeup.js"></script>
 <script>
@@ -146,6 +147,8 @@
       var balance = w.rewardAnalysis('myface');
       state.coinAwarded = true;
       status('준비됐어요! 화장품을 골라 보세요. · 🪙 +5 (현재 ' + balance + ')');
+      /* 화장을 해 봤다 — 좋은 순간으로 점수만 쌓아 둔다(아직 묻지는 않는다) */
+      if (window.RatePrompt) window.RatePrompt.good('makeup');
     } catch (e) { }
   }
 
@@ -321,6 +324,10 @@
       a.download = 'my-makeup.png';
       a.href = cv.toDataURL('image/png');
       a.click();
+      /* 사진까지 저장했다 = 마음에 들었다는 뜻. 별점을 부탁할 좋은 순간. */
+      if (window.RatePrompt) window.RatePrompt.goodAndMaybeAsk('saved', {
+        message: '화장한 사진이 마음에 드셨나요? 별점을 남겨 주시면 더 많은 친구들이 이 앱을 찾을 수 있어요!'
+      });
     } catch (e) {
       status('저장에 실패했어요. 화면을 길게 눌러 이미지를 저장해 주세요.', true);
     }
