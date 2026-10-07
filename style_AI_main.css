@@ -19,6 +19,14 @@
 }
 .global-wallet span { font-size: 13px; color: #fff; }
 
+.web-adfit-banner {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	overflow: hidden;
+	background: #fff;
+}
+
 .tabs > ul {
 	font-family: 'Jua', sans-serif;
 	position: relative;

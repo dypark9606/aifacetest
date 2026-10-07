@@ -74,6 +74,17 @@
 
 	<body scrolling="yes">
 		<div class="global-wallet" id="global-wallet">🪙 코인 <b id="global-coin-count">0</b><span id="global-coin-note"></span></div>
+		<!-- 웹 전용 Kakao AdFit 배너. 네이티브 앱은 AdMob을 쓰므로 빌드 시 제거한다. -->
+		<div class="web-adfit-banner" data-web-only>
+			<ins
+				class="kakao_ad_area"
+				style="display: none"
+				data-ad-unit="DAN-YLLMo8Ph65fsmH37"
+				data-ad-width="320"
+				data-ad-height="100"
+			></ins>
+			<script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+		</div>
 		<!-- -----------------------------------------Tab 관련 code----------------------------->
 		<div class="tabs">
 			<!-- 윗줄 5개: 사진으로 보는 것 / 아랫줄 5개: 사주·성격·부자상 -->
